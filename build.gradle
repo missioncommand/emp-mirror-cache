@@ -1,0 +1,62 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.netflix.nebula:nebula-publishing-plugin:4.9.1'
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.0.RC1"
+    }
+}
+
+ext {
+	di2eNexusReleaseUrl = "https://nexus.di2e.net/nexus/content/repositories/releases/"
+    di2eNexusUsername   = project.hasProperty('empUsername') ? project.property('empUsername') : ''
+    di2eNexusPassword   = project.hasProperty('empPassword') ? project.property('empPassword') : ''
+    
+    version_wildfly_swarm = "2017.1.1"
+}
+
+allprojects { project ->
+    group = "org.cmapi.mirrorcache"
+    
+    apply plugin: 'io.spring.dependency-management'
+    
+    dependencyManagement {
+        imports {
+            mavenBom "org.wildfly.swarm:bom-all:$version_wildfly_swarm"
+        }
+    }
+    
+    repositories {
+        mavenLocal()
+        jcenter()
+		//mavenCentral()
+		
+        maven {
+            url 'http://repository.jboss.org/nexus/content/groups/public-jboss'
+        }
+		
+		maven {
+			url = project.di2eNexusReleaseUrl
+			credentials {
+				username project.di2eNexusUsername
+				password project.di2eNexusPassword
+			}
+		}
+    }
+}
+
+
+task wrapper(type: Wrapper, description: "Generates gradlew[.bat] scripts") {
+    gradleVersion = '3.2.1'
+}
+
+if (JavaVersion.current().isJava8Compatible()) { // disable lint for java8
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}

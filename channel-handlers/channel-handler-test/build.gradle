@@ -1,0 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    compile project (':api')
+    compile project (':channel-handlers:channel-handler-pli')
+
+    compile "ch.qos.logback:logback-classic:1.1.8"
+}
+
+
+mainClassName = "org.cmapi.mirrorcache.channelhandler.test.Test"
