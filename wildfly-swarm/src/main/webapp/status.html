@@ -1,0 +1,37 @@
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+</head>
+<body>
+    <div class="page">
+        <div class="center">
+            <pre>
+                    <div id="results"> </div>
+                    
+                </pre>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var timerId = setInterval(function() {
+            var url = "http://127.0.0.1:8080/rest/status";
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+
+                    //var json = JSON.parse(xhr.responseText);
+                    //alert(JSON.stringify(json, null, 10));
+
+                    results.innerHTML = xhr.responseText;
+
+                }
+            }
+            xhr.send();
+        }, 500);
+        
+    </script>
+</body>
+
+</html>

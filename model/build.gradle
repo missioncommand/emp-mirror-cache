@@ -1,0 +1,52 @@
+plugins {
+    id "java"
+    
+    // protobuf
+    id "com.google.protobuf" version "0.8.0"
+}
+apply plugin: 'nebula.maven-nebula-publish'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+sourceSets.main.java.srcDirs += "$buildDir/generated-sources/proto/main/java"
+
+dependencies {
+    // CMAPI
+    compile "org.cmapi.primitives:common-map-geospatial-notation:0.0.5"
+
+    // PROTOBUF
+    compile 'com.google.protobuf:protobuf-java:3.1.0'
+}
+
+protobuf {
+    generatedFilesBaseDir = "$buildDir/generated-sources/proto"
+    
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.1.0-build2'
+    }
+    plugins {
+//        javalite {
+//            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+//        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.generateDescriptorSet = true
+            task.descriptorSetOptions.includeSourceInfo = true
+            task.descriptorSetOptions.includeImports = true
+            
+            task.builtins {
+                //remove java
+                js {
+                    option 'library=cmapi_proto'
+                    option 'binary'
+                    option 'error_on_name_conflict'
+                }
+            }
+            task.plugins {
+                //javalite { }
+            }
+        }
+    }
+}

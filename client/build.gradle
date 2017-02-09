@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'nebula.maven-nebula-publish'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    compile project (':model')
+    compile project (':api')
+
+    compile "org.cmapi.primitives:common-map-geospatial-notation:0.0.5"
+    compile "io.undertow:undertow-websockets-jsr:1.2.9.Final"
+    
+    compile "uk.gov.nationalarchives.thirdparty.netbeans:org-netbeans-swing-outline:7.2"
+    
+    compile "ch.qos.logback:logback-classic:1.1.8"
+}
+
+mainClassName = "org.cmapi.mirrorcache.client.ClientApp"

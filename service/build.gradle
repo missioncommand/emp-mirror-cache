@@ -1,0 +1,19 @@
+apply plugin: 'java'
+apply plugin: 'nebula.maven-nebula-publish'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+
+dependencies {
+    compile project (':api')
+    
+    compile 'com.google.protobuf:protobuf-java-util:3.1.0'
+    compile "ch.qos.logback:logback-classic:1.1.8"
+    
+    compileOnly 'org.wildfly.swarm:undertow'
+	compileOnly 'org.wildfly.swarm:jaxrs'
+    compileOnly 'org.wildfly.swarm:cdi'
+    compileOnly 'org.wildfly.swarm:ejb'
+    
+}

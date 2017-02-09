@@ -1,0 +1,13 @@
+{
+  "name": "mc-client",
+  "version": "0.1.0-SNAPSHOT",
+  "main":"js_testing.js",
+  "author":"Test",
+  "description": "For test ",
+
+  "dependencies": {
+    "google-protobuf": "3.1.0",
+    "google-closure-library": "v20160822.0.0"
+  }
+
+}

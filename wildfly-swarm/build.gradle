@@ -1,0 +1,42 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.wildfly.swarm:wildfly-swarm-plugin:2016.12.1"
+    }
+}
+
+apply plugin: 'war'
+apply plugin: 'wildfly-swarm'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+swarm {
+    //mainClassName = "org.cmapi.mirrorcache.service.ServerApp"
+}
+
+dependencies {
+    compile project (':service')
+    
+    compile 'com.google.protobuf:protobuf-java-util:3.1.0'
+    
+    compile 'org.wildfly.swarm:undertow'
+    compile 'org.wildfly.swarm:cdi'
+    compile 'org.wildfly.swarm:ejb'
+    compile 'org.wildfly.swarm:jaxrs'
+
+    //compile 'org.wildfly.swarm:jaxrs-cdi'
+    //compile 'javax:javaee-api:7.0'
+    //compile 'org.wildfly.swarm:monitor'
+    
+    //compile 'org.wildfly.swarm:keycloak:2016.12.1'
+    //compile 'org.wildfly.swarm:keycloak-server:2016.12.1'
+    
+    //compile 'org.wildfly.swarm:bootstrap:2016.12.1'
+    //compile 'org.wildfly.swarm:msc'
+    //compile 'org.wildfly.swarm:logging'
+}

@@ -1,0 +1,11 @@
+rootProject.name = 'mirror-cache'
+
+include ':api'
+include ':model'
+include ':service'
+include ':client'
+
+include ':channel-handlers:channel-handler-pli'
+include ':channel-handlers:channel-handler-test'
+
+include ':wildfly-swarm'
