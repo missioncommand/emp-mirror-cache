@@ -11,14 +11,13 @@ buildscript {
 }
 
 ext {
-	di2eNexusReleaseUrl = "https://nexus.di2e.net/nexus/content/repositories/releases/"
-    di2eNexusUsername   = project.hasProperty('empUsername') ? project.property('empUsername') : ''
-    di2eNexusPassword   = project.hasProperty('empPassword') ? project.property('empPassword') : ''
-    
+    empUsername = System.getenv("CI_USERNAME") ?: empUsername
+    empPassword = System.getenv("CI_PASSWORD") ?: empPassword
+
     version_wildfly_swarm = "2017.1.1"
 }
 
-allprojects { project ->
+allprojects {
     group = "org.cmapi.mirrorcache"
     
     apply plugin: 'io.spring.dependency-management'
@@ -32,17 +31,16 @@ allprojects { project ->
     repositories {
         mavenLocal()
         jcenter()
-		//mavenCentral()
 		
         maven {
             url 'http://repository.jboss.org/nexus/content/groups/public-jboss'
         }
 		
 		maven {
-			url = project.di2eNexusReleaseUrl
+			url = "https://nexus.di2e.net/nexus/content/repositories/releases/"
 			credentials {
-				username project.di2eNexusUsername
-				password project.di2eNexusPassword
+				username empUsername
+				password empPassword
 			}
 		}
     }

@@ -1,0 +1,29 @@
+sudo: false
+language: java
+jdk:
+  - oraclejdk8
+
+env:
+  global:
+    - secure: V0Thbu67PT1jbxnRX9h7QJ2IGNahLTDBko0nN35LuXIjPDmpVfFLyWOE6z7sayP9U8ZiQVH2VVfF2K840JYXQtheTBxx4IHAdxYGldF0xI50Wt+5DC7I4sHg/dNM5oDCcrSsn2LRs++0GsQi4NIIue7xjYUtffpMyXoyD7AghWjVKJ+MZsdY1BBRPcLrBbcTowKVP8S/XSYsMxJ+6y6obp1XX3jYN65QmEVdBKZr2LUDgfO8g6d0L+J0R+KqrHe6VAxgGA+NkDyT3mAUAB8L8nMC5EeRFk47s0SyzHg3DGDzllErCBX8IVhJrDamtPH8VDG3JnwGWesiZoRsicAxorTg0H82a69dydJzGE+qEGfLSBP3IB19oZTsiOj0pBrIO+2rjTrKB7SgGDEi1nwLPmreoM+2MyzZsV0f/A7fVcOcrm66BqZ3omzuih2tW9vEZs5eYWi2+otb3skRwSSPrHvVZq9Bdtd0fpxbrh99oesnWFIe0F5mpafaTTUPb+wgbC7KAUDcAGR9L0W4PYHveehaAE4o6aVOqpSZQlyCK+GxP9ZsN2U1dyK4b3Srr337hDaFP//xGaOJuyott8w+CBCTctYT6SaxkkTQlQjJtHy+8cOOGifVDrcZOXYDvIoh8/6lasVNSql3eX1h+BSomJ5Ke4B9H5GqsI//h1Std+o=
+    - secure: n4G17HSn1eoZsZhCacMm1Nu4DtD2GkMtGB3L9x0ILUz4kXG22BQv681bIYaiAWKIHBsosTaLxA7lhnZrnNZBJoO+KwjZ8e/E+V1vadTxubP+5JUaz+F765+703Mv2wevmdsrAo/3FbmolOf7pkCi3/adIXZRlfMWc6q29YNnxXJ/eRanHs7KiV+fIellu+/emALUeE0rK39R+Zr+mMmLjHlHHEicR9Z7kLQkIQgrKtgiUZ1U27qgLNWeiE0/ahc72Zmwvl9cOTWilunXr3fZ9MJx/ao9D0uolrm+N9Dq67Ch9QJX1VaTDz8EriKVStn5WVx+u924MyObEqom+9UA4/zwlsy8XnoRMXxgqtT1qm1tfL017txFEAPiKSVLApejgISgVwJuglQu92c6EeQpt4l71OAHJTgRxnafxLtphnmvhQ0JmSgJLOG2CLLdza+ZmPbZ4m+re/fTtw8vucCRsUWMCzE80HZpnkVkRblf9GDxjMJVDgVHegewz6mbHVJpm8XI7MNDlwX/VNWii12cmzihbh7SZEorKefzs5vT1Qd5Iiqc8DCcPzkoVt6gPKrkA+rfRZ05xvLy9lRoU2OrbWFtCMD3M/Uvd/A+Wwl1/Q/z8WKWqytI++le0vw3WG4SZYs9glnjaOU9OrbZ+NOnQzJX8RndsxU3zF5QXYDtnu4=
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+before_install:
+  - chmod +x gradlew
+  - export GRADLE_OPTS="-Dorg.gradle.daemon=false -XX:MaxPermSize=512m -Xmx2048m $GRADLE_OPTS"
+  - export DEFAULT_JVM_OPTS=
+
+install: echo "skip 'gradle assemble' step"
+
+script:
+ - ./gradlew build --refresh-dependencies  --continue --stacktrace
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
