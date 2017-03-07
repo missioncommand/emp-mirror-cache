@@ -1,24 +1,42 @@
 # emp-mirror-cache
+[![Build Status](https://travis-ci.org/missioncommand/emp3-mirror-cache.svg?branch=master)](https://travis-ci.org/missioncommand/emp3-mirror-cache)
+[![Download](https://api.bintray.com/packages/missioncommand/maven/emp3-mirror-cache/images/download.svg)](https://bintray.com/missioncommand/maven/emp3-mirror-cache/_latestVersion)
+
+## About
 Geospatial data sharing and collaboration service
 
+## Building
 
+### Prerequisites
+
+__Software__
+
+* [JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* [Maven 3.3.9](https://maven.apache.org/download.cgi)
+
+### Build
 To build and launch server:
-1. gradlew clean build publishToMavenLocal
-2. cd wildfly-swarm
-3. mvn clean package
-4. java -jar target/wildfly-swarm-swarm.jar
-5. keep console window open
+```
+$ ./gradlew clean build publishToMavenLocal
+$ cd wildfly-swarm
+$ mvn clean package
+$ java -jar target/wildfly-swarm-swarm.jar
+```
 
-To launch Java client:
-1. gradlew :client:run
+To launch the Java client:
+```
+$ ./gradlew :mirrorcache-client:run
+```
+To launch the Web client:
 
-To launch Web client:
 1. visit: [127.0.0.1:8080/client](http://127.0.0.1:8080/client)
 
-To view server state:
+To view the server state:
+
 1. visit: [127.0.0.1:8080/status.html](http://127.0.0.1:8080/status.html)
 
 To view specific server states:
+
 - status -  [/rest/status](http://127.0.0.1:8080/rest/status)
 - channels - [/rest/channels](http://127.0.0.1:8080/rest/channels)
 - channelGroups - [/rest/channelgroups](http://127.0.0.1:8080/rest/channelgroups)
@@ -30,8 +48,6 @@ To view specific server states:
 __NOTE: The Web client assumes a channel named 'inject' exists when performing certain functions.__
 
 __TODO - maven and gradle configuration notes for di2e access__
-
----
 
 ## Channel
 A channel represents the path message data travels through. A client can open a channel and produce or consume message data (or both) on it by specificying a flow pattern. Once a channel has been opened data can be published to it or consumed from it.
@@ -49,12 +65,8 @@ __Channel Flow:__
 - Egress - An egress flow denotes a client who is only interested in producing messages.
 - BOTH - A both flow denotes a client interested in producing and consuming.
 
----
-
 ## ChannelGroup
 A ChannelGroup represents a collection of channels. Clients who join a channelGroup will receive published data from each channel participating in the channelGroup. The owner of a channelGroup can publish data to the channelGroup, this has the effect of broadcasting data to each participating channel in the channelGroup. A channelGroup will persist until the owning session is closed.
-
----
 
 ## WebSocket Endpoints
 All clients interested in participating in MirrorCache message exchanges must connect to the following endpoint. Only ProtoMessage objects will be recognized by this endpoint.
@@ -155,8 +167,6 @@ The server commands and the attributes they support/provide are provided below:
   - history
 
 
----
-
 ## REST endpoints
 - [GET] __http://127.0.0.1:8080/rest/status__
   - This endpoint returns the current state of the system. Returned data currently includes all active WebSocket sessions, all created channels, all created channelGroups, and outbound queues sizes.
@@ -174,7 +184,6 @@ The server commands and the attributes they support/provide are provided below:
 - [GET] __http://127.0.0.1:8080/rest/cache/entity__
   - This endpoint returns detailed information about each cached entity.
 
----
 
 ### EMP3 API
 __MirrorCacheProductManager__

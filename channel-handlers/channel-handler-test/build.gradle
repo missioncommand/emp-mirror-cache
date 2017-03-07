@@ -1,14 +1,14 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = rootProject.sourceCompatibility
+targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
-    compile project (':api')
-    compile project (':channel-handlers:channel-handler-pli')
+    compile project (':mirrorcache-api')
+    compile project (':channel-handlers:mirrorcache-channelhandler-pli')
 
-    compile "ch.qos.logback:logback-classic:1.1.8"
+    compile "ch.qos.logback:logback-classic"
 }
 
 
