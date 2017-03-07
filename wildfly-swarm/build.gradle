@@ -5,7 +5,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 //swarm {
-    //mainClassName = "org.cmapi.mirrorcache.service.ServerApp"
+    //mainClassName = "mil.emp3.mirrorcache.service.ServerApp"
 //}
 
 dependencies {

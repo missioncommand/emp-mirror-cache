@@ -2,7 +2,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.cmapi.mirrorcache</groupId>
+    <groupId>mil.army.missioncommand</groupId>
     <artifactId>wildfly-swarm</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -47,7 +47,6 @@
         
         <wildfly-swarm.version>2017.2.0</wildfly-swarm.version>
         <protobuf-java-util.version>3.2.0</protobuf-java-util.version>
-        
     </properties>
 
     <dependencyManagement>
@@ -64,7 +63,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.cmapi.mirrorcache</groupId>
+            <groupId>mil.army.missioncommand</groupId>
             <artifactId>mirrorcache-service</artifactId>
             <version>${project.version}</version>
         </dependency>

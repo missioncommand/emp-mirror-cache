@@ -7,7 +7,7 @@
         </layout>
     </appender>
 
-    <logger name="org.cmapi.mirrorcache" level="DEBUG" />
+    <logger name="mil.emp3.mirrorcache" level="DEBUG" />
 
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />

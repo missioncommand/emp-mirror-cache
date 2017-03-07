@@ -12,4 +12,4 @@ dependencies {
 }
 
 
-mainClassName = "org.cmapi.mirrorcache.channelhandler.test.Test"
+mainClassName = "mil.emp3.mirrorcache.channelhandler.test.Test"

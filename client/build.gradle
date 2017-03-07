@@ -17,4 +17,4 @@ dependencies {
     compile "ch.qos.logback:logback-classic"
 }
 
-mainClassName = "org.cmapi.mirrorcache.client.ClientApp"
+mainClassName = "mil.emp3.mirrorcache.client.ClientApp"
