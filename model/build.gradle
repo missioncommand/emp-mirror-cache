@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'nebula.maven-nebula-publish'
+apply plugin: 'nebula.compile-api'
 
 sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.targetCompatibility
@@ -8,11 +9,8 @@ targetCompatibility = rootProject.targetCompatibility
 sourceSets.main.java.srcDirs += "$buildDir/generated-sources/proto/main/java"
 
 dependencies {
-    // CMAPI
-    compile "org.cmapi.primitives:common-map-geospatial-notation"
-
-    // PROTOBUF
-    compile 'com.google.protobuf:protobuf-java'
+    compileApi ("org.cmapi.primitives:common-map-geospatial-notation")
+    compileApi ("com.google.protobuf:protobuf-java")
 }
 
 protobuf {

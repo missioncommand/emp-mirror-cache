@@ -1,20 +1,19 @@
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'nebula.maven-nebula-publish'
+apply plugin: 'nebula.compile-api'
 
 sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
-    compile project (':mirrorcache-model')
-    compile project (':mirrorcache-api')
+    compileApi project (":mirrorcache-model")
+    compileApi project (":mirrorcache-api")
 
-    compile "org.cmapi.primitives:common-map-geospatial-notation"
-    compile "io.undertow:undertow-websockets-jsr"
-    
-    compile "uk.gov.nationalarchives.thirdparty.netbeans:org-netbeans-swing-outline"
-    
-    compile "ch.qos.logback:logback-classic"
+    compileApi         ("org.cmapi.primitives:common-map-geospatial-notation")
+    compileApi         ("io.undertow:undertow-websockets-jsr")
+    compileApi         ("uk.gov.nationalarchives.thirdparty.netbeans:org-netbeans-swing-outline")
+    compileApi         ("ch.qos.logback:logback-classic")
 }
 
 mainClassName = "mil.emp3.mirrorcache.client.ClientApp"

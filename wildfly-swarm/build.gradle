@@ -1,5 +1,6 @@
 apply plugin: 'war'
 //apply plugin: 'wildfly-swarm'
+apply plugin: 'nebula.compile-api'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -9,23 +10,22 @@ targetCompatibility = JavaVersion.VERSION_1_8
 //}
 
 dependencies {
-    compile project (':mirrorcache-service')
+    compileApi project (":mirrorcache-service")
     
-    compile 'com.google.protobuf:protobuf-java-util'
-    
-    compile 'org.wildfly.swarm:undertow'
-    compile 'org.wildfly.swarm:cdi'
-    compile 'org.wildfly.swarm:ejb'
-    compile 'org.wildfly.swarm:jaxrs'
+    compileApi         ("com.google.protobuf:protobuf-java-util")
+    compileApi         ("org.wildfly.swarm:undertow")
+    compileApi         ("org.wildfly.swarm:cdi")
+    compileApi         ("org.wildfly.swarm:ejb")
+    compileApi         ("org.wildfly.swarm:jaxrs")
 
-    //compile 'org.wildfly.swarm:jaxrs-cdi'
-    //compile 'javax:javaee-api:7.0'
-    //compile 'org.wildfly.swarm:monitor'
+    //compileApi         ("org.wildfly.swarm:jaxrs-cdi")
+    //compileApi         ("javax:javaee-api:7.0")
+    //compileApi         ("org.wildfly.swarm:monitor")
     
-    //compile 'org.wildfly.swarm:keycloak:2016.12.1'
-    //compile 'org.wildfly.swarm:keycloak-server:2016.12.1'
+    //compileApi         ("org.wildfly.swarm:keycloak:2016.12.1")
+    //compileApi         ("org.wildfly.swarm:keycloak-server:2016.12.1")
     
-    //compile 'org.wildfly.swarm:bootstrap:2016.12.1'
-    //compile 'org.wildfly.swarm:msc'
-    //compile 'org.wildfly.swarm:logging'
+    //compileApi         ("org.wildfly.swarm:bootstrap:2016.12.1")
+    //compileApi         ("org.wildfly.swarm:msc")
+    //compileApi         ("org.wildfly.swarm:logging")
 }
