@@ -1,4 +1,4 @@
-# emp-mirror-cache
+# emp3-mirror-cache
 [![Build Status](https://travis-ci.org/missioncommand/emp3-mirror-cache.svg?branch=master)](https://travis-ci.org/missioncommand/emp3-mirror-cache)
 [![Download](https://api.bintray.com/packages/missioncommand/maven/emp3-mirror-cache/images/download.svg)](https://bintray.com/missioncommand/maven/emp3-mirror-cache/_latestVersion)
 

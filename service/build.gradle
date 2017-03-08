@@ -1,19 +1,19 @@
 apply plugin: 'java'
 apply plugin: 'nebula.maven-nebula-publish'
+apply plugin: 'nebula.compile-api'
 
 sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.targetCompatibility
 
 
 dependencies {
-    compile project (':mirrorcache-api')
+    compileApi project (":mirrorcache-api")
     
-    compile 'com.google.protobuf:protobuf-java-util'
-    compile 'ch.qos.logback:logback-classic'
+    compileApi         ("com.google.protobuf:protobuf-java-util")
+    compileApi         ("ch.qos.logback:logback-classic")
     
-    compileOnly 'org.wildfly.swarm:undertow'
-	compileOnly 'org.wildfly.swarm:jaxrs'
-    compileOnly 'org.wildfly.swarm:cdi'
-    compileOnly 'org.wildfly.swarm:ejb'
-    
+    compileOnly        ("org.wildfly.swarm:undertow")
+	compileOnly        ("org.wildfly.swarm:jaxrs")
+    compileOnly        ("org.wildfly.swarm:cdi")
+    compileOnly        ("org.wildfly.swarm:ejb")
 }
