@@ -1,12 +1,19 @@
 buildscript {
+    ext {
+        version_wildfly_swarm = "2017.2.0"
+    }
+    
     repositories {
         mavenLocal()
         jcenter()
+        mavenCentral()
     }
 
     dependencies {
         classpath 'com.netflix.nebula:nebula-publishing-plugin:4.9.1'
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.0.RC1"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.0.RELEASE"
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.1"
+        //classpath "org.wildfly.swarm:wildfly-swarm-plugin:${version_wildfly_swarm}"
     }
 }
 
@@ -14,23 +21,43 @@ ext {
     empUsername = System.getenv("CI_USERNAME") ?: empUsername
     empPassword = System.getenv("CI_PASSWORD") ?: empPassword
 
-    version_wildfly_swarm = "2017.1.1"
+    version_cmapi         = "0.0.5"
+    version_protoc        = "3.2.0"
+    version_logback       = "1.1.11"
+    version_websocketsJsr = "1.2.9.Final"
+    
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
 }
 
 allprojects {
-    group = "org.cmapi.mirrorcache"
+    group = "mil.army.missioncommand"
     
     apply plugin: 'io.spring.dependency-management'
     
     dependencyManagement {
         imports {
-            mavenBom "org.wildfly.swarm:bom-all:$version_wildfly_swarm"
+            mavenBom "org.wildfly.swarm:bom-all:${version_wildfly_swarm}"
+        }
+        
+        dependencies {
+            dependency ("org.cmapi.primitives:common-map-geospatial-notation:${version_cmapi}")
+            
+            dependency ("ch.qos.logback:logback-classic:${version_logback}")
+            
+            dependency ("com.google.protobuf:protobuf-java:${version_protoc}")
+            dependency ("com.google.protobuf:protobuf-java-util:${version_protoc}")
+            
+            dependency ("uk.gov.nationalarchives.thirdparty.netbeans:org-netbeans-swing-outline:7.2")
+            
+            dependency ("io.undertow:undertow-websockets-jsr:${version_websocketsJsr}")
         }
     }
     
     repositories {
         mavenLocal()
         jcenter()
+        //mavenCentral()
 		
         maven {
             url 'http://repository.jboss.org/nexus/content/groups/public-jboss'
@@ -48,7 +75,7 @@ allprojects {
 
 
 task wrapper(type: Wrapper, description: "Generates gradlew[.bat] scripts") {
-    gradleVersion = '3.2.1'
+    gradleVersion = '3.4.1'
 }
 
 if (JavaVersion.current().isJava8Compatible()) { // disable lint for java8

@@ -2,7 +2,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.cmapi.mirrorcache</groupId>
+    <groupId>mil.army.missioncommand</groupId>
     <artifactId>wildfly-swarm</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -33,21 +33,20 @@
     </repositories>
 
     <properties>
-        <version.cmapi-mirrorcache>${project.version}</version.cmapi-mirrorcache>
-
-        <version.wildfly-swarm>2017.1.1</version.wildfly-swarm>
-
-        <version.maven-failsafe-plugin>2.19.1</version.maven-failsafe-plugin>
-        <version.maven-war-plugin>2.6</version.maven-war-plugin>
+        <maven.enforcer.mavenVer>3.3.9</maven.enforcer.mavenVer>
+        <maven.enforcer.javaVer>[1.8,)</maven.enforcer.javaVer>
         
-
-        <maven.min.version>3.2.1</maven.min.version>
-
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+        <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
+        <maven-war-plugin.version>2.6</maven-war-plugin.version>
+        <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
+        
+        <wildfly-swarm.version>2017.2.0</wildfly-swarm.version>
+        <protobuf-java-util.version>3.2.0</protobuf-java-util.version>
     </properties>
 
     <dependencyManagement>
@@ -55,7 +54,7 @@
             <dependency>
                 <groupId>org.wildfly.swarm</groupId>
                 <artifactId>bom-all</artifactId>
-                <version>${version.wildfly-swarm}</version>
+                <version>${wildfly-swarm.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -64,15 +63,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.cmapi.mirrorcache</groupId>
-            <artifactId>service</artifactId>
-            <version>${version.cmapi-mirrorcache}</version>
+            <groupId>mil.army.missioncommand</groupId>
+            <artifactId>mirrorcache-service</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
-            <version>3.1.0</version>
+            <version>${protobuf-java-util.version}</version>
         </dependency>
 
         <dependency>
@@ -100,7 +99,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>${version.maven-war-plugin}</version>
+                <version>${maven-war-plugin.version}</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -109,7 +108,7 @@
             <plugin>
                 <groupId>org.wildfly.swarm</groupId>
                 <artifactId>wildfly-swarm-plugin</artifactId>
-                <version>${version.wildfly-swarm}</version>
+                <version>${wildfly-swarm.version}</version>
                 <configuration>
                     <!--<bundleDependencies>true</bundleDependencies> -->
                     <propertiesFile>${project.basedir}/src/main/webapp/META-INF/swarm.properties</propertiesFile>
@@ -133,12 +132,38 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${version.maven-failsafe-plugin}</version>
+                <version>${maven-failsafe-plugin.version}</version>
                 <configuration>
                     <systemPropertyVariables>
                         <test.web.dir>${project.basedir}/src/main/webapp</test.web.dir>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>${maven.enforcer.mavenVer}</version>
+                                    <message>This project requires at least Maven version ${maven.enforcer.mavenVer}</message>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>${maven.enforcer.javaVer}</version>
+                                    <message>This project requires at least Java version ${maven.enforcer.javaVer}</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

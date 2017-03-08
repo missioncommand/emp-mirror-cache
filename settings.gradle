@@ -1,11 +1,22 @@
-rootProject.name = 'mirror-cache'
+rootProject.name = 'mirrorcache'
 
 include ':api'
+project(':api').name = 'mirrorcache-api'
+
 include ':model'
+project(':model').name = 'mirrorcache-model'
+
 include ':service'
+project(':service').name = 'mirrorcache-service'
+
 include ':client'
+project(':client').name = 'mirrorcache-client'
 
 include ':channel-handlers:channel-handler-pli'
+project(':channel-handlers:channel-handler-pli').name = 'mirrorcache-channelhandler-pli'
+
 include ':channel-handlers:channel-handler-test'
+project(':channel-handlers:channel-handler-test').name = 'mirrorcache-channelhandler-test'
 
 include ':wildfly-swarm'
+project(':wildfly-swarm').name = 'mirrorcache-wildfly-swarm'

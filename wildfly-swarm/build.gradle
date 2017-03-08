@@ -1,28 +1,17 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "org.wildfly.swarm:wildfly-swarm-plugin:2016.12.1"
-    }
-}
-
 apply plugin: 'war'
-apply plugin: 'wildfly-swarm'
+//apply plugin: 'wildfly-swarm'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-swarm {
-    //mainClassName = "org.cmapi.mirrorcache.service.ServerApp"
-}
+//swarm {
+    //mainClassName = "mil.emp3.mirrorcache.service.ServerApp"
+//}
 
 dependencies {
-    compile project (':service')
+    compile project (':mirrorcache-service')
     
-    compile 'com.google.protobuf:protobuf-java-util:3.1.0'
+    compile 'com.google.protobuf:protobuf-java-util'
     
     compile 'org.wildfly.swarm:undertow'
     compile 'org.wildfly.swarm:cdi'
