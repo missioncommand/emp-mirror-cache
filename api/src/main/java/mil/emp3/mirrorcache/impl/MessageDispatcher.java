@@ -48,12 +48,12 @@ import mil.emp3.mirrorcache.impl.response.BaseResponseProcessor;
 import mil.emp3.mirrorcache.impl.response.ChannelGroupPublishResponseProcessor;
 import mil.emp3.mirrorcache.impl.response.ChannelPublishResponseProcessor;
 import mil.emp3.mirrorcache.impl.response.ResponseProcessor;
-import mil.emp3.mirrorcache.impl.spi.ChannelHandlerProviderFactory;
 import mil.emp3.mirrorcache.impl.stage.DeserializeStageProcessor;
 import mil.emp3.mirrorcache.impl.stage.InTransportStageProcessor;
 import mil.emp3.mirrorcache.impl.stage.OutTransportStageProcessor;
 import mil.emp3.mirrorcache.impl.stage.SerializeStageProcessor;
 import mil.emp3.mirrorcache.impl.stage.TranslateStageProcessor;
+import mil.emp3.mirrorcache.spi.ChannelHandlerProviderFactory;
 
 public class MessageDispatcher {
     static final private Logger LOG = LoggerFactory.getLogger(MessageDispatcher.class);

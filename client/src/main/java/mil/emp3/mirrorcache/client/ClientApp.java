@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.MirrorCacheException;
+import mil.emp3.mirrorcache.Transport.TransportType;
 import mil.emp3.mirrorcache.channel.Channel;
 import mil.emp3.mirrorcache.channel.Channel.Flow;
 import mil.emp3.mirrorcache.channel.ChannelCache;
@@ -83,7 +84,8 @@ import mil.emp3.mirrorcache.event.ClientConnectEvent;
 import mil.emp3.mirrorcache.event.ClientDisconnectEvent;
 import mil.emp3.mirrorcache.event.ClientEventHandler;
 import mil.emp3.mirrorcache.event.ClientMessageEvent;
-import mil.emp3.mirrorcache.impl.spi.MirrorCacheClientProviderFactory;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
 import mil.emp3.mirrorcache.support.ItemTracker;
 import mil.emp3.mirrorcache.support.Utils;
 
@@ -245,7 +247,16 @@ public class ClientApp {
                     getJTextFieldAddress().setEditable(false);
                     
                     try {
-                        client = MirrorCacheClientProviderFactory.getClient(new URI(getJTextFieldAddress().getText()));
+                        final URI endpointUri = new URI(getJTextFieldAddress().getText());
+                        
+                        client = MirrorCacheClientProviderFactory.getClient(new MirrorCacheClientProvider.ClientArguments() {
+                            @Override public TransportType transportType() {
+                                return TransportType.WEBSOCKET;
+                            }
+                            @Override public URI endpoint() {
+                                return endpointUri;
+                            }
+                        });
                         client.init();
                         client.connect();
                         

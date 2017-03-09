@@ -1,20 +1,14 @@
-package mil.emp3.mirrorcache.impl.spi;
+package mil.emp3.mirrorcache.spi;
 
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Serializer;
-import mil.emp3.mirrorcache.spi.SerializerProvider;
 
 public class SerializerProviderFactory {
-    static final private Logger LOG = LoggerFactory.getLogger(SerializerProviderFactory.class);
-
     static private class Holder { // for synchronized initialization 
         static private SerializerProviderFactory instance = new SerializerProviderFactory();
     }
@@ -40,11 +34,9 @@ public class SerializerProviderFactory {
             }
             
         } catch (ServiceConfigurationError e) {
-            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e)
-                                          .withDetail("type: " + type);
+            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("type: " + type);
         }
         
-        LOG.warn("Unable to locate suitable serializer.");
-        return null;
+        throw new IllegalStateException("Unable to locate suitable serializer.");
     }
 }

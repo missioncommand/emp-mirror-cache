@@ -1,21 +1,14 @@
-package mil.emp3.mirrorcache.impl.spi;
+package mil.emp3.mirrorcache.spi;
 
-import java.net.URI;
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
-import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
 
 public class MirrorCacheClientProviderFactory {
-    static final private Logger LOG = LoggerFactory.getLogger(MirrorCacheClientProviderFactory.class);
-
     static private class Holder { // for synchronized initialization 
         static private MirrorCacheClientProviderFactory instance = new MirrorCacheClientProviderFactory();
     }
@@ -30,23 +23,19 @@ public class MirrorCacheClientProviderFactory {
         return Holder.instance;
     }
     
-    static public MirrorCacheClient getClient(URI endpoint) throws MirrorCacheException {
+    static public MirrorCacheClient getClient(final MirrorCacheClientProvider.ClientArguments args) throws MirrorCacheException {
         try {
             for (Iterator<MirrorCacheClientProvider> iter = getInstance().loader.iterator(); iter.hasNext(); ) {
                 final MirrorCacheClientProvider provider = iter.next();
                 
-                if (provider.canHandle(endpoint)) {
-                    return provider.getClient(endpoint);
+                if (provider.canHandle(args)) {
+                    return provider.getClient(args);
                 }
             }
-            
         } catch (ServiceConfigurationError e) {
-            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e)
-                                          .withDetail("endpoint: " + endpoint);
+            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("endpoint: " + args.endpoint());
         }
         
-        LOG.warn("Unable to locate suitable client.");
-        return null;
+        throw new IllegalStateException("Unable to locate suitable client.");
     }
-
 }

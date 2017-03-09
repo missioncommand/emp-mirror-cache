@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.Translator;
-import mil.emp3.mirrorcache.impl.spi.TranslatorProviderFactory;
+import mil.emp3.mirrorcache.spi.TranslatorProviderFactory;
 
 public class TranslateStageProcessor extends StageProcessor<Message> {
     static final private Logger LOG = LoggerFactory.getLogger(TranslateStageProcessor.class);

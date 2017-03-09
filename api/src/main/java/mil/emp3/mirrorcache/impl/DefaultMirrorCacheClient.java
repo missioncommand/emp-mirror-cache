@@ -1,6 +1,5 @@
 package mil.emp3.mirrorcache.impl;
 
-import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -16,6 +15,7 @@ import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.Transport;
+import mil.emp3.mirrorcache.Transport.TransportType;
 import mil.emp3.mirrorcache.channel.Channel;
 import mil.emp3.mirrorcache.channel.ChannelGroup;
 import mil.emp3.mirrorcache.event.EventHandler;
@@ -27,6 +27,9 @@ import mil.emp3.mirrorcache.impl.request.DeleteChannelGroupRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.DeleteChannelRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.FindChannelGroupsRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.FindChannelsRequestProcessor;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
+import mil.emp3.mirrorcache.spi.TransportProvider;
+import mil.emp3.mirrorcache.spi.TransportProviderFactory;
 
 public class DefaultMirrorCacheClient implements MirrorCacheClient {
 
@@ -36,9 +39,21 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
 
-    public DefaultMirrorCacheClient(URI endpoint) {
+    public DefaultMirrorCacheClient(final MirrorCacheClientProvider.ClientArguments args) {
         this.messageDispatcher = new MessageDispatcher(this);
-        this.transport         = new WebSocketClientTransport(endpoint, messageDispatcher); 
+        try {
+            this.transport = TransportProviderFactory.getTransport(new TransportProvider.TransportArguments() {
+                @Override public TransportType type() {
+                    return args.transportType();
+                }
+                @Override public MessageDispatcher messageDispatcher() {
+                    return messageDispatcher;
+                }
+            });
+            
+        } catch (MirrorCacheException e) {
+            throw new IllegalStateException(e);
+        }
     }
     
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //

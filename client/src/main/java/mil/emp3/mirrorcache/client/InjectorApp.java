@@ -16,9 +16,11 @@ import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.MirrorCacheException;
+import mil.emp3.mirrorcache.Transport.TransportType;
 import mil.emp3.mirrorcache.channel.Channel;
 import mil.emp3.mirrorcache.channel.Channel.Flow;
-import mil.emp3.mirrorcache.impl.spi.MirrorCacheClientProviderFactory;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
 
 public class InjectorApp {
     static final private Logger LOG = LoggerFactory.getLogger(InjectorApp.class);
@@ -50,7 +52,14 @@ public class InjectorApp {
         /*
          * Create and initialize client.
          */
-        final MirrorCacheClient client = MirrorCacheClientProviderFactory.getClient(endpoint);
+        final MirrorCacheClient client = MirrorCacheClientProviderFactory.getClient(new MirrorCacheClientProvider.ClientArguments() {
+            @Override public TransportType transportType() {
+                return TransportType.WEBSOCKET;
+            }
+            @Override public URI endpoint() {
+                return endpoint;
+            }
+        });
         client.init();
         client.connect();
         

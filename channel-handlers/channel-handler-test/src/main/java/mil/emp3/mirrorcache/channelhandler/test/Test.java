@@ -13,11 +13,11 @@ import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.Serializer;
 import mil.emp3.mirrorcache.Translator;
 import mil.emp3.mirrorcache.channel.ChannelHandler;
-import mil.emp3.mirrorcache.impl.spi.ChannelHandlerProviderFactory;
-import mil.emp3.mirrorcache.impl.spi.DeserializerProviderFactory;
-import mil.emp3.mirrorcache.impl.spi.MirrorCacheClientProviderFactory;
-import mil.emp3.mirrorcache.impl.spi.SerializerProviderFactory;
-import mil.emp3.mirrorcache.impl.spi.TranslatorProviderFactory;
+import mil.emp3.mirrorcache.spi.ChannelHandlerProviderFactory;
+import mil.emp3.mirrorcache.spi.DeserializerProviderFactory;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
+import mil.emp3.mirrorcache.spi.SerializerProviderFactory;
+import mil.emp3.mirrorcache.spi.TranslatorProviderFactory;
 
 public class Test {
     static final private Logger LOG = LoggerFactory.getLogger(Test.class);
