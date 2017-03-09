@@ -39,13 +39,9 @@ public class ChannelHandlerProviderFactory {
             }
             
         } catch (ServiceConfigurationError e) {
-            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e)
-                                          .withDetail("channelName: " + channelName);
+            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("channelName: " + channelName);
         }
         
-        if (results.size() == 0) {
-            throw new IllegalStateException("Unable to locate suitable channelHandler.");
-        }
         return results;
     }
 }

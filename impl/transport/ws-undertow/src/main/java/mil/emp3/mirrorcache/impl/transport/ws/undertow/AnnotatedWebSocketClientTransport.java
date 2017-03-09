@@ -1,4 +1,4 @@
-package mil.emp3.mirrorcache.impl;
+package mil.emp3.mirrorcache.impl.transport.ws.undertow;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,12 +9,14 @@ import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Payload;
@@ -25,7 +27,7 @@ import mil.emp3.mirrorcache.event.ClientMessageEvent;
 
 
 @ClientEndpoint
-public class WebSocketClientTransport implements Transport {
+public class AnnotatedWebSocketClientTransport implements Transport {
     private Session session;
     
     final private URI uri;
@@ -34,7 +36,7 @@ public class WebSocketClientTransport implements Transport {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
 
-    public WebSocketClientTransport(URI uri, MessageDispatcher dispatcher) {
+    public AnnotatedWebSocketClientTransport(URI uri, MessageDispatcher dispatcher) {
         this.uri        = uri;
         this.dispatcher = dispatcher;
     }
@@ -98,7 +100,6 @@ public class WebSocketClientTransport implements Transport {
 
     @OnMessage
     public void onMessage(byte[] messageBytes) throws MirrorCacheException {
-        
         final Message message = new Message();
         message.setEventType(ClientMessageEvent.TYPE);
         message.setPayload(new Payload<>(null, "[B", messageBytes));
@@ -116,5 +117,10 @@ public class WebSocketClientTransport implements Transport {
         message.setPayload(new Payload<>(null, String.class.getName(), messageStr));
         
         dispatcher.dispatchEvent(new ClientMessageEvent(message));
+    }
+    
+    @OnError
+    public void onError(Throwable t) {
+        t.printStackTrace();
     }
 }

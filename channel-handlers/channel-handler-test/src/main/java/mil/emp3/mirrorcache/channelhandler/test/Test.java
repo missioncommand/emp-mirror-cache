@@ -12,9 +12,11 @@ import mil.emp3.mirrorcache.Deserializer;
 import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.Serializer;
 import mil.emp3.mirrorcache.Translator;
+import mil.emp3.mirrorcache.Transport.TransportType;
 import mil.emp3.mirrorcache.channel.ChannelHandler;
 import mil.emp3.mirrorcache.spi.ChannelHandlerProviderFactory;
 import mil.emp3.mirrorcache.spi.DeserializerProviderFactory;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
 import mil.emp3.mirrorcache.spi.SerializerProviderFactory;
 import mil.emp3.mirrorcache.spi.TranslatorProviderFactory;
@@ -44,7 +46,16 @@ public class Test {
         final Serializer serializer = SerializerProviderFactory.getSerializer(MilStdSymbol.class.getName());
         LOG.info("serializer: " + serializer);
         
-        final MirrorCacheClient client = MirrorCacheClientProviderFactory.getClient(new URI("ws://127.0.0.1:8080/mirrorcache"));
+        final URI endpointUri = new URI("ws://127.0.0.1:8080/mirrorcache");
+        final MirrorCacheClient client = MirrorCacheClientProviderFactory.getClient(new MirrorCacheClientProvider.ClientArguments() {
+            @Override public TransportType transportType() {
+                return TransportType.WEBSOCKET;
+            }
+            @Override public URI endpoint() {
+                return endpointUri;
+            }
+        });
+        
         LOG.info("client: " + client);
         
     }

@@ -1,9 +1,9 @@
 package mil.emp3.mirrorcache.impl.request;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.Priority;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 
 public class ChannelPublishRequestProcessor extends BaseRequestProcessor<Message, Void> {
 //    static final private Logger LOG = LoggerFactory.getLogger(ChannelPublishRequestProcessor.class);

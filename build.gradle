@@ -26,10 +26,11 @@ ext {
     bintrayUser = System.getenv("BINTRAY_USER") ?: project.hasProperty('bintrayUser') ? bintrayUser : ''
     bintrayKey  = System.getenv("BINTRAY_KEY")  ?: project.hasProperty('bintrayKey') ? bintrayKey : ''
 
-    version_cmapi         = "0.0.6"
-    version_protoc        = "3.2.0"
-    version_logback       = "1.1.11"
-    version_websocketsJsr = "1.2.9.Final"
+    version_cmapi       = "0.0.6"
+    version_protoc      = "3.2.0"
+    version_logback     = "1.1.11"
+    version_ws_undertow = "1.2.9.Final"
+    version_ws_nv       = "1.31"
     
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
@@ -55,7 +56,8 @@ allprojects {
             
             dependency ("uk.gov.nationalarchives.thirdparty.netbeans:org-netbeans-swing-outline:7.2")
             
-            dependency ("io.undertow:undertow-websockets-jsr:${version_websocketsJsr}")
+            dependency ("io.undertow:undertow-websockets-jsr:${version_ws_undertow}")
+            dependency ("com.neovisionaries:nv-websocket-client:${version_ws_nv}")
         }
     }
     

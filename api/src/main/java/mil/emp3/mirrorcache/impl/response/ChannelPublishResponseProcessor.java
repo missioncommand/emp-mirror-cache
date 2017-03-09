@@ -1,8 +1,8 @@
 package mil.emp3.mirrorcache.impl.response;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.event.ChannelPublishedEvent;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 
 public class ChannelPublishResponseProcessor extends BaseResponseProcessor {
     

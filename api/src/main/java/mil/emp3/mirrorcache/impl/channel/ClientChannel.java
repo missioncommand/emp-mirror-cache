@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Payload;
@@ -19,7 +20,6 @@ import mil.emp3.mirrorcache.channel.ChannelHistory;
 import mil.emp3.mirrorcache.event.ChannelEvent;
 import mil.emp3.mirrorcache.event.EventHandler;
 import mil.emp3.mirrorcache.event.EventRegistration;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 import mil.emp3.mirrorcache.impl.request.ChannelCacheRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelCloseRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelHistoryRequestProcessor;

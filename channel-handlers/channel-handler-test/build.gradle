@@ -7,7 +7,7 @@ targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
     compileApi project (":mirrorcache-api")
-    compileApi project (":channel-handlers:mirrorcache-channelhandler-pli")
+    compileApi project (":mirrorcache-channelhandler-pli")
 
     compileApi         ("ch.qos.logback:logback-classic")
 }

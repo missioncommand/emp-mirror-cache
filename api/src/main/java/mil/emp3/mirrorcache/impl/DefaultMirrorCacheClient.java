@@ -1,5 +1,6 @@
 package mil.emp3.mirrorcache.impl;
 
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -12,6 +13,7 @@ import org.cmapi.primitives.proto.CmapiProto.FindChannelsCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.Transport;
@@ -40,9 +42,12 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
 
     public DefaultMirrorCacheClient(final MirrorCacheClientProvider.ClientArguments args) {
-        this.messageDispatcher = new MessageDispatcher(this);
+        this.messageDispatcher = new DefaultMessageDispatcher(this);
         try {
             this.transport = TransportProviderFactory.getTransport(new TransportProvider.TransportArguments() {
+                @Override public URI endpoint() {
+                    return args.endpoint();
+                }
                 @Override public TransportType type() {
                     return args.transportType();
                 }

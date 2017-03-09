@@ -1,7 +1,6 @@
 package mil.emp3.mirrorcache.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Message;
-import mil.emp3.mirrorcache.MessageProcessor;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
+import mil.emp3.mirrorcache.RequestProcessor;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.channel.ChannelHandler;
 import mil.emp3.mirrorcache.event.ClientConnectEvent;
@@ -43,7 +43,6 @@ import mil.emp3.mirrorcache.impl.request.DeleteChannelGroupRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.DeleteChannelRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.FindChannelGroupsRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.FindChannelsRequestProcessor;
-import mil.emp3.mirrorcache.impl.request.RequestProcessor;
 import mil.emp3.mirrorcache.impl.response.BaseResponseProcessor;
 import mil.emp3.mirrorcache.impl.response.ChannelGroupPublishResponseProcessor;
 import mil.emp3.mirrorcache.impl.response.ChannelPublishResponseProcessor;
@@ -55,8 +54,8 @@ import mil.emp3.mirrorcache.impl.stage.SerializeStageProcessor;
 import mil.emp3.mirrorcache.impl.stage.TranslateStageProcessor;
 import mil.emp3.mirrorcache.spi.ChannelHandlerProviderFactory;
 
-public class MessageDispatcher {
-    static final private Logger LOG = LoggerFactory.getLogger(MessageDispatcher.class);
+public class DefaultMessageDispatcher implements MessageDispatcher {
+    static final private Logger LOG = LoggerFactory.getLogger(DefaultMessageDispatcher.class);
     
     final private Map<MirrorCacheEvent.Type<?>, List<EventHandler>> eventHandlerMap;
     
@@ -73,7 +72,7 @@ public class MessageDispatcher {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     
-    public MessageDispatcher(DefaultMirrorCacheClient client) {
+    public DefaultMessageDispatcher(DefaultMirrorCacheClient client) {
         this.client = client;
         
         this.outProcessingPipeline = new Chain();
@@ -102,8 +101,8 @@ public class MessageDispatcher {
 //        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_PUBLISH       , new ArrayBlockingQueue<Message>(1));
         
         this.responseProcessorMap = new EnumMap<>(CommandCase.class);
-        responseProcessorMap.put(CommandCase.CHANNEL_PUBLISH      , new ArrayList<ResponseProcessor>() {{ add(new ChannelPublishResponseProcessor(MessageDispatcher.this)); }});
-        responseProcessorMap.put(CommandCase.CHANNEL_GROUP_PUBLISH, new ArrayList<ResponseProcessor>() {{ add(new ChannelGroupPublishResponseProcessor(MessageDispatcher.this)); }});
+        responseProcessorMap.put(CommandCase.CHANNEL_PUBLISH      , new ArrayList<ResponseProcessor>() {{ add(new ChannelPublishResponseProcessor(DefaultMessageDispatcher.this)); }});
+        responseProcessorMap.put(CommandCase.CHANNEL_GROUP_PUBLISH, new ArrayList<ResponseProcessor>() {{ add(new ChannelGroupPublishResponseProcessor(DefaultMessageDispatcher.this)); }});
         
         this.requestProcessorMap = new HashMap<>();
         requestProcessorMap.put(CreateChannelRequestProcessor.class            , new CreateChannelRequestProcessor(this));
@@ -194,6 +193,7 @@ public class MessageDispatcher {
         inProcessingPipeline.shutdown();
     }
     
+    @Override
     public <T extends EventHandler> EventRegistration on(MirrorCacheEvent.Type<T> type, T handler) {
         if (type == null || handler == null) {
             throw new IllegalStateException("type == null || handler == null");
@@ -210,6 +210,7 @@ public class MessageDispatcher {
     }
 
     /** Blocks while waiting for a response message given the request message. */
+    @Override
     public Message awaitResponse(Message reqMessage) throws MirrorCacheException, InterruptedException {
 //TODO consider using CompletionService instead..
         final CommandCase command = reqMessage.getCommand().getCommandCase();
@@ -231,6 +232,8 @@ public class MessageDispatcher {
     public Chain getOutProcessorPipeline() {
         return outProcessingPipeline;
     }
+    
+    @Override
     public Chain getInProcessorPipeline() {
         return inProcessingPipeline;
     }
@@ -239,6 +242,7 @@ public class MessageDispatcher {
      * Dispatches events to registered handlers synchronously.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
     public void dispatchEvent(MirrorCacheEvent event) {
         if (eventHandlerMap.containsKey(event.getType())) {
             for (EventHandler handler : eventHandlerMap.get(event.getType())) {
@@ -247,6 +251,7 @@ public class MessageDispatcher {
         }
     }
     
+    @Override
     public void dispatchMessage(Message message) throws MirrorCacheException {
         getOutProcessorPipeline().processMessage(message);
         
@@ -254,6 +259,7 @@ public class MessageDispatcher {
     }
     
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends RequestProcessor<?, ?>> T getRequestProcessor(Class<T> clazz) {
         final T requestProcessor = (T) requestProcessorMap.get(clazz);
         if (requestProcessor == null) {
@@ -272,51 +278,16 @@ public class MessageDispatcher {
                     && command != CommandCase.CHANNEL_GROUP_PUBLISH;
     }
     
-    
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
-    
-    
-    static public class Chain implements MessageProcessor<Message> {
-        final private List<MessageProcessor<Message>> links;
 
-        public Chain() {
-            this.links = new ArrayList<>();
-        }
-        
-        public void shutdown() {
-            links.clear();
-        }
-
-        public Chain link(MessageProcessor<Message> link) {
-            links.add(link);
-            return this;
-        }
-
-        public List<MessageProcessor<Message>> links() {
-            return Collections.unmodifiableList(links);
-        }
-
-        @Override
-        public void processMessage(Message message) throws MirrorCacheException {
-            for (MessageProcessor<Message> link : links()) {
-                link.processMessage(message);
-            }
-        }
-    }
-
-    
-    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
-    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
-    
-    
     private class LocalResponseProcessor extends BaseResponseProcessor {
         public LocalResponseProcessor() {
-            super(MessageDispatcher.this, "MessageDispatcher.LocalResponseProcessor", 5);
+            super(DefaultMessageDispatcher.this, "MessageDispatcher.LocalResponseProcessor", 5);
         }
+        
         @Override
         public void onMessage(Message message) throws MirrorCacheException {
-
             /*
              * Opportunity to react to responses.
              */

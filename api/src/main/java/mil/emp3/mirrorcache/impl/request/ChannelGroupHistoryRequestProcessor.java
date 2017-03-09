@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.History.Entry;
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
@@ -21,7 +22,6 @@ import mil.emp3.mirrorcache.channel.ChannelGroupHistory;
 import mil.emp3.mirrorcache.channel.ChannelHistory;
 import mil.emp3.mirrorcache.impl.DefaultHistory;
 import mil.emp3.mirrorcache.impl.DefaultHistory.ClientEntry;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 
 public class ChannelGroupHistoryRequestProcessor extends BaseRequestProcessor<Message, ChannelGroupHistory> {
     static final private Logger LOG = LoggerFactory.getLogger(ChannelHistory.class);

@@ -9,9 +9,10 @@ targetCompatibility = rootProject.targetCompatibility
 dependencies {
     compileApi project (":mirrorcache-model")
     compileApi project (":mirrorcache-api")
+    //compileApi project (":mirrorcache-impl-transport-ws-undertow")
+    compileApi project (":mirrorcache-impl-transport-ws-nv")
 
     compileApi         ("org.cmapi.primitives:common-map-geospatial-notation")
-    compileApi         ("io.undertow:undertow-websockets-jsr")
     compileApi         ("uk.gov.nationalarchives.thirdparty.netbeans:org-netbeans-swing-outline")
     compileApi         ("ch.qos.logback:logback-classic")
 }

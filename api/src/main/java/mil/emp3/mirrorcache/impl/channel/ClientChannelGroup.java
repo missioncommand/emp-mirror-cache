@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Member;
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Payload;
@@ -26,7 +27,6 @@ import mil.emp3.mirrorcache.channel.ChannelGroupHistory;
 import mil.emp3.mirrorcache.event.ChannelGroupEvent;
 import mil.emp3.mirrorcache.event.EventHandler;
 import mil.emp3.mirrorcache.event.EventRegistration;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 import mil.emp3.mirrorcache.impl.request.ChannelGroupAddChannelRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelGroupCacheRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelGroupHistoryRequestProcessor;
