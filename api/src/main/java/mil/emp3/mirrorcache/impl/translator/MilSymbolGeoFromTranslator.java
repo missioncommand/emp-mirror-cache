@@ -54,9 +54,6 @@ public class MilSymbolGeoFromTranslator implements Translator {
                 .setAltitudeMode(AltitudeMode.valueOf(symbol.getAltitudeMode().name()))
                 .addAllPosition(positions)
                 .putAllModifier(modifiers)
-                //TODO fillStyle
-                //TODO strokeStyle
-                //TODO labelStyle
             .build();
         
         return newSymbol;

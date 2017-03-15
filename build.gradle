@@ -67,7 +67,7 @@ allprojects {
         //mavenCentral()
 		
         maven {
-            url 'http://repository.jboss.org/nexus/content/groups/public-jboss'
+            url 'https://repository.jboss.org/nexus/content/groups/public-jboss'
         }
 		
 		maven {

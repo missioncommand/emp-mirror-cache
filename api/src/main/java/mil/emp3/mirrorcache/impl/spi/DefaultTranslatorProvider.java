@@ -3,8 +3,8 @@ package mil.emp3.mirrorcache.impl.spi;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.cmapi.primitives.GeoContainer;
-import org.cmapi.primitives.GeoMilSymbol;
+import org.cmapi.primitives.IGeoContainer;
+import org.cmapi.primitives.IGeoMilSymbol;
 import org.cmapi.primitives.proto.CmapiProto.Container;
 import org.cmapi.primitives.proto.CmapiProto.MilStdSymbol;
 
@@ -32,8 +32,8 @@ public class DefaultTranslatorProvider implements TranslatorProvider {
         this.protoTranslators.put(Container.class.getName()   , new ContainerProtoFromTranslator());
         
         // geoCMAPI
-        this.protoTranslators.put(GeoMilSymbol.class.getName(), new MilSymbolGeoFromTranslator());
-        this.protoTranslators.put(GeoContainer.class.getName(), new ContainerGeoFromTranslator());
+        this.protoTranslators.put(IGeoMilSymbol.class.getName(), new MilSymbolGeoFromTranslator());
+        this.protoTranslators.put(IGeoContainer.class.getName(), new ContainerGeoFromTranslator());
     }
     
     @Override

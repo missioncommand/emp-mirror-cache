@@ -50,7 +50,7 @@ public class ChannelAdaptor implements Channel {
     }
     
     @Override
-    public void publish(String id, Object payload) {
+    public void publish(String id, Class<?> type, Object payload) {
         throw new IllegalStateException("not implemented");
     }
     

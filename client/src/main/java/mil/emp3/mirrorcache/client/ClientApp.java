@@ -48,6 +48,7 @@ import org.cmapi.primitives.GeoContainer;
 import org.cmapi.primitives.GeoMilSymbol;
 import org.cmapi.primitives.GeoPosition;
 import org.cmapi.primitives.IGeoAltitudeMode.AltitudeMode;
+import org.cmapi.primitives.IGeoMilSymbol;
 import org.cmapi.primitives.IGeoMilSymbol.Modifier;
 import org.cmapi.primitives.IGeoMilSymbol.SymbolStandard;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
@@ -108,7 +109,7 @@ public class ClientApp {
         });
     }
     
-    private static GeoMilSymbol createGeoMilSymbol(String name) {
+    private static IGeoMilSymbol createGeoMilSymbol(String name) {
         /*
          * Create symbol to publish
          */
@@ -124,9 +125,6 @@ public class ClientApp {
         geoSymbol.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
         geoSymbol.getPositions().add(pos);
         geoSymbol.getModifiers().put(Modifier.UNIQUE_DESIGNATOR_1, "Maintenance Recovery Theater");
-        // fillStyle
-        // strokeStyle
-        // labelStyle
         
         return geoSymbol;
     }
@@ -352,15 +350,15 @@ public class ClientApp {
                      */
                     final int sendCount = Integer.parseInt(getJTextFieldChannelSendCount().getText());
                     if (sendCount > 0) {
-                        new Thread(new Publisher<GeoMilSymbol>("ChannelPublisher", sendCount) {
+                        new Thread(new Publisher<IGeoMilSymbol>("ChannelPublisher", sendCount) {
                             @Override public void log(String msg) {
                                 logSend(msg);
                             }
-                            @Override public void publish(GeoMilSymbol payload) throws MirrorCacheException {
-                                channel.publish(payload.getGeoId().toString(), payload);
+                            @Override public void publish(IGeoMilSymbol payload) throws MirrorCacheException {
+                                channel.publish(payload.getGeoId().toString(), IGeoMilSymbol.class, payload);
                             }
-                            @Override public GeoMilSymbol constructPayload(String name) {
-                                final GeoMilSymbol symbol = createGeoMilSymbol(name);
+                            @Override public IGeoMilSymbol constructPayload(String name) {
+                                final IGeoMilSymbol symbol = createGeoMilSymbol(name);
                                 return symbol;
                             }
                             @Override public void statusUpdate(final int count) {
@@ -407,15 +405,15 @@ public class ClientApp {
                      * Send to selected channelGroup.
                      */
                     final int sendCount = Integer.parseInt(getJTextFieldChannelGroupSendCount().getText());
-                    new Thread(new Publisher<GeoMilSymbol>("ChannelGroupPublisher", sendCount) {
+                    new Thread(new Publisher<IGeoMilSymbol>("ChannelGroupPublisher", sendCount) {
                         @Override public void log(String msg) {
                             logSend(msg);
                         }
-                        @Override public void publish(GeoMilSymbol payload) throws MirrorCacheException {
-                            channelGroup.publish(payload.getGeoId().toString(), payload);
+                        @Override public void publish(IGeoMilSymbol payload) throws MirrorCacheException {
+                            channelGroup.publish(payload.getGeoId().toString(), IGeoMilSymbol.class, payload);
                         }
-                        @Override public GeoMilSymbol constructPayload(String name) {
-                            final GeoMilSymbol symbol = createGeoMilSymbol(name);
+                        @Override public IGeoMilSymbol constructPayload(String name) {
+                            final IGeoMilSymbol symbol = createGeoMilSymbol(name);
                             return symbol;
                         }
                         @Override public void statusUpdate(final int count) {

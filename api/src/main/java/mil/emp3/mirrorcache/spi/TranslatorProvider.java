@@ -3,8 +3,7 @@ package mil.emp3.mirrorcache.spi;
 import mil.emp3.mirrorcache.Translator;
 
 public interface TranslatorProvider {
-
-    boolean canTranslateFrom(String type);
     
+    boolean canTranslateFrom(String type);
     Translator getTranslator();
 }

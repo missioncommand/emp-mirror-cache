@@ -1,0 +1,2 @@
+channelGroup=product:aaa|count=1|type=IGeoMilSymbol|name=TestUnit|latitude=40|longitude=-105|altitude=10|symbolCode=SUGP---------XX|symbolStandard=MIL_STD_2525C|altitudeMode=RELATIVE_TO_GROUND
+

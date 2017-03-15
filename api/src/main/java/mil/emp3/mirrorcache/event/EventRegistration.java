@@ -1,8 +1,6 @@
 package mil.emp3.mirrorcache.event;
 
-public class EventRegistration {
+public interface EventRegistration {
 
-    public void removeHandler() {
-        throw new IllegalStateException("not implemented");
-    }
+    void removeHandler();
 }

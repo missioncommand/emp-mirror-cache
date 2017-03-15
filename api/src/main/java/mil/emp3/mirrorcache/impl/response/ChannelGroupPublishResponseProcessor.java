@@ -15,7 +15,7 @@ public class ChannelGroupPublishResponseProcessor extends BaseResponseProcessor 
         message.setEventType(ChannelGroupPublishedEvent.TYPE);
 
         final String channelGroupName = message.getCommand().getChannelGroupPublish().getChannelGroupName();
-        
-        getMessageDispatcher().dispatchEvent(new ChannelGroupPublishedEvent(channelGroupName));
+
+        getMessageDispatcher().dispatchEvent(new ChannelGroupPublishedEvent(channelGroupName, message));
     }
 }

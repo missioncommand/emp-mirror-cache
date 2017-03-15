@@ -8,6 +8,8 @@ import java.util.List;
 import org.cmapi.primitives.GeoContainer;
 import org.cmapi.primitives.GeoMilSymbol;
 import org.cmapi.primitives.GeoPosition;
+import org.cmapi.primitives.IGeoContainer;
+import org.cmapi.primitives.IGeoMilSymbol;
 import org.cmapi.primitives.IGeoAltitudeMode.AltitudeMode;
 import org.cmapi.primitives.IGeoMilSymbol.Modifier;
 import org.cmapi.primitives.IGeoMilSymbol.SymbolStandard;
@@ -27,7 +29,7 @@ public class InjectorApp {
     
     final private URI endpoint;
     final private String channelName;
-    final private List<GeoContainer> geoContainers;
+    final private List<IGeoContainer> geoContainers;
     
     public InjectorApp(String endpoint, String channelName, int numContainers, int numSymbolsPerContainer) throws URISyntaxException {
         this.endpoint      = new URI(endpoint);
@@ -38,7 +40,7 @@ public class InjectorApp {
          * Construct message objects. 
          */
         for (int i = 0; i < numContainers; i++) {
-            final GeoContainer geoContainer = createGeoContainer("Container #" + i);
+            final IGeoContainer geoContainer = createGeoContainer("Container #" + i);
             
             for (int j = 0; j < numSymbolsPerContainer; j++) {
                 geoContainer.getChildren().add(createGeoMilSymbol("Unit #" + j));
@@ -90,8 +92,8 @@ public class InjectorApp {
             /*
              * Inject data.
              */
-            for (GeoContainer geoContainer : geoContainers) {
-                injectChannel.publish(geoContainer.getGeoId().toString(), geoContainer);                
+            for (IGeoContainer geoContainer : geoContainers) {
+                injectChannel.publish(geoContainer.getGeoId().toString(), IGeoContainer.class, geoContainer);                
             }
             
             /*
@@ -106,14 +108,14 @@ public class InjectorApp {
         }
     }
     
-    private static GeoContainer createGeoContainer(String name) {
-        final GeoContainer geoContainer = new GeoContainer();
+    private static IGeoContainer createGeoContainer(String name) {
+        final IGeoContainer geoContainer = new GeoContainer();
         geoContainer.setName(name);
         
         return geoContainer;
     }
     
-    private static GeoMilSymbol createGeoMilSymbol(String name) {
+    private static IGeoMilSymbol createGeoMilSymbol(String name) {
         /*
          * Create symbol to publish
          */
@@ -122,16 +124,13 @@ public class InjectorApp {
         pos.setLongitude(3.4);
         pos.setAltitude(10.);
         
-        final GeoMilSymbol geoSymbol = new GeoMilSymbol();
+        final IGeoMilSymbol geoSymbol = new GeoMilSymbol();
         geoSymbol.setName(name);
         geoSymbol.setSymbolCode("SUGP---------XX");
         geoSymbol.setSymbolStandard(SymbolStandard.MIL_STD_2525C);
         geoSymbol.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
         geoSymbol.getPositions().add(pos);
         geoSymbol.getModifiers().put(Modifier.UNIQUE_DESIGNATOR_1, "Maintenance Recovery Theater");
-        //TODO fillStyle
-        //TODO strokeStyle
-        //TODO labelStyle
         
         return geoSymbol;
     }

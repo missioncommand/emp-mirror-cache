@@ -157,15 +157,15 @@ public class ClientChannelGroup implements ChannelGroup {
     }
 
     @Override
-    public void publish(String id, Object payload) throws MirrorCacheException {
+    public void publish(String id, Class<?> type, Object payload) throws MirrorCacheException {
         LOG.debug("ChannelGroup[" + name + "].publish()");
-        
+
         if (!isJoined()) {
             throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_JOINED);
         }
         
         final Message reqMessage = new Message();
-        reqMessage.setPayload(new Payload<>(id, payload.getClass().getName(), payload));
+        reqMessage.setPayload(new Payload<>(id, type.getName(), payload));
         reqMessage.setCommand(CommandCase.CHANNEL_GROUP_PUBLISH, ChannelGroupPublishCommand.newBuilder()
                                                                                            .setChannelGroupName(name)
                                                                                            .build());

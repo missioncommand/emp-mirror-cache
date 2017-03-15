@@ -194,19 +194,25 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
     }
     
     @Override
-    public <T extends EventHandler> EventRegistration on(MirrorCacheEvent.Type<T> type, T handler) {
+    public <T extends EventHandler> EventRegistration on(MirrorCacheEvent.Type<T> type, final T handler) {
         if (type == null || handler == null) {
             throw new IllegalStateException("type == null || handler == null");
         }
         
-        List<EventHandler> handlers;
-        if ((handlers = eventHandlerMap.get(type)) == null) {
+        final List<EventHandler> handlers;
+        if (eventHandlerMap.get(type) == null) {
             eventHandlerMap.put(type, handlers = new ArrayList<EventHandler>());
+        } else {
+            handlers = eventHandlerMap.get(type);
         }
             
         handlers.add(handler);
         
-        return new EventRegistration();
+        return new EventRegistration() {
+            @Override public void removeHandler() {
+                handlers.remove(handler);
+            }
+        };
     }
 
     /** Blocks while waiting for a response message given the request message. */

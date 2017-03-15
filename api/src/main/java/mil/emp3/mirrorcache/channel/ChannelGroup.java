@@ -17,7 +17,7 @@ public interface ChannelGroup {
     ChannelGroupHistory history() throws MirrorCacheException;
     
     /** Publishes a message to all channels in this group. */
-    void publish(String id, Object payload) throws MirrorCacheException;
+    void publish(String id, Class<?> type, Object payload) throws MirrorCacheException;
     
     /** can only add an existing channel. */
     void addChannel(String channelName) throws MirrorCacheException;

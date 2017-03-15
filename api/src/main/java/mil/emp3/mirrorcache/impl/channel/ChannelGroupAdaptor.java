@@ -55,7 +55,7 @@ public class ChannelGroupAdaptor implements ChannelGroup {
     }
 
     @Override
-    public void publish(String id, Object payload) throws MirrorCacheException {
+    public void publish(String id, Class<?> type, Object payload) throws MirrorCacheException {
         throw new IllegalStateException("not implemented");
     }
 
