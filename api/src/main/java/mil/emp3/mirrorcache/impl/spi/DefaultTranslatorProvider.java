@@ -37,12 +37,12 @@ public class DefaultTranslatorProvider implements TranslatorProvider {
     }
     
     @Override
-    public boolean canTranslateFrom(String type) {
-        return protoTranslators.containsKey(type);
+    public boolean canTranslateFrom(TranslatorArguments args) {
+        return protoTranslators.containsKey(args.from());
     }
 
     @Override
-    public Translator getTranslator() {
+    public Translator getTranslator(TranslatorArguments args) {
         return translator;
     }
 

@@ -69,7 +69,7 @@ public class FindChannelGroupsRequestProcessor extends BaseRequestProcessor<Mess
                     }
                     
                     results.add(new ClientChannelGroup(channelGroup.getName(),
-                                                       channelGroup.getIsJoined(),
+                                                       channelGroup.getIsOpen(),
                                                        channels,
                                                        members,
                                                        dispatcher));

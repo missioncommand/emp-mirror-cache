@@ -30,7 +30,7 @@ public class ChannelGroupAdaptor implements ChannelGroup {
     }
     
     @Override
-    public boolean isJoined() {
+    public boolean isOpen() {
         throw new IllegalStateException("not implemented");
     }
     
@@ -45,17 +45,22 @@ public class ChannelGroupAdaptor implements ChannelGroup {
     }
 
     @Override
-    public void join() throws MirrorCacheException {
+    public void open() throws MirrorCacheException {
         throw new IllegalStateException("not implemented");
     }
 
     @Override
-    public void leave() throws MirrorCacheException {
+    public void close() throws MirrorCacheException {
         throw new IllegalStateException("not implemented");
     }
 
     @Override
     public void publish(String id, Class<?> type, Object payload) throws MirrorCacheException {
+        throw new IllegalStateException("not implemented");
+    }
+    
+    @Override
+    public void delete(String id) throws MirrorCacheException {
         throw new IllegalStateException("not implemented");
     }
 

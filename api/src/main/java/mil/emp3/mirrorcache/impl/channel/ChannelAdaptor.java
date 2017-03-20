@@ -55,6 +55,11 @@ public class ChannelAdaptor implements Channel {
     }
     
     @Override
+    public void delete(String id) {
+        throw new IllegalStateException("not implemented");
+    }
+    
+    @Override
     public ChannelCache cache() {
         throw new IllegalStateException("not implemented");
     }

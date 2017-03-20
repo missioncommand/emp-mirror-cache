@@ -214,7 +214,7 @@ message ChannelInfo {
 
 message ChannelGroupInfo {
     string name                  = 1;
-    bool is_joined               = 2;
+    bool is_open                 = 2;
     repeated ChannelInfo channel = 3;
     repeated MemberInfo member   = 4;
 }
@@ -249,19 +249,21 @@ message OneOfCommand {
         ChannelOpenCommand channel_open                               = 103;
         ChannelCloseCommand channel_close                             = 104;
         ChannelPublishCommand channel_publish                         = 105;
-        ChannelCacheCommand channel_cache                             = 106;
-        ChannelHistoryCommand channel_history                         = 107;
+        ChannelDeleteCommand channel_delete                           = 106;
+        ChannelCacheCommand channel_cache                             = 107;
+        ChannelHistoryCommand channel_history                         = 108;
         
-        CreateChannelGroupCommand create_channel_group                = 108;
-        DeleteChannelGroupCommand delete_channel_group                = 109;
-        FindChannelGroupsCommand find_channel_groups                  = 110;
-        ChannelGroupJoinCommand channel_group_join                    = 111;
-        ChannelGroupLeaveCommand channel_group_leave                  = 112;
-        ChannelGroupAddChannelCommand channel_group_add_channel       = 113;
-        ChannelGroupRemoveChannelCommand channel_group_remove_channel = 114;
-        ChannelGroupPublishCommand channel_group_publish              = 115;
-        ChannelGroupCacheCommand channel_group_cache                  = 116;
-        ChannelGroupHistoryCommand channel_group_history              = 117;
+        CreateChannelGroupCommand create_channel_group                = 109;
+        DeleteChannelGroupCommand delete_channel_group                = 110;
+        FindChannelGroupsCommand find_channel_groups                  = 111;
+        ChannelGroupOpenCommand channel_group_open                    = 112;
+        ChannelGroupCloseCommand channel_group_close                  = 113;
+        ChannelGroupAddChannelCommand channel_group_add_channel       = 114;
+        ChannelGroupRemoveChannelCommand channel_group_remove_channel = 115;
+        ChannelGroupPublishCommand channel_group_publish              = 116;
+        ChannelGroupDeleteCommand channel_group_delete                = 117;
+        ChannelGroupCacheCommand channel_group_cache                  = 118;
+        ChannelGroupHistoryCommand channel_group_history              = 119;
     }
 }
 
@@ -280,13 +282,36 @@ message ProtoMessage {
 }
 
 //.
-//.. CHANNEL_GROUP
+//.. EVENTS
+//...
+/*message ChannelPublishedEvent {
+    string channel_name  = 1;
+    ProtoPayload payload = 2;
+}
+message ChannelDeletedEvent {
+    string channel_name  = 1;
+    string payload_id    = 2;
+    ProtoPayload payload = 3;
+}
+
+message ChannelGroupPublishedEvent {
+    string channel_group_name = 1;
+    ProtoPayload payload      = 2;
+}
+message ChannelGroupDeletedEvent {
+    string channel_group_name = 1;
+    string payload_id         = 2;
+    ProtoPayload payload      = 3;
+}*/
+
 //.
-message ChannelGroupJoinCommand {
+//.. CHANNEL_GROUP
+//...
+message ChannelGroupOpenCommand {
     Status status             = 1;
     string channel_group_name = 2;
 }
-message ChannelGroupLeaveCommand {
+message ChannelGroupCloseCommand {
     Status status             = 1;
     string channel_group_name = 2;
 }
@@ -303,6 +328,11 @@ message ChannelGroupRemoveChannelCommand {
 message ChannelGroupPublishCommand {
     Status status             = 1;
     string channel_group_name = 2;
+}
+message ChannelGroupDeleteCommand {
+    Status status             = 1;
+    string channel_group_name = 2;
+    string payload_id         = 3;
 }
 message ChannelGroupCacheCommand {
     Status status              = 1;
@@ -333,7 +363,7 @@ message FindChannelGroupsCommand {
 
 //.
 //.. CHANNEL
-//.
+//...
 message CreateChannelCommand {
     Status status       = 1;
     string channel_name = 2;
@@ -363,6 +393,11 @@ message ChannelCloseCommand {
 message ChannelPublishCommand {
     Status status       = 1;
     string channel_name = 2;
+}
+message ChannelDeleteCommand {
+    Status status       = 1;
+    string channel_name = 2;
+    string payload_id   = 3;
 }
 message ChannelCacheCommand {
     Status status            = 1;

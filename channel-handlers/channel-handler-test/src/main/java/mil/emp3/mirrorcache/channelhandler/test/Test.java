@@ -19,6 +19,7 @@ import mil.emp3.mirrorcache.spi.DeserializerProviderFactory;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
 import mil.emp3.mirrorcache.spi.SerializerProviderFactory;
+import mil.emp3.mirrorcache.spi.TranslatorProvider;
 import mil.emp3.mirrorcache.spi.TranslatorProviderFactory;
 
 public class Test {
@@ -37,10 +38,14 @@ public class Test {
         final Deserializer deserializer = DeserializerProviderFactory.getDeserializer(MilStdSymbol.class.getName());
         LOG.info("deserializer: " + deserializer);
         
-        final Translator inTranslator = TranslatorProviderFactory.getTranslator(MilStdSymbol.class.getName());
+        final Translator inTranslator = TranslatorProviderFactory.getTranslator(new TranslatorProvider.TranslatorArguments() {
+            @Override public String from() { return MilStdSymbol.class.getName(); }
+        });
         LOG.info("inTranslator: " + inTranslator);
         
-        final Translator outTranslator = TranslatorProviderFactory.getTranslator(GeoMilSymbol.class.getName());
+        final Translator outTranslator = TranslatorProviderFactory.getTranslator(new TranslatorProvider.TranslatorArguments() {
+            @Override public String from() { return GeoMilSymbol.class.getName(); }
+        });
         LOG.info("outTranslator: " + outTranslator);
         
         final Serializer serializer = SerializerProviderFactory.getSerializer(MilStdSymbol.class.getName());

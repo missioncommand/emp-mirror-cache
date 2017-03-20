@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.Translator;
+import mil.emp3.mirrorcache.spi.TranslatorProvider;
 import mil.emp3.mirrorcache.spi.TranslatorProviderFactory;
 
 public class TranslateStageProcessor extends StageProcessor<Message> {
@@ -16,13 +17,15 @@ public class TranslateStageProcessor extends StageProcessor<Message> {
     }
     
     @Override
-    public void processMessage(Message message) throws MirrorCacheException {
+    public void processMessage(final Message message) throws MirrorCacheException {
         LOG.trace("processMessage()");
         
         if (message.hasPayload()) {
-            final String payloadType = message.getPayload().getType();
-            
-            final Translator translator = TranslatorProviderFactory.getTranslator(payloadType);
+            final Translator translator = TranslatorProviderFactory.getTranslator(new TranslatorProvider.TranslatorArguments() {
+                @Override public String from() {
+                    return message.getPayload().getType();
+                }
+            });
             translator.processMessage(message);
         }
     }

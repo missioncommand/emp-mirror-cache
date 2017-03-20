@@ -16,6 +16,6 @@ public class ChannelPublishResponseProcessor extends BaseResponseProcessor {
 
         final String channelName = message.getCommand().getChannelPublish().getChannelName();
         
-        getMessageDispatcher().dispatchEvent(new ChannelPublishedEvent(channelName));
+        getMessageDispatcher().dispatchEvent(new ChannelPublishedEvent(channelName, message));
     }
 }

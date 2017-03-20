@@ -1,6 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupAddChannelCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupDeleteCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -12,12 +12,12 @@ import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
 
-public class ChannelGroupAddChannelRequestProcessor extends BaseRequestProcessor<Message, Void> {
-    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupAddChannelRequestProcessor.class);
+public class ChannelGroupDeleteRequestProcessor extends BaseRequestProcessor<Message, Void> {
+    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupDeleteRequestProcessor.class);
     
     final private MessageDispatcher dispatcher;
     
-    public ChannelGroupAddChannelRequestProcessor(MessageDispatcher dispatcher) {
+    public ChannelGroupDeleteRequestProcessor(MessageDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
     
@@ -26,16 +26,15 @@ public class ChannelGroupAddChannelRequestProcessor extends BaseRequestProcessor
         if (reqMessage == null) {
             throw new IllegalStateException("reqMessage == null");
         }
-
-        dispatcher.dispatchMessage(reqMessage.setPriority(Priority.MEDIUM));
+        
+        dispatcher.dispatchMessage(reqMessage.setPriority(Priority.LOW));
         
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupAddChannelCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_ADD_CHANNEL);
+            final ChannelGroupDeleteCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_DELETE);
             if (!(command.getStatus() == Status.SUCCESS)) {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_ADD_CHANNEL_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName())
-                                                                                       .withDetail("channelName: " + command.getChannelName());
+                throw new MirrorCacheException(Reason.CHANNELGROUP_DELETE_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
             }
             
         } catch (InterruptedException e) {

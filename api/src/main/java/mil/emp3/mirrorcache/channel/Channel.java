@@ -39,6 +39,7 @@ public interface Channel {
     ChannelHistory history() throws MirrorCacheException;
     
     void publish(String id, Class<?> type, Object payload) throws MirrorCacheException;
+    void delete(String id) throws MirrorCacheException;
     
     /** Opening a channel will allow producing or consuming from it. */
     void open(Flow flow, String filter) throws MirrorCacheException;

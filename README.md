@@ -108,7 +108,7 @@ BOTH | A both flow denotes a client interested in producing and consuming.
 
 ### ChannelGroup
 
-A ChannelGroup represents a collection of channels. Clients who join a channelGroup will receive published data from each channel participating in the channelGroup. The owner of a channelGroup can publish data to the channelGroup, this has the effect of broadcasting data to each participating channel in the channelGroup. A channelGroup will persist until the owning session is closed.
+A ChannelGroup represents a collection of channels. Clients who open a channelGroup will receive published data from each channel participating in the channelGroup. The owner of a channelGroup can publish data to the channelGroup, this has the effect of broadcasting data to each participating channel in the channelGroup. A channelGroup will persist until the owning session is closed.
 
 ### Server Commands
 
@@ -120,16 +120,18 @@ FIND_CHANNELS | <ul><li>status</li><li>filter</li><li>channel</li></ul>
 CHANNEL_OPEN | <ul><li>status</li><li>channelName</li><li>flow</li><li>filter</li></ul>
 CHANNEL_CLOSE | <ul><li>status</li><li>channelName</li></ul>
 CHANNEL_PUBLISH | <ul><li>status</li><li>channelName</li></ul>
+CHANNEL_DELETE | <ul><li>status</li><li>channelName</li><li>payloadId</li></ul>
 CHANNEL_CACHE | <ul><li>status</li><li>channelName</li><li>entityId</li></ul>
 CHANNEL_HISTORY | <ul><li>status</li><li>channelName</li><li>startTime</li><li>endTime</li><li>history</li></ul>
 CREATE_CHANNELGROUP | <ul><li>status</li><li>channelGroupName</li></ul>
 DELETE_CHANNELGROUP | <ul><li>status</li><li>channelGroupName</li></ul>
 FIND_CHANNELGROUPS | <ul><li>status</li><li>filter</li><li>channelGroup</li></ul>
-CHANNELGROUP_JOIN | <ul><li>status</li><li>channelGroupName</li></ul>
-CHANNELGROUP_LEAVE | <ul><li>status</li><li>channelGroupName</li></ul>
+CHANNELGROUP_OPEN | <ul><li>status</li><li>channelGroupName</li></ul>
+CHANNELGROUP_CLOSE | <ul><li>status</li><li>channelGroupName</li></ul>
 CHANNELGROUP_ADD_CHANNEL | <ul><li>status</li><li>channelGroupName</li><li>channelName</li></ul>
 CHANNELGROUP_REMOVE_CHANNEL | <ul><li>status</li><li>channelGroupName</li><li>channelName</li></ul>
 CHANNELGROUP_PUBLISH | <ul><li>status</li><li>channelGroupName</li></ul>
+CHANNELGROUP_DELETE | <ul><li>status</li><li>channelGroupName</li><li>payloadId</li></ul>
 CHANNELGROUP_CACHE | <ul><li>status</li><li>channelGroupName</li><li>entityId</li></ul>
 CHANNELGROUP_HISTORY | <ul><li>status</li><li>channelGroupName</li><li>entityId</li><li>startTime</li><li>endTime</li><li>history</li></ul>
 

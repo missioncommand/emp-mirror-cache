@@ -22,7 +22,11 @@ import org.slf4j.LoggerFactory;
 import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.Transport.TransportType;
+import mil.emp3.mirrorcache.channel.Channel;
 import mil.emp3.mirrorcache.channel.ChannelGroup;
+import mil.emp3.mirrorcache.channel.Channel.Flow;
+import mil.emp3.mirrorcache.channel.Channel.Type;
+import mil.emp3.mirrorcache.channel.Channel.Visibility;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
 
@@ -38,7 +42,7 @@ public class ScriptedInjectorApp {
 
     }
     
-    public void doInject() throws MirrorCacheException {
+    public void doThings() throws MirrorCacheException {
         /*
          * Create and initialize client.
          */
@@ -55,35 +59,12 @@ public class ScriptedInjectorApp {
         
         try {
             for (ScriptEntry script : scripts) {
-                final String channelGroupName = script.getChannelGroup();
-                
-                ChannelGroup injectChannelGroup = null;
                 
                 /*
-                 * See if the channelGroup already exists.
+                 * Construct data.
                  */
-                for (ChannelGroup channelGroup : client.findChannelGroups("*")) {
-                    if (channelGroup.getName().equals(channelGroupName)) {
-                        injectChannelGroup = channelGroup;
-                        break;
-                    }
-                }
+                final List<IGeoMilSymbol> geoSymbols = new ArrayList<>();
                 
-                /*
-                 * Create channelGroup if need be.
-                 */
-                if (injectChannelGroup == null) {
-                    injectChannelGroup = client.createChannelGroup(channelGroupName);
-                }
-                
-                /*
-                 * Join channelGroup for publishing.
-                 */
-                injectChannelGroup.join();
-                
-                /*
-                 * Inject data.
-                 */
                 if (script.getType().equals("IGeoMilSymbol")) {
                     
                     for (int i = 0, len = script.getCount(); i < len; i++) {
@@ -103,18 +84,77 @@ public class ScriptedInjectorApp {
                                                                               symbolCode,
                                                                               symbolStandard,
                                                                               altitudeMode);
-                        
-                        injectChannelGroup.publish(geoMilSymbol.getGeoId().toString(), IGeoMilSymbol.class, geoMilSymbol);
+                        geoSymbols.add(geoMilSymbol);
                     }
                 }
                 
-                /*
-                 * We're done..
-                 */
-                injectChannelGroup.leave();
+                
+                
+                final boolean isChannel = script.getChannel() != null;
+                
+                Channel injectChannel           = null;
+                ChannelGroup injectChannelGroup = null;
+                
+                if (isChannel) {
+                    final String channelName = script.getChannel();
+                    
+                    // See if the channel already exists.
+                    for (Channel channel : client.findChannels("*")) {
+                        if (channel.getName().equals(channelName)) {
+                            injectChannel = channel;
+                            break;
+                        }
+                    }
+                    
+                    // Create channel if need be.
+                    if (injectChannel == null) {
+                        injectChannel = client.createChannel(channelName, Visibility.PUBLIC, Type.TEMPORARY);
+                    }
+                    
+                    // Open channel for publishing.
+                    injectChannel.open(Flow.BOTH, "*");
+                    
+                } else {
+                    final String channelGroupName = script.getChannelGroup();
+                    
+                    // See if the channelGroup already exists.
+                    for (ChannelGroup channelGroup : client.findChannelGroups("*")) {
+                        if (channelGroup.getName().equals(channelGroupName)) {
+                            injectChannelGroup = channelGroup;
+                            break;
+                        }
+                    }
+                    
+                    // Create channelGroup if need be.
+                    if (injectChannelGroup == null) {
+                        injectChannelGroup = client.createChannelGroup(channelGroupName);
+                    }
+                    
+                    // Open channelGroup for publishing.
+                    injectChannelGroup.open();
+                }
+
+                if (script.getAction() != null && script.getAction().equals("publish")) {
+                    // Inject data.
+                    for (IGeoMilSymbol geoSymbol : geoSymbols) {
+                        if (isChannel) {
+                            injectChannel.publish(geoSymbol.getGeoId().toString(), IGeoMilSymbol.class, geoSymbol);
+                        } else {
+                            injectChannelGroup.publish(geoSymbol.getGeoId().toString(), IGeoMilSymbol.class, geoSymbol);
+                        }
+                    }
+                }
+                
+                // Done..
+                if (isChannel) {
+                    injectChannel.close();
+                } else {
+                    injectChannelGroup.close();
+                }
             }
             
         } finally {
+            client.disconnect();
             client.shutdown();
         }
     }
@@ -165,6 +205,9 @@ public class ScriptedInjectorApp {
             }
         }
         
+        public String getAction() {
+            return properties.get("action");
+        }
         public String getChannel() {
             return properties.get("channel");
         }
@@ -259,7 +302,7 @@ public class ScriptedInjectorApp {
         
         try {
             final ScriptedInjectorApp injector = new ScriptedInjectorApp(endpoint, scripts);
-            injector.doInject();
+            injector.doThings();
             
         } catch (URISyntaxException | MirrorCacheException e) {
             LOG.error(e.getMessage(), e);

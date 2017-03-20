@@ -1,6 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupJoinCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCloseCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -12,12 +12,12 @@ import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
 
-public class ChannelGroupJoinRequestProcessor extends BaseRequestProcessor<Message, Void> {
-    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupJoinRequestProcessor.class);
+public class ChannelGroupCloseRequestProcessor extends BaseRequestProcessor<Message, Void> {
+    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupCloseRequestProcessor.class);
     
     final private MessageDispatcher dispatcher;
     
-    public ChannelGroupJoinRequestProcessor(MessageDispatcher dispatcher) {
+    public ChannelGroupCloseRequestProcessor(MessageDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
     
@@ -32,9 +32,9 @@ public class ChannelGroupJoinRequestProcessor extends BaseRequestProcessor<Messa
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupJoinCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_JOIN);
+            final ChannelGroupCloseCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_CLOSE);
             if (!(command.getStatus() == Status.SUCCESS)) {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_JOIN_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
+                throw new MirrorCacheException(Reason.CHANNELGROUP_CLOSE_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
             }
             
         } catch (InterruptedException e) {

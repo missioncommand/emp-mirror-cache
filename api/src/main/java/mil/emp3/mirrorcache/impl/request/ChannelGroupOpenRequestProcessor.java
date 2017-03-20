@@ -1,6 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupLeaveCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -12,12 +12,12 @@ import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
 
-public class ChannelGroupLeaveRequestProcessor extends BaseRequestProcessor<Message, Void> {
-    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupLeaveRequestProcessor.class);
+public class ChannelGroupOpenRequestProcessor extends BaseRequestProcessor<Message, Void> {
+    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupOpenRequestProcessor.class);
     
     final private MessageDispatcher dispatcher;
     
-    public ChannelGroupLeaveRequestProcessor(MessageDispatcher dispatcher) {
+    public ChannelGroupOpenRequestProcessor(MessageDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
     
@@ -32,9 +32,9 @@ public class ChannelGroupLeaveRequestProcessor extends BaseRequestProcessor<Mess
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupLeaveCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_LEAVE);
+            final ChannelGroupOpenCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_OPEN);
             if (!(command.getStatus() == Status.SUCCESS)) {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_LEAVE_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
+                throw new MirrorCacheException(Reason.CHANNELGROUP_OPEN_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
             }
             
         } catch (InterruptedException e) {

@@ -490,7 +490,7 @@ public class ClientApp {
             });
             
             /*
-             * To JOIN / LEAVE channelGroups.
+             * To OPEN / CLOSE channelGroups.
              */
             getJTreeTableChannelGroups().getOutlineModel().addTableModelListener(new TableModelListener() {
                 @Override public void tableChanged(TableModelEvent e) {
@@ -500,23 +500,31 @@ public class ClientApp {
                             final int row = e.getFirstRow();
                             final int col = e.getColumn();
                             
-                            if (row != -1 && (col == TableModelEvent.ALL_COLUMNS || col == 1)) { // the 'join' column
+                            if (row != -1 && (col == TableModelEvent.ALL_COLUMNS || col == 1)) { // the 'open' column
                                 
                                 final ChannelGroupEntry entry = (ChannelGroupEntry) getJTreeTableChannelGroups().getOutlineModel().getValueAt(row, 0);
                                 try {
-                                    if (entry.isJoinedSelected()) {
+                                    if (entry.isOpenSelected()) {
 tmpChannelGroup = entry.getChannelGroup();//TODO remove me eventually
-                                        entry.getChannelGroup().join();
-                                        entry.getChannelGroup().on(ChannelGroupPublishedEvent.TYPE, new ChannelGroupEventHandler() {
+                                        entry.getChannelGroup().open();
+                                        
+                                        final ChannelGroupEventHandler handler = new ChannelGroupEventHandler() {
                                             @Override public void onChannelGroupPublishedEvent(ChannelGroupPublishedEvent event) {
                                                 //increment RCV column in channelGroup table
+                                                System.out.println("__onChannelGroupPublishedEvent()");
                                             }
-                                            @Override public void onChannelGroupUpdatedEvent(ChannelGroupUpdatedEvent event) { }
-                                            @Override public void onChannelGroupDeletedEvent(ChannelGroupDeletedEvent event) { }
-                                        });
+                                            @Override public void onChannelGroupUpdatedEvent(ChannelGroupUpdatedEvent event) {
+                                                System.out.println("__onChannelGroupUpdatedEvent()");
+                                            }
+                                            @Override public void onChannelGroupDeletedEvent(ChannelGroupDeletedEvent event) {
+                                                System.out.println("__onChannelGroupDeletedEvent()");
+                                            }
+                                        };
+                                        entry.getChannelGroup().on(ChannelGroupPublishedEvent.TYPE, handler);
+                                        entry.getChannelGroup().on(ChannelGroupDeletedEvent.TYPE, handler);
                                         
                                     } else {
-                                        entry.getChannelGroup().leave();
+                                        entry.getChannelGroup().close();
                                     }
                                     
                                     getJButtonChannelGroupRefresh().doClick();
@@ -548,13 +556,21 @@ tmpChannelGroup = entry.getChannelGroup();//TODO remove me eventually
                                 if (entry.isOpenSelected()) {
 tmpChannel = entry.getChannel();//TODO remove me eventually
                                     entry.getChannel().open(Flow.BOTH, "*");
-                                    entry.getChannel().on(ChannelPublishedEvent.TYPE, new ChannelEventHandler() {
+                                    
+                                    final ChannelEventHandler handler = new ChannelEventHandler() {
                                         @Override public void onChannelPublishedEvent(ChannelPublishedEvent event) {
                                             //increment RCV column in channel table
+                                            System.out.println("__onChannelPublishedEvent()");
                                         }
-                                        @Override public void onChannelUpdatedEvent(ChannelUpdatedEvent event) { }
-                                        @Override public void onChannelDeletedEvent(ChannelDeletedEvent event) { }
-                                    });
+                                        @Override public void onChannelUpdatedEvent(ChannelUpdatedEvent event) {
+                                            System.out.println("__onChannelUpdatedEvent()");
+                                        }
+                                        @Override public void onChannelDeletedEvent(ChannelDeletedEvent event) {
+                                            System.out.println("__onChannelDeletedEvent()");
+                                        }
+                                    };
+                                    entry.getChannel().on(ChannelPublishedEvent.TYPE, handler);
+                                    entry.getChannel().on(ChannelDeletedEvent.TYPE, handler);
                                     
                                 } else {
                                     entry.getChannel().close();

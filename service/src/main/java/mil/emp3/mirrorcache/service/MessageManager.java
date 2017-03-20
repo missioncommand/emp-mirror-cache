@@ -15,11 +15,13 @@ import org.slf4j.Logger;
 import mil.emp3.mirrorcache.service.event.MessageEvent;
 import mil.emp3.mirrorcache.service.processor.ChannelCacheProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelCloseProcessor;
+import mil.emp3.mirrorcache.service.processor.ChannelDeleteProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelGroupAddChannelProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelGroupCacheProcessor;
+import mil.emp3.mirrorcache.service.processor.ChannelGroupCloseProcessor;
+import mil.emp3.mirrorcache.service.processor.ChannelGroupDeleteProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelGroupHistoryProcessor;
-import mil.emp3.mirrorcache.service.processor.ChannelGroupJoinProcessor;
-import mil.emp3.mirrorcache.service.processor.ChannelGroupLeaveProcessor;
+import mil.emp3.mirrorcache.service.processor.ChannelGroupOpenProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelGroupPublishProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelGroupRemoveChannelProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelHistoryProcessor;
@@ -45,17 +47,19 @@ public class MessageManager {
     @Inject private ChannelOpenProcessor channelOpenProcessor;
     @Inject private ChannelCloseProcessor channelCloseProcessor;
     @Inject private ChannelPublishProcessor channelPublishProcessor;
+    @Inject private ChannelDeleteProcessor channelDeleteProcessor;
     @Inject private ChannelCacheProcessor channelCacheProcessor;
     @Inject private ChannelHistoryProcessor channelHistoryProcessor;
     
     @Inject private CreateChannelGroupProcessor createChannelGroupProcessor;
     @Inject private DeleteChannelGroupProcessor deleteChannelGroupProcessor;
     @Inject private FindChannelGroupsProcessor findChannelGroupsProcessor;
-    @Inject private ChannelGroupJoinProcessor channelGroupJoinProcessor;
-    @Inject private ChannelGroupLeaveProcessor channelGroupLeaveProcessor;
+    @Inject private ChannelGroupOpenProcessor channelGroupOpenProcessor;
+    @Inject private ChannelGroupCloseProcessor channelGroupCloseProcessor;
     @Inject private ChannelGroupAddChannelProcessor channelGroupAddChannelProcessor;
     @Inject private ChannelGroupRemoveChannelProcessor channelGroupRemoveChannelProcessor;
     @Inject private ChannelGroupPublishProcessor channelGroupPublishProcessor;
+    @Inject private ChannelGroupDeleteProcessor channelGroupDeleteProcessor;
     @Inject private ChannelGroupCacheProcessor channelGroupCacheProcessor;
     @Inject private ChannelGroupHistoryProcessor channelGroupHistoryProcessor;
     
@@ -70,17 +74,19 @@ public class MessageManager {
         this.commandProcessors.put(CommandCase.CHANNEL_OPEN   , channelOpenProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_CLOSE  , channelCloseProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_PUBLISH, channelPublishProcessor);
+        this.commandProcessors.put(CommandCase.CHANNEL_DELETE , channelDeleteProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_CACHE  , channelCacheProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_HISTORY, channelHistoryProcessor);
         
         this.commandProcessors.put(CommandCase.CREATE_CHANNEL_GROUP        , createChannelGroupProcessor);
         this.commandProcessors.put(CommandCase.DELETE_CHANNEL_GROUP        , deleteChannelGroupProcessor);
         this.commandProcessors.put(CommandCase.FIND_CHANNEL_GROUPS         , findChannelGroupsProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_JOIN          , channelGroupJoinProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_LEAVE         , channelGroupLeaveProcessor);
+        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_OPEN          , channelGroupOpenProcessor);
+        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_CLOSE         , channelGroupCloseProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_GROUP_ADD_CHANNEL   , channelGroupAddChannelProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_GROUP_REMOVE_CHANNEL, channelGroupRemoveChannelProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_GROUP_PUBLISH       , channelGroupPublishProcessor);
+        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_DELETE        , channelGroupDeleteProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_GROUP_CACHE         , channelGroupCacheProcessor);
         this.commandProcessors.put(CommandCase.CHANNEL_GROUP_HISTORY       , channelGroupHistoryProcessor);
     }

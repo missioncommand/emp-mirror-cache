@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.event;
 
 /**
- * For when properties or attributes of a channel have changed.
+ * For when data has been updated in a channel.
  */
 public class ChannelUpdatedEvent extends ChannelEvent<ChannelEventHandler> {
     static final public Type<ChannelEventHandler> TYPE = new Type<ChannelEventHandler>();

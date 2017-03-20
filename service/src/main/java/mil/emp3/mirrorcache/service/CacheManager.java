@@ -18,6 +18,11 @@ import mil.emp3.mirrorcache.service.cache.EntityCache;
 import mil.emp3.mirrorcache.service.event.ChannelDeletedEvent;
 import mil.emp3.mirrorcache.service.event.ChannelGroupDeletedEvent;
 
+/**
+ * This class maintains a cache of each entity published to Channels and ChannelGroups.
+ * This class can be used to retrieve all entities published to a particular Channel or
+ * ChannelGroup.
+ */
 @ApplicationScoped
 public class CacheManager {
 

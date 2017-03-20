@@ -6,9 +6,10 @@ import java.util.Set;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupAddChannelCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCacheCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCloseCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupDeleteCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupHistoryCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupJoinCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupLeaveCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupPublishCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupRemoveChannelCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
@@ -29,16 +30,17 @@ import mil.emp3.mirrorcache.event.EventHandler;
 import mil.emp3.mirrorcache.event.EventRegistration;
 import mil.emp3.mirrorcache.impl.request.ChannelGroupAddChannelRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelGroupCacheRequestProcessor;
+import mil.emp3.mirrorcache.impl.request.ChannelGroupCloseRequestProcessor;
+import mil.emp3.mirrorcache.impl.request.ChannelGroupDeleteRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelGroupHistoryRequestProcessor;
-import mil.emp3.mirrorcache.impl.request.ChannelGroupJoinRequestProcessor;
-import mil.emp3.mirrorcache.impl.request.ChannelGroupLeaveRequestProcessor;
+import mil.emp3.mirrorcache.impl.request.ChannelGroupOpenRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelGroupPublishRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelGroupRemoveChannelRequestProcessor;
 
 public class ClientChannelGroup implements ChannelGroup {
     static final private Logger LOG = LoggerFactory.getLogger(ClientChannelGroup.class);
     
-    private boolean isJoined;
+    private boolean isOpen;
     
     final private Set<ClientChannel> channels;
     final private Set<Member> members;
@@ -46,12 +48,12 @@ public class ClientChannelGroup implements ChannelGroup {
     final private String name;
     final private MessageDispatcher dispatcher;
     
-    public ClientChannelGroup(String name, boolean isJoined, MessageDispatcher dispatcher) {
-        this(name, isJoined, Collections.<ClientChannel>emptySet(), Collections.<Member>emptySet(), dispatcher);
+    public ClientChannelGroup(String name, boolean isOpen, MessageDispatcher dispatcher) {
+        this(name, isOpen, Collections.<ClientChannel>emptySet(), Collections.<Member>emptySet(), dispatcher);
     }
-    public ClientChannelGroup(String name, boolean isJoined, Set<ClientChannel> channels, Set<Member> members, MessageDispatcher dispatcher) {
+    public ClientChannelGroup(String name, boolean isOpen, Set<ClientChannel> channels, Set<Member> members, MessageDispatcher dispatcher) {
         this.name       = name;
-        this.isJoined   = isJoined;
+        this.isOpen     = isOpen;
         this.dispatcher = dispatcher;
         this.channels   = new HashSet<>(channels);
         this.members    = new HashSet<>(members);
@@ -85,8 +87,8 @@ public class ClientChannelGroup implements ChannelGroup {
     }
     
     @Override
-    public boolean isJoined() {
-        return isJoined;
+    public boolean isOpen() {
+        return isOpen;
     }
     
     @Override
@@ -98,8 +100,8 @@ public class ClientChannelGroup implements ChannelGroup {
     public void addChannel(String channelName) throws MirrorCacheException {
         LOG.debug("ChannelGroup[" + name + "].addChannel()");
 
-//        if (!isJoined) {
-//            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_JOINED);
+//        if (!isOpen) {
+//            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_OPEN);
 //        }
         
         final Message reqMessage = new Message();
@@ -115,8 +117,8 @@ public class ClientChannelGroup implements ChannelGroup {
     public void removeChannel(String channelName) throws MirrorCacheException {
         LOG.debug("ChannelGroup[" + name + "].removeChannel()");
 
-//        if (!isJoined) {
-//            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_JOINED);
+//        if (!isOpen) {
+//            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_OPEN);
 //        }
         
         final Message reqMessage = new Message();
@@ -129,39 +131,39 @@ public class ClientChannelGroup implements ChannelGroup {
     }
 
     @Override
-    public void join() throws MirrorCacheException {
-        LOG.debug("ChannelGroup[" + name + "].join()");
+    public void open() throws MirrorCacheException {
+        LOG.debug("ChannelGroup[" + name + "].open()");
 
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_JOIN, ChannelGroupJoinCommand.newBuilder()
+        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_OPEN, ChannelGroupOpenCommand.newBuilder()
                                                                                      .setChannelGroupName(name)
                                                                                      .build());
 
-        dispatcher.getRequestProcessor(ChannelGroupJoinRequestProcessor.class).executeSync(reqMessage);
+        dispatcher.getRequestProcessor(ChannelGroupOpenRequestProcessor.class).executeSync(reqMessage);
         
-        isJoined = true;
+        isOpen = true;
     }
 
     @Override
-    public void leave() throws MirrorCacheException {
-        LOG.debug("ChannelGroup[" + name + "].leave()");
+    public void close() throws MirrorCacheException {
+        LOG.debug("ChannelGroup[" + name + "].close()");
 
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_LEAVE, ChannelGroupLeaveCommand.newBuilder()
+        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_CLOSE, ChannelGroupCloseCommand.newBuilder()
                                                                                        .setChannelGroupName(name)
                                                                                        .build());
 
-        dispatcher.getRequestProcessor(ChannelGroupLeaveRequestProcessor.class).executeSync(reqMessage);
+        dispatcher.getRequestProcessor(ChannelGroupCloseRequestProcessor.class).executeSync(reqMessage);
         
-        isJoined = false;
+        isOpen = false;
     }
 
     @Override
     public void publish(String id, Class<?> type, Object payload) throws MirrorCacheException {
         LOG.debug("ChannelGroup[" + name + "].publish()");
 
-        if (!isJoined()) {
-            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_JOINED);
+        if (!isOpen()) {
+            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_OPEN);
         }
         
         final Message reqMessage = new Message();
@@ -174,11 +176,28 @@ public class ClientChannelGroup implements ChannelGroup {
     }
     
     @Override
+    public void delete(String id) throws MirrorCacheException {
+        LOG.debug("ChannelGroup[" + name + "].delete()");
+        
+        if (!isOpen()) {
+            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_OPEN);
+        }
+
+        final Message reqMessage = new Message().setCommand(CommandCase.CHANNEL_GROUP_DELETE,
+                                                            ChannelGroupDeleteCommand.newBuilder()
+                                                                                     .setChannelGroupName(name)
+                                                                                     .setPayloadId(id)
+                                                                                     .build());
+
+        dispatcher.getRequestProcessor(ChannelGroupDeleteRequestProcessor.class).executeSync(reqMessage);
+    }
+    
+    @Override
     public ChannelGroupCache cache() throws MirrorCacheException {
       LOG.debug("ChannelGroup[" + name + "].cache()");
       
-      if (!isJoined()) {
-          throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_JOINED);
+      if (!isOpen()) {
+          throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_OPEN);
       }
       
       final Message reqMessage = new Message();
@@ -194,8 +213,8 @@ public class ClientChannelGroup implements ChannelGroup {
     public ChannelGroupHistory history() throws MirrorCacheException {
         LOG.debug("ChannelGroup[" + name + "].history()");
         
-        if (!isJoined()) {
-            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_JOINED);
+        if (!isOpen()) {
+            throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_OPEN);
         }
         
         final Message reqMessage = new Message();
