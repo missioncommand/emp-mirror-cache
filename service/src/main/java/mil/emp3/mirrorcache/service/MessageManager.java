@@ -10,7 +10,6 @@ import javax.inject.Inject;
 
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
-import org.slf4j.Logger;
 
 import mil.emp3.mirrorcache.service.event.MessageEvent;
 import mil.emp3.mirrorcache.service.processor.ChannelCacheProcessor;
@@ -34,13 +33,13 @@ import mil.emp3.mirrorcache.service.processor.DeleteChannelGroupProcessor;
 import mil.emp3.mirrorcache.service.processor.DeleteChannelProcessor;
 import mil.emp3.mirrorcache.service.processor.FindChannelGroupsProcessor;
 import mil.emp3.mirrorcache.service.processor.FindChannelsProcesor;
+import mil.emp3.mirrorcache.service.processor.GetClientInfoProcessor;
 
 @ApplicationScoped
 public class MessageManager {
     
-    @Inject
-    Logger LOG;
-    
+    @Inject private GetClientInfoProcessor getClientInfoProcessor;
+
     @Inject private CreateChannelProcessor createChannelProcessor;
     @Inject private DeleteChannelProcessor deleteChannelProcessor;
     @Inject private FindChannelsProcesor findChannelsProcessor;
@@ -68,6 +67,8 @@ public class MessageManager {
     @PostConstruct
     public void init() {
         this.commandProcessors = new EnumMap<>(CommandCase.class);
+        this.commandProcessors.put(CommandCase.GET_CLIENT_INFO, getClientInfoProcessor);
+        
         this.commandProcessors.put(CommandCase.CREATE_CHANNEL , createChannelProcessor);
         this.commandProcessors.put(CommandCase.DELETE_CHANNEL , deleteChannelProcessor);
         this.commandProcessors.put(CommandCase.FIND_CHANNELS  , findChannelsProcessor);

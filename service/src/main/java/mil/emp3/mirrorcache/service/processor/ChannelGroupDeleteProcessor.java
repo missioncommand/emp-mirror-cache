@@ -65,7 +65,7 @@ public class ChannelGroupDeleteProcessor implements CommandProcessor {
                 .build();
         
         /*
-         * Distribute deletion event to each participant of channelGroup.
+         * Distribute deletion to the other participants of channelGroup.
          */
         try {
             LOG.debug("distribute: " + Utils.asString(res));

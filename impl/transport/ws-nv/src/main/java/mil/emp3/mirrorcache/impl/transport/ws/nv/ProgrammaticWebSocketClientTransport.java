@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +17,6 @@ import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
-import com.neovisionaries.ws.client.WebSocketListener;
 
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MessageDispatcher;
@@ -32,14 +33,16 @@ public class ProgrammaticWebSocketClientTransport implements Transport {
     static final private Logger LOG = LoggerFactory.getLogger(ProgrammaticWebSocketClientTransport.class);
     
     private WebSocket socket;
-    private WebSocketListener listener;
+    private LocalWebSocketAdapter listener;
     
     final private URI uri;
     final private MessageDispatcher dispatcher;
+    final private Object disconnectLock;
     
     public ProgrammaticWebSocketClientTransport(URI uri, MessageDispatcher dispatcher) {
-        this.uri        = uri;
-        this.dispatcher = dispatcher;
+        this.uri            = uri;
+        this.dispatcher     = dispatcher;
+        this.disconnectLock = new Object();
     }
     
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
@@ -47,15 +50,17 @@ public class ProgrammaticWebSocketClientTransport implements Transport {
     
     @Override
     public void connect() throws MirrorCacheException {
-        LOG.info("connect()");
+        LOG.debug("connect()");
         
-        disconnect();
+        if (socket != null) {
+            disconnect();
+        }
 
         try {
             socket = new WebSocketFactory().createSocket(uri, 5000);
             socket.addListener(listener = new LocalWebSocketAdapter());
 
-            socket.connect(); // blocking call
+            socket.connect(); // blocks
 
         } catch (OpeningHandshakeException e) { // WebSocket violation !
             dumpNvLog(e);
@@ -68,17 +73,36 @@ public class ProgrammaticWebSocketClientTransport implements Transport {
 
     @Override
     public void disconnect() throws MirrorCacheException {
-        if (socket != null) {
-            try {
-                socket.disconnect();
+        LOG.info("disconnect()");
+
+        synchronized (disconnectLock) {
+            if (socket != null) {
+                /*
+                 * A hokey way to give the onDisconnected event an opportunity to complete.
+                 * This is due to socket events not triggering when removing listeners
+                 * immediately after invoking a method that should trigger an event.
+                 */
+                final CountDownLatch disconnectLatch = new CountDownLatch(1);
                 
-                if (listener != null) {
+                try {
+                    listener.setDisconnectLatch(disconnectLatch);
+
+                    socket.disconnect();
+                    
+                    if (!disconnectLatch.await(5, TimeUnit.SECONDS)) {
+                        throw new MirrorCacheException(Reason.GENERAL_TIMEOUT).withDetail("disconnectLatch did not countdown.");
+                    }
+
                     socket.removeListener(listener);
+                    
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    LOG.warn(Thread.currentThread().getName() + " thread was interrupted.");
+                    
+                } finally {
                     listener = null;
+                    socket   = null;
                 }
-                
-            } finally {
-                socket = null;
             }
         }
     }
@@ -121,6 +145,13 @@ public class ProgrammaticWebSocketClientTransport implements Transport {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     
     private class LocalWebSocketAdapter extends WebSocketAdapter {
+        
+        private CountDownLatch disconnectLatch;
+        
+        private void setDisconnectLatch(CountDownLatch disconnectLatch) {
+            this.disconnectLatch = disconnectLatch;
+        }
+        
         @Override
         public void onBinaryMessage(WebSocket websocket, byte[] messageBytes) throws Exception {
             final Message message = new Message();
@@ -135,30 +166,44 @@ public class ProgrammaticWebSocketClientTransport implements Transport {
         
         @Override
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
-            final Message message = new Message();
-            message.setEventType(ClientConnectEvent.TYPE);
+            LOG.debug("onConnected()");
             
-            dispatcher.dispatchEvent(new ClientConnectEvent(message));
+            /*
+             * We use a separate thread here due to the ReadingThread possibly blocking
+             * when dispatching events which would prevent the consumption of newer messages.
+             */
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    final Message message = new Message();
+                    message.setEventType(ClientConnectEvent.TYPE);
+                    
+                    dispatcher.dispatchEvent(new ClientConnectEvent(message));
+                }
+            }, "ProgrammaticWebSocketClientTransport:onConnected - Thread").start();;
         }
         
         @Override
         public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer) throws Exception {
+            LOG.debug("onDisconnected()");
+            
             final Message message = new Message();
             message.setEventType(ClientDisconnectEvent.TYPE);
             
             dispatcher.dispatchEvent(new ClientDisconnectEvent(message));
             
-            socket = null;
+            if (disconnectLatch != null) {
+                disconnectLatch.countDown();
+            }
+        }
+
+        @Override
+        public void onError(WebSocket websocket, WebSocketException e) throws Exception {
+            e.printStackTrace(); // can be called multiple times for multiple errors
         }
         
         @Override
-        public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-            cause.printStackTrace(); // can be called multiple times for multiple errors
-        }
-        
-        @Override
-        public void handleCallbackError(WebSocket websocket, Throwable cause) throws Exception {
-            LOG.error(cause.getMessage(), cause); // called when the above callbacks fail
+        public void handleCallbackError(WebSocket websocket, Throwable t) throws Exception {
+            LOG.error(t.getMessage(), t); // called when the above callbacks fail
         }
     }
 }

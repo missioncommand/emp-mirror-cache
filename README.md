@@ -114,13 +114,15 @@ A ChannelGroup represents a collection of channels. Clients who open a channelGr
 
 Command | Properties
 --------|-----------
+GET_CLIENT_INFO | <ul><li>status</li><li>clientInfo</li></ul>
+CREATE_CHANNEL | <ul><li>status</li><li>channelName</li><li>type</li><li>visibility</li></ul>
 CREATE_CHANNEL | <ul><li>status</li><li>channelName</li><li>type</li><li>visibility</li></ul>
 DELETE_CHANNEL | <ul><li>status</li><li>channelName</li></ul>
 FIND_CHANNELS | <ul><li>status</li><li>filter</li><li>channel</li></ul>
 CHANNEL_OPEN | <ul><li>status</li><li>channelName</li><li>flow</li><li>filter</li></ul>
 CHANNEL_CLOSE | <ul><li>status</li><li>channelName</li></ul>
 CHANNEL_PUBLISH | <ul><li>status</li><li>channelName</li></ul>
-CHANNEL_DELETE | <ul><li>status</li><li>channelName</li><li>payloadId</li></ul>
+CHANNEL_DELETE | <ul><li>status</li><li>channelName</li><li>payloadId</li><li>sourceId</li></ul>
 CHANNEL_CACHE | <ul><li>status</li><li>channelName</li><li>entityId</li></ul>
 CHANNEL_HISTORY | <ul><li>status</li><li>channelName</li><li>startTime</li><li>endTime</li><li>history</li></ul>
 CREATE_CHANNELGROUP | <ul><li>status</li><li>channelGroupName</li></ul>
@@ -131,7 +133,7 @@ CHANNELGROUP_CLOSE | <ul><li>status</li><li>channelGroupName</li></ul>
 CHANNELGROUP_ADD_CHANNEL | <ul><li>status</li><li>channelGroupName</li><li>channelName</li></ul>
 CHANNELGROUP_REMOVE_CHANNEL | <ul><li>status</li><li>channelGroupName</li><li>channelName</li></ul>
 CHANNELGROUP_PUBLISH | <ul><li>status</li><li>channelGroupName</li></ul>
-CHANNELGROUP_DELETE | <ul><li>status</li><li>channelGroupName</li><li>payloadId</li></ul>
+CHANNELGROUP_DELETE | <ul><li>status</li><li>channelGroupName</li><li>payloadId</li><li>sourceId</li></ul>
 CHANNELGROUP_CACHE | <ul><li>status</li><li>channelGroupName</li><li>entityId</li></ul>
 CHANNELGROUP_HISTORY | <ul><li>status</li><li>channelGroupName</li><li>entityId</li><li>startTime</li><li>endTime</li><li>history</li></ul>
 

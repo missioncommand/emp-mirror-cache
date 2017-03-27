@@ -15,8 +15,12 @@ public class ChannelDeleteResponseProcessor extends BaseResponseProcessor {
         message.setEventType(ChannelDeletedEvent.TYPE);
 
         final String channelName = message.getCommand().getChannelDelete().getChannelName();
-        final String payloadId = message.getCommand().getChannelDelete().getPayloadId();
+        final String payloadId   = message.getCommand().getChannelDelete().getPayloadId();
+        final String sourceId    = message.getCommand().getChannelDelete().getSourceId();
         
-        getMessageDispatcher().dispatchEvent(new ChannelDeletedEvent(channelName, payloadId, message));
+        // do not trigger an event if we sourced it
+        if (!getMessageDispatcher().getClientInfo().clientId().equals(sourceId)) {
+            getMessageDispatcher().dispatchEvent(new ChannelDeletedEvent(channelName, payloadId, message));    
+        }
     }
 }

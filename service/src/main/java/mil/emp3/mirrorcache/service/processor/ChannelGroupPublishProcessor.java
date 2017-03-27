@@ -78,7 +78,7 @@ public class ChannelGroupPublishProcessor implements CommandProcessor {
             
             try {
                 /*
-                 * Distribute to participants of channelGroup.
+                 * Distribute to the other participants of channelGroup.
                  */
                 LOG.debug("distribute: " + Utils.asString(res));
                 for (Member otherMember : channelGroupManager.getMembers(sessionId, command.getChannelGroupName())) {

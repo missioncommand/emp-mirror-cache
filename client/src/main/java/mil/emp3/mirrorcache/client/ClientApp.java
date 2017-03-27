@@ -81,9 +81,7 @@ import mil.emp3.mirrorcache.event.ChannelGroupPublishedEvent;
 import mil.emp3.mirrorcache.event.ChannelGroupUpdatedEvent;
 import mil.emp3.mirrorcache.event.ChannelPublishedEvent;
 import mil.emp3.mirrorcache.event.ChannelUpdatedEvent;
-import mil.emp3.mirrorcache.event.ClientConnectEvent;
-import mil.emp3.mirrorcache.event.ClientDisconnectEvent;
-import mil.emp3.mirrorcache.event.ClientEventHandler;
+import mil.emp3.mirrorcache.event.ClientEventHandlerAdapter;
 import mil.emp3.mirrorcache.event.ClientMessageEvent;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
@@ -261,9 +259,6 @@ public class ClientApp {
                         // register to receive events..
                         handler = new Handler();
                         client.on(ClientMessageEvent.TYPE, handler);
-                        client.on(ClientConnectEvent.TYPE, handler);
-                        client.on(ClientDisconnectEvent.TYPE, handler);
-
                         
                         getJButtonDisconnect().setEnabled(true);
                         getJButtonChannelSend().setEnabled(true);
@@ -566,7 +561,7 @@ tmpChannel = entry.getChannel();//TODO remove me eventually
                                             System.out.println("__onChannelUpdatedEvent()");
                                         }
                                         @Override public void onChannelDeletedEvent(ChannelDeletedEvent event) {
-                                            System.out.println("__onChannelDeletedEvent()");
+                                            System.out.println("__onChannelDeletedEvent() : payloadId=" + event.getPayloadId());
                                         }
                                     };
                                     entry.getChannel().on(ChannelPublishedEvent.TYPE, handler);
@@ -1335,12 +1330,10 @@ ChannelGroup tmpChannelGroup;
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
         
-        private class Handler implements ClientEventHandler {
+        private class Handler extends ClientEventHandlerAdapter {
             @Override
             public void onMessage(ClientMessageEvent event) {
-                
                 try {
-                    
                     final boolean isPublishMessage = event.getMessage().getCommand().getCommandCase() == CommandCase.CHANNEL_PUBLISH
                                                   || event.getMessage().getCommand().getCommandCase() == CommandCase.CHANNEL_GROUP_PUBLISH;
                     
@@ -1403,12 +1396,6 @@ ChannelGroup tmpChannelGroup;
                 } catch (Exception e) {
                     LOG.error(e.getMessage(), e);
                 }
-            }
-            @Override
-            public void onConnect(ClientConnectEvent event) {
-            }
-            @Override
-            public void onDisconnect(ClientDisconnectEvent event) {
             }
         }
     }

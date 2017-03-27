@@ -65,11 +65,12 @@ public class ChannelDeleteProcessor implements CommandProcessor {
                 .setPriority(Priority.LOW.getValue())
                 .setCommand(OneOfCommand.newBuilder()
                                         .setChannelDelete(ChannelDeleteCommand.newBuilder(command)
+                                                                              .setSourceId(sessionId)
                                                                               .setStatus(Status.SUCCESS)))
                 .build();
         
         /*
-         * Distribute deletion event to each participant of channel.
+         * Distribute deletion to the other participants of channel.
          */
         try {
             LOG.debug("distribute: " + Utils.asString(res));
@@ -100,7 +101,5 @@ public class ChannelDeleteProcessor implements CommandProcessor {
             Thread.currentThread().interrupt();
             LOG.warn(Thread.currentThread().getName() + " thread was interrupted.");
         }
-        
-        
     }
 }

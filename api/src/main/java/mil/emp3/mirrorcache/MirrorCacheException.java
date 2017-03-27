@@ -22,6 +22,11 @@ public class MirrorCacheException extends Exception {
         QUEUE_POLL_TIMEOUT                 ("Timeout while polling from queue."),
         QUEUE_OFFER_TIMEOUT                ("Timeout while offering to queue."),
         QUEUE_UNEXPECTED_ID                ("Unexpected id."),
+        GENERAL_TIMEOUT                    ("Timeout while waiting."),
+        
+        // client
+        GET_CLIENT_INFO_FAILURE            ("Unable to get client info."),
+        
         
         // channels
         CHANNEL_DNE                        ("Channel does not exist."),

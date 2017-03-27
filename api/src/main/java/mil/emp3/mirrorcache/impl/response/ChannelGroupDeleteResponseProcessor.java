@@ -15,8 +15,12 @@ public class ChannelGroupDeleteResponseProcessor extends BaseResponseProcessor {
         message.setEventType(ChannelGroupDeletedEvent.TYPE);
 
         final String channelGroupName = message.getCommand().getChannelGroupDelete().getChannelGroupName();
-        final String payloadId = message.getCommand().getChannelDelete().getPayloadId();
+        final String payloadId        = message.getCommand().getChannelDelete().getPayloadId();
+        final String sourceId         = message.getCommand().getChannelDelete().getSourceId();
         
-        getMessageDispatcher().dispatchEvent(new ChannelGroupDeletedEvent(channelGroupName, payloadId, message));
+        // do not trigger an event if we sourced it
+        if (!getMessageDispatcher().getClientInfo().clientId().equals(sourceId)) {
+            getMessageDispatcher().dispatchEvent(new ChannelGroupDeletedEvent(channelGroupName, payloadId, message));    
+        }
     }
 }

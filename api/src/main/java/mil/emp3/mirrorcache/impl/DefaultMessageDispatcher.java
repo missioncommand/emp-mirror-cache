@@ -16,13 +16,12 @@ import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MessageDispatcher;
+import mil.emp3.mirrorcache.MirrorCacheClient.ClientInfo;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.RequestProcessor;
 import mil.emp3.mirrorcache.channel.ChannelHandler;
-import mil.emp3.mirrorcache.event.ClientConnectEvent;
-import mil.emp3.mirrorcache.event.ClientDisconnectEvent;
-import mil.emp3.mirrorcache.event.ClientEventHandler;
+import mil.emp3.mirrorcache.event.ClientEventHandlerAdapter;
 import mil.emp3.mirrorcache.event.ClientMessageEvent;
 import mil.emp3.mirrorcache.event.EventHandler;
 import mil.emp3.mirrorcache.event.EventRegistration;
@@ -45,6 +44,7 @@ import mil.emp3.mirrorcache.impl.request.DeleteChannelGroupRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.DeleteChannelRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.FindChannelGroupsRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.FindChannelsRequestProcessor;
+import mil.emp3.mirrorcache.impl.request.GetClientInfoRequestProcessor;
 import mil.emp3.mirrorcache.impl.response.BaseResponseProcessor;
 import mil.emp3.mirrorcache.impl.response.ChannelDeleteResponseProcessor;
 import mil.emp3.mirrorcache.impl.response.ChannelGroupDeleteResponseProcessor;
@@ -61,6 +61,8 @@ import mil.emp3.mirrorcache.support.LatchedContent;
 
 public class DefaultMessageDispatcher implements MessageDispatcher {
     static final private Logger LOG = LoggerFactory.getLogger(DefaultMessageDispatcher.class);
+    
+    private EventRegistration clientEventRegistration;
     
     final private Map<MirrorCacheEvent.Type<?>, List<EventHandler>> eventHandlerMap;
     
@@ -85,6 +87,8 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
         this.eventHandlerMap       = new HashMap<>();
         
         this.responseQueueMap = new EnumMap<>(CommandCase.class);
+        this.responseQueueMap.put(CommandCase.GET_CLIENT_INFO, new ConcurrentHashMap<String, LatchedContent<Message>>());
+        
         this.responseQueueMap.put(CommandCase.CREATE_CHANNEL , new ConcurrentHashMap<String, LatchedContent<Message>>());
         this.responseQueueMap.put(CommandCase.DELETE_CHANNEL , new ConcurrentHashMap<String, LatchedContent<Message>>());
         this.responseQueueMap.put(CommandCase.FIND_CHANNELS  , new ConcurrentHashMap<String, LatchedContent<Message>>());
@@ -114,6 +118,8 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
         responseProcessorMap.put(CommandCase.CHANNEL_GROUP_DELETE , new ArrayList<ResponseProcessor>() {{ add(new ChannelGroupDeleteResponseProcessor(DefaultMessageDispatcher.this)); }});
         
         this.requestProcessorMap = new HashMap<>();
+        requestProcessorMap.put(GetClientInfoRequestProcessor.class            , new GetClientInfoRequestProcessor(this));
+
         requestProcessorMap.put(CreateChannelRequestProcessor.class            , new CreateChannelRequestProcessor(this));
         requestProcessorMap.put(DeleteChannelRequestProcessor.class            , new DeleteChannelRequestProcessor(this));
         requestProcessorMap.put(FindChannelsRequestProcessor.class             , new FindChannelsRequestProcessor(this));
@@ -143,6 +149,8 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
 
     public void init() {
+        LOG.debug("init()");
+        
         final TranslateStageProcessor translateStageProcessor = new TranslateStageProcessor();
         
         inProcessingPipeline.link(new InTransportStageProcessor())
@@ -166,16 +174,25 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
          * be extracted and sent to a queue where registered response processors may interrogate it. This is a non-blocking
          * call as the message queue will be consumed by the response processors in a different thread.
          */
-        client.on(ClientMessageEvent.TYPE, new ClientEventHandler() {
+        this.clientEventRegistration = client.on(ClientMessageEvent.TYPE, new ClientEventHandlerAdapter() {
             @Override public void onMessage(ClientMessageEvent event) {
                 localResponseProcessor.processMessage(event.getMessage());
             }
-            @Override public void onDisconnect(ClientDisconnectEvent event) { /* NOOP */ }
-            @Override public void onConnect(ClientConnectEvent event) { /* NOOP */ }
         });
     }
     
     public void shutdown() {
+        LOG.debug("shutdown()");
+        
+        /*
+         * We are no longer interested in receiving ClientMessageEvent events.
+         */
+        if (clientEventRegistration != null) {
+            clientEventRegistration.removeHandler();
+            clientEventRegistration = null;
+        }
+        
+        
         /*
          * Shutdown response processors.
          */
@@ -184,6 +201,7 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
                 responseProcessor.shutdown();
             }
         }
+        
         
         /*
          * Shutdown the local response processor.
@@ -216,7 +234,7 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
         } else {
             handlers = eventHandlerMap.get(type);
         }
-            
+
         handlers.add(handler);
         
         return new EventRegistration() {
@@ -309,6 +327,10 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
         return requestProcessor;
     }
 
+    @Override
+    public ClientInfo getClientInfo() {
+        return client.getClientInfo();
+    }
     
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //

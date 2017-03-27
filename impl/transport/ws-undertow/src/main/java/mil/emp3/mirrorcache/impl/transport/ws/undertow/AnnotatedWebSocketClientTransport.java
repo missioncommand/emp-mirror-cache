@@ -15,6 +15,9 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
@@ -28,6 +31,8 @@ import mil.emp3.mirrorcache.event.ClientMessageEvent;
 
 @ClientEndpoint
 public class AnnotatedWebSocketClientTransport implements Transport {
+    static final private Logger LOG = LoggerFactory.getLogger(AnnotatedWebSocketClientTransport.class);
+    
     private Session session;
     
     final private URI uri;
@@ -46,10 +51,16 @@ public class AnnotatedWebSocketClientTransport implements Transport {
     
     @Override
     public void connect() throws MirrorCacheException {
+        LOG.debug("connect()");
+        
+        if (session != null) {
+            disconnect();
+        }
+        
         final WebSocketContainer container = ContainerProvider.getWebSocketContainer(); //io.undertow.websockets.jsr.UndertowContainerProvider
 
         try {
-            session = container.connectToServer(this, uri);
+            session = container.connectToServer(this, uri); // blocks
             
         } catch (IOException | DeploymentException e) {
             throw new MirrorCacheException(Reason.CONNECT_FAILURE, e);
@@ -58,6 +69,8 @@ public class AnnotatedWebSocketClientTransport implements Transport {
     
     @Override
     public void disconnect() throws MirrorCacheException {
+        LOG.debug("disconnect()");
+        
         if (session != null) {
             try {
                 session.close();
@@ -82,6 +95,8 @@ public class AnnotatedWebSocketClientTransport implements Transport {
     
     @OnOpen
     public void onOpen(Session session) {
+        LOG.debug("onOpen()");
+        
         final Message message = new Message();
         message.setEventType(ClientConnectEvent.TYPE);
         
@@ -90,12 +105,12 @@ public class AnnotatedWebSocketClientTransport implements Transport {
 
     @OnClose
     public void onClose(Session session, CloseReason reason) {
+        LOG.debug("onClose()");
+        
         final Message message = new Message();
         message.setEventType(ClientDisconnectEvent.TYPE);
         
         dispatcher.dispatchEvent(new ClientDisconnectEvent(message));
-        
-        this.session = null;
     }
 
     @OnMessage

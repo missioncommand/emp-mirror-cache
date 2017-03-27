@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import mil.emp3.mirrorcache.MirrorCacheClient.ClientInfo;
 import mil.emp3.mirrorcache.event.EventHandler;
 import mil.emp3.mirrorcache.event.EventRegistration;
 import mil.emp3.mirrorcache.event.MirrorCacheEvent;
@@ -27,6 +28,8 @@ public interface MessageDispatcher {
     
     Chain getInProcessorPipeline();
     Chain getOutProcessorPipeline();
+    
+    ClientInfo getClientInfo();
     
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //

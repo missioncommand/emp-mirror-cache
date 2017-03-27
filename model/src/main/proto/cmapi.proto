@@ -189,6 +189,10 @@ enum Status {
     FAILURE = 1; 
 }
 
+message ProtoClientInfo {
+    string client_id = 1;
+}
+
 message QueueInfo {
     string queue_name     = 1;
     repeated string entry = 2;
@@ -264,6 +268,8 @@ message OneOfCommand {
         ChannelGroupDeleteCommand channel_group_delete                = 117;
         ChannelGroupCacheCommand channel_group_cache                  = 118;
         ChannelGroupHistoryCommand channel_group_history              = 119;
+        
+        GetClientInfoCommmand get_client_info                         = 120;
     }
 }
 
@@ -304,6 +310,12 @@ message ChannelGroupDeletedEvent {
     ProtoPayload payload      = 3;
 }*/
 
+message GetClientInfoCommmand {
+    Status status               = 1;
+    ProtoClientInfo client_info = 2;
+}
+
+
 //.
 //.. CHANNEL_GROUP
 //...
@@ -333,6 +345,7 @@ message ChannelGroupDeleteCommand {
     Status status             = 1;
     string channel_group_name = 2;
     string payload_id         = 3;
+    string source_id          = 4;
 }
 message ChannelGroupCacheCommand {
     Status status              = 1;
@@ -398,6 +411,7 @@ message ChannelDeleteCommand {
     Status status       = 1;
     string channel_name = 2;
     string payload_id   = 3;
+    string source_id    = 4;
 }
 message ChannelCacheCommand {
     Status status            = 1;

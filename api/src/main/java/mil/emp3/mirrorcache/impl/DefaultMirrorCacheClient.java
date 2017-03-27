@@ -10,6 +10,7 @@ import org.cmapi.primitives.proto.CmapiProto.DeleteChannelCommand;
 import org.cmapi.primitives.proto.CmapiProto.DeleteChannelGroupCommand;
 import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsCommand;
 import org.cmapi.primitives.proto.CmapiProto.FindChannelsCommand;
+import org.cmapi.primitives.proto.CmapiProto.GetClientInfoCommmand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 
 import mil.emp3.mirrorcache.Message;
@@ -20,6 +21,8 @@ import mil.emp3.mirrorcache.Transport;
 import mil.emp3.mirrorcache.Transport.TransportType;
 import mil.emp3.mirrorcache.channel.Channel;
 import mil.emp3.mirrorcache.channel.ChannelGroup;
+import mil.emp3.mirrorcache.event.ClientConnectEvent;
+import mil.emp3.mirrorcache.event.ClientEventHandlerAdapter;
 import mil.emp3.mirrorcache.event.EventHandler;
 import mil.emp3.mirrorcache.event.EventRegistration;
 import mil.emp3.mirrorcache.event.MirrorCacheEvent;
@@ -29,12 +32,16 @@ import mil.emp3.mirrorcache.impl.request.DeleteChannelGroupRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.DeleteChannelRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.FindChannelGroupsRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.FindChannelsRequestProcessor;
+import mil.emp3.mirrorcache.impl.request.GetClientInfoRequestProcessor;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
 import mil.emp3.mirrorcache.spi.TransportProvider;
 import mil.emp3.mirrorcache.spi.TransportProviderFactory;
 
 public class DefaultMirrorCacheClient implements MirrorCacheClient {
 
+    private ClientInfo clientId;
+    private EventRegistration clientEventRegistration;
+    
     final private MessageDispatcher messageDispatcher;
     final private Transport transport;
     
@@ -67,10 +74,37 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     @Override
     public void init() {
         getMessageDispatcher().init();
+        
+        this.clientEventRegistration = on(ClientConnectEvent.TYPE, new ClientEventHandlerAdapter() {
+            @Override public void onConnect(ClientConnectEvent event) {
+                /*
+                 * Retrieve 'clientInfo' from server.
+                 */
+                final Message reqMessage = new Message();
+                reqMessage.setCommand(CommandCase.GET_CLIENT_INFO, GetClientInfoCommmand.newBuilder()
+                                                                                        .build());
+
+                try {
+                    final ClientInfo clientInfo = getMessageDispatcher().getRequestProcessor(GetClientInfoRequestProcessor.class).executeSync(reqMessage);
+                    DefaultMirrorCacheClient.this.clientId = clientInfo;
+
+                } catch (MirrorCacheException e) {
+                    throw new IllegalStateException("Unable to retrieve clientInfo: " + e.getMessage(), e);
+                }
+            }
+        });
     }
     
     @Override
     public void shutdown() throws MirrorCacheException {
+        /*
+         * We are no longer interested in receiving ClientConnectEvent events.
+         */
+        if (clientEventRegistration != null) {
+            clientEventRegistration.removeHandler();
+            clientEventRegistration = null;
+        }
+        
         disconnect();
         getMessageDispatcher().shutdown();
     }
@@ -90,6 +124,11 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
         return getMessageDispatcher().on(type, handler);
     }
 
+    @Override
+    public ClientInfo getClientInfo() {
+        return clientId;
+    }
+    
     @Override
     public Channel createChannel(String name, Channel.Visibility visibility, Channel.Type type) throws MirrorCacheException {
         final Message reqMessage = new Message();
