@@ -1,0 +1,52 @@
+artifactory {
+    contextUrl = "https://oss.jfrog.org/artifactory"
+
+    publish {
+        repository {
+            repoKey  = 'oss-snapshot-local'
+            username = bintrayUser
+            password = bintrayKey
+        }
+
+        defaults {
+            publications ('nebula')
+        }
+    }
+}
+
+bintray {
+    dryRun   = false
+    publish  = true
+    override = false
+
+    user = bintrayUser
+    key  = bintrayKey
+
+    publications = ['nebula']
+
+    pkg {
+        userOrg = 'missioncommand'
+        repo    = 'maven'
+        name    = 'emp3-mirror-cache'
+        desc    = 'Extensible Map Platform (EMP) - MirrorCache'
+        
+        licenses = ['Apache-2.0']
+
+        vcsUrl          = 'https://github.com/missioncommand/emp3-mirror-cache.git'
+        websiteUrl      = 'https://github.com/missioncommand/emp3-mirror-cache'
+        issueTrackerUrl = 'https://github.com/missioncommand/emp3-mirror-cache/issues'
+
+        publicDownloadNumbers = true
+        labels                = []
+        attributes            = [:]
+
+        githubRepo = 'missioncommand/emp3-mirror-cache'
+        //githubReleaseNotesFile = 'README.md'
+
+        version {
+            name       = project.version
+            vcsTag     = "v${project.version}"
+            attributes = [:]
+        }
+    }
+}
