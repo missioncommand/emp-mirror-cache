@@ -115,7 +115,7 @@ public class ChannelGroupManager {
                                                          .setVisibility(channel.getVisibility().name())
                                                          .setType(channel.getType().name())
                                                          .setIsOpen(isOpen)
-                                                     .build());
+                                                         .build());
             }
             
             final List<MemberInfo> memberInfos = new ArrayList<>();
@@ -123,14 +123,14 @@ public class ChannelGroupManager {
                 memberInfos.add(MemberInfo.newBuilder().setSessionId(member.getSessionId()).build());
             }
             
-            final boolean isJoined = channelGroup.isJoined(currentMember);
+            final boolean isOpen = channelGroup.isOpen(currentMember);
             
             //TODO filter
             results.add(ChannelGroupInfo.newBuilder().setName(channelGroup.getName())
                                                      .addAllChannel(channelInfos)
                                                      .addAllMember(memberInfos)
-                                                     .setIsJoined(isJoined)
-                                                 .build());
+                                                     .setIsOpen(isOpen)
+                                                     .build());
         }
         
         return results;
@@ -150,27 +150,6 @@ public class ChannelGroupManager {
         channelGroupMap.remove(channelGroup.getName());
         
         channelGroupDeleteEvent.fire(new ChannelGroupDeletedEvent(channelGroup));
-    }
-    
-    /** Determines which members should receive data when publishing to this group. */
-    public Set<Member> publish(String channelGroupName) throws MirrorCacheException {
-        final Set<Member> results = new HashSet<>();
-        
-        final ServerChannelGroup channelGroup = get(channelGroupName);
-        
-        /*
-         * Collect members of this group.
-         */
-        results.addAll(channelGroup.getMembers());
-        
-        /*
-         * Collect members of the channels in this group.
-         */
-        for (ServerChannel channel : channelGroup.getChannels()) {
-            results.addAll(channel.getMembers());
-        }
-        
-        return results;
     }
     
     /** Removes a channel from a channelGroup. */
@@ -223,7 +202,7 @@ public class ChannelGroupManager {
     }
     
     /** Add this sessionId to the memberList for this channelGroup. */
-    public void channelGroupJoin(String sessionId, String channelGroupName) throws MirrorCacheException {
+    public void channelGroupOpen(String sessionId, String channelGroupName) throws MirrorCacheException {
         final ServerChannelGroup channelGroup = get(channelGroupName);
         
         final Member member = new Member(sessionId);
@@ -232,7 +211,7 @@ public class ChannelGroupManager {
          * Add member to group.
          */
         if (channelGroup.getMembers().contains(member)) {
-            throw new MirrorCacheException(Reason.CHANNELGROUP_ALREADY_JOINED)
+            throw new MirrorCacheException(Reason.CHANNELGROUP_ALREADY_OPEN)
                                                  .withDetail("member: " + member)
                                                  .withDetail("channelGroupName: " + channelGroupName);
         }
@@ -240,7 +219,7 @@ public class ChannelGroupManager {
     }
     
     /** Remove this sessionId from the memberList for this channelGroup. */
-    public void channelGroupLeave(String sessionId, String channelGroupName) throws MirrorCacheException {
+    public void channelGroupClose(String sessionId, String channelGroupName) throws MirrorCacheException {
         final ServerChannelGroup channelGroup = get(channelGroupName);
         
         final Member member = new Member(sessionId);
@@ -258,7 +237,15 @@ public class ChannelGroupManager {
         
     }
     
-    public Set<Member> channelGroupPublish(String sessionId, String channelGroupName) throws MirrorCacheException {
+    /**
+     * Retrieves all {@code members} participating in {@code channelGroupName}.
+     * 
+     * @param sessionId the current sessionId
+     * @param channelGroupName the channelGroup name used to identify participants
+     * @return the participating members
+     * @throws MirrorCacheException If a MirrorCacheException occurs.
+     */
+    public Set<Member> getMembers(String sessionId, String channelGroupName) throws MirrorCacheException {
         final Set<Member> results = new HashSet<>();
         
         final ServerChannelGroup channelGroup = get(channelGroupName);

@@ -1,20 +1,14 @@
-package mil.emp3.mirrorcache.impl.spi;
+package mil.emp3.mirrorcache.spi;
 
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import mil.emp3.mirrorcache.Deserializer;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
-import mil.emp3.mirrorcache.spi.DeserializerProvider;
 
 public class DeserializerProviderFactory {
-    static final private Logger LOG = LoggerFactory.getLogger(DeserializerProviderFactory.class);
-
     static private class Holder { // for synchronized initialization 
         static private DeserializerProviderFactory instance = new DeserializerProviderFactory();
     }
@@ -40,11 +34,9 @@ public class DeserializerProviderFactory {
             }
             
         } catch (ServiceConfigurationError e) {
-            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e)
-                                          .withDetail("type: " + type);
+            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("type: " + type);
         }
         
-        LOG.warn("Unable to locate suitable deserializer.");
-        return null;
+        throw new IllegalStateException("Unable to locate suitable deserializer.");
     }
 }

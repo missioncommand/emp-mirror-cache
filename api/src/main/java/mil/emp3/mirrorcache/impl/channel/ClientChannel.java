@@ -2,6 +2,7 @@ package mil.emp3.mirrorcache.impl.channel;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelCacheCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelCloseCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelDeleteCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelHistoryCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelOpenCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelPublishCommand;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Payload;
@@ -19,9 +21,9 @@ import mil.emp3.mirrorcache.channel.ChannelHistory;
 import mil.emp3.mirrorcache.event.ChannelEvent;
 import mil.emp3.mirrorcache.event.EventHandler;
 import mil.emp3.mirrorcache.event.EventRegistration;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 import mil.emp3.mirrorcache.impl.request.ChannelCacheRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelCloseRequestProcessor;
+import mil.emp3.mirrorcache.impl.request.ChannelDeleteRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelHistoryRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelOpenRequestProcessor;
 import mil.emp3.mirrorcache.impl.request.ChannelPublishRequestProcessor;
@@ -109,7 +111,7 @@ public class ClientChannel implements Channel {
     }
     
     @Override
-    public void publish(String id, Object payload) throws MirrorCacheException {
+    public void publish(String id, Class<?> type, Object payload) throws MirrorCacheException {
         LOG.debug("Channel[" + name + "].publish()");
         
         if (!isOpen()) {
@@ -117,12 +119,28 @@ public class ClientChannel implements Channel {
         }
         
         final Message reqMessage = new Message();
-        reqMessage.setPayload(new Payload<>(id, payload.getClass().getName(), payload));
+        reqMessage.setPayload(new Payload<>(id, type.getName(), payload));
         reqMessage.setCommand(CommandCase.CHANNEL_PUBLISH, ChannelPublishCommand.newBuilder()
                                                                                 .setChannelName(name)
                                                                                 .build());
         
         dispatcher.getRequestProcessor(ChannelPublishRequestProcessor.class).executeSync(reqMessage);
+    }
+    
+    @Override
+    public void delete(String id) throws MirrorCacheException {
+        LOG.debug("Channel[" + name + "].delete()");
+        
+        if (!isOpen()) {
+            throw new MirrorCacheException(Reason.CHANNEL_NOT_OPEN);
+        }
+
+        final Message reqMessage = new Message().setCommand(CommandCase.CHANNEL_DELETE, ChannelDeleteCommand.newBuilder()
+                                                                                                            .setChannelName(name)
+                                                                                                            .setPayloadId(id)
+                                                                                                            .build());
+
+        dispatcher.getRequestProcessor(ChannelDeleteRequestProcessor.class).executeSync(reqMessage);
     }
     
     @Override

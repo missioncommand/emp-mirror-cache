@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupLeaveCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCloseCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
@@ -19,7 +19,7 @@ import mil.emp3.mirrorcache.service.SessionManager;
 import mil.emp3.mirrorcache.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelGroupLeaveProcessor implements CommandProcessor {
+public class ChannelGroupCloseProcessor implements CommandProcessor {
 
     @Inject
     private Logger LOG;
@@ -32,11 +32,11 @@ public class ChannelGroupLeaveProcessor implements CommandProcessor {
 
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final ChannelGroupLeaveCommand command = req.getCommand().getChannelGroupLeave();
+        final ChannelGroupCloseCommand command = req.getCommand().getChannelGroupClose();
 
         Status status = Status.SUCCESS;
         try {
-            channelGroupManager.channelGroupLeave(sessionId, command.getChannelGroupName());
+            channelGroupManager.channelGroupClose(sessionId, command.getChannelGroupName());
             
         } catch (MirrorCacheException e) {
             LOG.error("ERROR", e);
@@ -46,7 +46,7 @@ public class ChannelGroupLeaveProcessor implements CommandProcessor {
         final ProtoMessage res = ProtoMessage.newBuilder(req)
                 .setPriority(Priority.MEDIUM.getValue())
                 .setCommand(OneOfCommand.newBuilder()
-                                        .setChannelGroupLeave(ChannelGroupLeaveCommand.newBuilder(command)
+                                        .setChannelGroupClose(ChannelGroupCloseCommand.newBuilder(command)
                                                                                       .setStatus(status)))
                 .build();
         

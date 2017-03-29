@@ -1,13 +1,28 @@
 package mil.emp3.mirrorcache.event;
 
+import mil.emp3.mirrorcache.Message;
+
 /**
- * For when a channelGroup has been deleted.
+ * For when data has been deleted from a channelGroup.
  */
 public class ChannelGroupDeletedEvent extends ChannelGroupEvent<ChannelGroupEventHandler> {
     static final public Type<ChannelGroupEventHandler> TYPE = new Type<ChannelGroupEventHandler>();
     
-    public ChannelGroupDeletedEvent(String channelName) {
-        super(channelName);
+    final private String payloadId;
+    final private Message message;
+    
+    public ChannelGroupDeletedEvent(String channelGroupName, String payloadId, Message message) {
+        super(channelGroupName);
+        this.payloadId = payloadId;
+        this.message   = message;
+    }
+    
+    public String getPayloadId() {
+        return payloadId;
+    }
+    
+    public Message getMessage() {
+        return message;
     }
     
     @Override

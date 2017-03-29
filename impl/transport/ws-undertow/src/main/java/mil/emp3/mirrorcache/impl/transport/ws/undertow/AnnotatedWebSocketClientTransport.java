@@ -1,4 +1,4 @@
-package mil.emp3.mirrorcache.impl;
+package mil.emp3.mirrorcache.impl.transport.ws.undertow;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,12 +9,17 @@ import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Payload;
@@ -25,7 +30,9 @@ import mil.emp3.mirrorcache.event.ClientMessageEvent;
 
 
 @ClientEndpoint
-public class WebSocketClientTransport implements Transport {
+public class AnnotatedWebSocketClientTransport implements Transport {
+    static final private Logger LOG = LoggerFactory.getLogger(AnnotatedWebSocketClientTransport.class);
+    
     private Session session;
     
     final private URI uri;
@@ -34,7 +41,7 @@ public class WebSocketClientTransport implements Transport {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
 
-    public WebSocketClientTransport(URI uri, MessageDispatcher dispatcher) {
+    public AnnotatedWebSocketClientTransport(URI uri, MessageDispatcher dispatcher) {
         this.uri        = uri;
         this.dispatcher = dispatcher;
     }
@@ -44,10 +51,16 @@ public class WebSocketClientTransport implements Transport {
     
     @Override
     public void connect() throws MirrorCacheException {
+        LOG.debug("connect()");
+        
+        if (session != null) {
+            disconnect();
+        }
+        
         final WebSocketContainer container = ContainerProvider.getWebSocketContainer(); //io.undertow.websockets.jsr.UndertowContainerProvider
 
         try {
-            session = container.connectToServer(this, uri);
+            session = container.connectToServer(this, uri); // blocks
             
         } catch (IOException | DeploymentException e) {
             throw new MirrorCacheException(Reason.CONNECT_FAILURE, e);
@@ -56,6 +69,8 @@ public class WebSocketClientTransport implements Transport {
     
     @Override
     public void disconnect() throws MirrorCacheException {
+        LOG.debug("disconnect()");
+        
         if (session != null) {
             try {
                 session.close();
@@ -80,6 +95,8 @@ public class WebSocketClientTransport implements Transport {
     
     @OnOpen
     public void onOpen(Session session) {
+        LOG.debug("onOpen()");
+        
         final Message message = new Message();
         message.setEventType(ClientConnectEvent.TYPE);
         
@@ -88,17 +105,16 @@ public class WebSocketClientTransport implements Transport {
 
     @OnClose
     public void onClose(Session session, CloseReason reason) {
+        LOG.debug("onClose()");
+        
         final Message message = new Message();
         message.setEventType(ClientDisconnectEvent.TYPE);
         
         dispatcher.dispatchEvent(new ClientDisconnectEvent(message));
-        
-        this.session = null;
     }
 
     @OnMessage
     public void onMessage(byte[] messageBytes) throws MirrorCacheException {
-        
         final Message message = new Message();
         message.setEventType(ClientMessageEvent.TYPE);
         message.setPayload(new Payload<>(null, "[B", messageBytes));
@@ -116,5 +132,10 @@ public class WebSocketClientTransport implements Transport {
         message.setPayload(new Payload<>(null, String.class.getName(), messageStr));
         
         dispatcher.dispatchEvent(new ClientMessageEvent(message));
+    }
+    
+    @OnError
+    public void onError(Throwable t) {
+        t.printStackTrace();
     }
 }

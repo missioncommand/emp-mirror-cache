@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Member;
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.channel.Channel.Type;
 import mil.emp3.mirrorcache.channel.Channel.Visibility;
 import mil.emp3.mirrorcache.channel.ChannelGroup;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 import mil.emp3.mirrorcache.impl.channel.ClientChannel;
 import mil.emp3.mirrorcache.impl.channel.ClientChannelGroup;
 
@@ -69,7 +69,7 @@ public class FindChannelGroupsRequestProcessor extends BaseRequestProcessor<Mess
                     }
                     
                     results.add(new ClientChannelGroup(channelGroup.getName(),
-                                                       channelGroup.getIsJoined(),
+                                                       channelGroup.getIsOpen(),
                                                        channels,
                                                        members,
                                                        dispatcher));

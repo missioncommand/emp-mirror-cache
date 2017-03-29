@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupJoinCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
@@ -19,7 +19,7 @@ import mil.emp3.mirrorcache.service.SessionManager;
 import mil.emp3.mirrorcache.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelGroupJoinProcessor implements CommandProcessor {
+public class ChannelGroupOpenProcessor implements CommandProcessor {
 
     @Inject
     private Logger LOG;
@@ -32,11 +32,11 @@ public class ChannelGroupJoinProcessor implements CommandProcessor {
 
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final ChannelGroupJoinCommand command = req.getCommand().getChannelGroupJoin();
+        final ChannelGroupOpenCommand command = req.getCommand().getChannelGroupOpen();
 
         Status status = Status.SUCCESS;
         try {
-            channelGroupManager.channelGroupJoin(sessionId, command.getChannelGroupName());
+            channelGroupManager.channelGroupOpen(sessionId, command.getChannelGroupName());
             
         } catch (MirrorCacheException e) {
             LOG.error("ERROR", e);
@@ -46,7 +46,7 @@ public class ChannelGroupJoinProcessor implements CommandProcessor {
         final ProtoMessage res = ProtoMessage.newBuilder(req)
                 .setPriority(Priority.MEDIUM.getValue())
                 .setCommand(OneOfCommand.newBuilder()
-                                        .setChannelGroupJoin(ChannelGroupJoinCommand.newBuilder(command)
+                                        .setChannelGroupOpen(ChannelGroupOpenCommand.newBuilder(command)
                                                                                     .setStatus(status)))
                 .build();
         

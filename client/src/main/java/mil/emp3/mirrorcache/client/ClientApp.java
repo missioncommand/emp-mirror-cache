@@ -48,6 +48,7 @@ import org.cmapi.primitives.GeoContainer;
 import org.cmapi.primitives.GeoMilSymbol;
 import org.cmapi.primitives.GeoPosition;
 import org.cmapi.primitives.IGeoAltitudeMode.AltitudeMode;
+import org.cmapi.primitives.IGeoMilSymbol;
 import org.cmapi.primitives.IGeoMilSymbol.Modifier;
 import org.cmapi.primitives.IGeoMilSymbol.SymbolStandard;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.MirrorCacheClient;
 import mil.emp3.mirrorcache.MirrorCacheException;
+import mil.emp3.mirrorcache.Transport.TransportType;
 import mil.emp3.mirrorcache.channel.Channel;
 import mil.emp3.mirrorcache.channel.Channel.Flow;
 import mil.emp3.mirrorcache.channel.ChannelCache;
@@ -79,11 +81,10 @@ import mil.emp3.mirrorcache.event.ChannelGroupPublishedEvent;
 import mil.emp3.mirrorcache.event.ChannelGroupUpdatedEvent;
 import mil.emp3.mirrorcache.event.ChannelPublishedEvent;
 import mil.emp3.mirrorcache.event.ChannelUpdatedEvent;
-import mil.emp3.mirrorcache.event.ClientConnectEvent;
-import mil.emp3.mirrorcache.event.ClientDisconnectEvent;
-import mil.emp3.mirrorcache.event.ClientEventHandler;
+import mil.emp3.mirrorcache.event.ClientEventHandlerAdapter;
 import mil.emp3.mirrorcache.event.ClientMessageEvent;
-import mil.emp3.mirrorcache.impl.spi.MirrorCacheClientProviderFactory;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
+import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
 import mil.emp3.mirrorcache.support.ItemTracker;
 import mil.emp3.mirrorcache.support.Utils;
 
@@ -106,7 +107,7 @@ public class ClientApp {
         });
     }
     
-    private static GeoMilSymbol createGeoMilSymbol(String name) {
+    private static IGeoMilSymbol createGeoMilSymbol(String name) {
         /*
          * Create symbol to publish
          */
@@ -122,9 +123,6 @@ public class ClientApp {
         geoSymbol.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
         geoSymbol.getPositions().add(pos);
         geoSymbol.getModifiers().put(Modifier.UNIQUE_DESIGNATOR_1, "Maintenance Recovery Theater");
-        // fillStyle
-        // strokeStyle
-        // labelStyle
         
         return geoSymbol;
     }
@@ -245,16 +243,22 @@ public class ClientApp {
                     getJTextFieldAddress().setEditable(false);
                     
                     try {
-                        client = MirrorCacheClientProviderFactory.getClient(new URI(getJTextFieldAddress().getText()));
+                        final URI endpointUri = new URI(getJTextFieldAddress().getText());
+                        
+                        client = MirrorCacheClientProviderFactory.getClient(new MirrorCacheClientProvider.ClientArguments() {
+                            @Override public TransportType transportType() {
+                                return TransportType.WEBSOCKET;
+                            }
+                            @Override public URI endpoint() {
+                                return endpointUri;
+                            }
+                        });
                         client.init();
                         client.connect();
                         
                         // register to receive events..
                         handler = new Handler();
                         client.on(ClientMessageEvent.TYPE, handler);
-                        client.on(ClientConnectEvent.TYPE, handler);
-                        client.on(ClientDisconnectEvent.TYPE, handler);
-
                         
                         getJButtonDisconnect().setEnabled(true);
                         getJButtonChannelSend().setEnabled(true);
@@ -341,15 +345,15 @@ public class ClientApp {
                      */
                     final int sendCount = Integer.parseInt(getJTextFieldChannelSendCount().getText());
                     if (sendCount > 0) {
-                        new Thread(new Publisher<GeoMilSymbol>("ChannelPublisher", sendCount) {
+                        new Thread(new Publisher<IGeoMilSymbol>("ChannelPublisher", sendCount) {
                             @Override public void log(String msg) {
                                 logSend(msg);
                             }
-                            @Override public void publish(GeoMilSymbol payload) throws MirrorCacheException {
-                                channel.publish(payload.getGeoId().toString(), payload);
+                            @Override public void publish(IGeoMilSymbol payload) throws MirrorCacheException {
+                                channel.publish(payload.getGeoId().toString(), IGeoMilSymbol.class, payload);
                             }
-                            @Override public GeoMilSymbol constructPayload(String name) {
-                                final GeoMilSymbol symbol = createGeoMilSymbol(name);
+                            @Override public IGeoMilSymbol constructPayload(String name) {
+                                final IGeoMilSymbol symbol = createGeoMilSymbol(name);
                                 return symbol;
                             }
                             @Override public void statusUpdate(final int count) {
@@ -396,15 +400,15 @@ public class ClientApp {
                      * Send to selected channelGroup.
                      */
                     final int sendCount = Integer.parseInt(getJTextFieldChannelGroupSendCount().getText());
-                    new Thread(new Publisher<GeoMilSymbol>("ChannelGroupPublisher", sendCount) {
+                    new Thread(new Publisher<IGeoMilSymbol>("ChannelGroupPublisher", sendCount) {
                         @Override public void log(String msg) {
                             logSend(msg);
                         }
-                        @Override public void publish(GeoMilSymbol payload) throws MirrorCacheException {
-                            channelGroup.publish(payload.getGeoId().toString(), payload);
+                        @Override public void publish(IGeoMilSymbol payload) throws MirrorCacheException {
+                            channelGroup.publish(payload.getGeoId().toString(), IGeoMilSymbol.class, payload);
                         }
-                        @Override public GeoMilSymbol constructPayload(String name) {
-                            final GeoMilSymbol symbol = createGeoMilSymbol(name);
+                        @Override public IGeoMilSymbol constructPayload(String name) {
+                            final IGeoMilSymbol symbol = createGeoMilSymbol(name);
                             return symbol;
                         }
                         @Override public void statusUpdate(final int count) {
@@ -481,7 +485,7 @@ public class ClientApp {
             });
             
             /*
-             * To JOIN / LEAVE channelGroups.
+             * To OPEN / CLOSE channelGroups.
              */
             getJTreeTableChannelGroups().getOutlineModel().addTableModelListener(new TableModelListener() {
                 @Override public void tableChanged(TableModelEvent e) {
@@ -491,23 +495,31 @@ public class ClientApp {
                             final int row = e.getFirstRow();
                             final int col = e.getColumn();
                             
-                            if (row != -1 && (col == TableModelEvent.ALL_COLUMNS || col == 1)) { // the 'join' column
+                            if (row != -1 && (col == TableModelEvent.ALL_COLUMNS || col == 1)) { // the 'open' column
                                 
                                 final ChannelGroupEntry entry = (ChannelGroupEntry) getJTreeTableChannelGroups().getOutlineModel().getValueAt(row, 0);
                                 try {
-                                    if (entry.isJoinedSelected()) {
+                                    if (entry.isOpenSelected()) {
 tmpChannelGroup = entry.getChannelGroup();//TODO remove me eventually
-                                        entry.getChannelGroup().join();
-                                        entry.getChannelGroup().on(ChannelGroupPublishedEvent.TYPE, new ChannelGroupEventHandler() {
+                                        entry.getChannelGroup().open();
+                                        
+                                        final ChannelGroupEventHandler handler = new ChannelGroupEventHandler() {
                                             @Override public void onChannelGroupPublishedEvent(ChannelGroupPublishedEvent event) {
                                                 //increment RCV column in channelGroup table
+                                                System.out.println("__onChannelGroupPublishedEvent()");
                                             }
-                                            @Override public void onChannelGroupUpdatedEvent(ChannelGroupUpdatedEvent event) { }
-                                            @Override public void onChannelGroupDeletedEvent(ChannelGroupDeletedEvent event) { }
-                                        });
+                                            @Override public void onChannelGroupUpdatedEvent(ChannelGroupUpdatedEvent event) {
+                                                System.out.println("__onChannelGroupUpdatedEvent()");
+                                            }
+                                            @Override public void onChannelGroupDeletedEvent(ChannelGroupDeletedEvent event) {
+                                                System.out.println("__onChannelGroupDeletedEvent()");
+                                            }
+                                        };
+                                        entry.getChannelGroup().on(ChannelGroupPublishedEvent.TYPE, handler);
+                                        entry.getChannelGroup().on(ChannelGroupDeletedEvent.TYPE, handler);
                                         
                                     } else {
-                                        entry.getChannelGroup().leave();
+                                        entry.getChannelGroup().close();
                                     }
                                     
                                     getJButtonChannelGroupRefresh().doClick();
@@ -539,13 +551,21 @@ tmpChannelGroup = entry.getChannelGroup();//TODO remove me eventually
                                 if (entry.isOpenSelected()) {
 tmpChannel = entry.getChannel();//TODO remove me eventually
                                     entry.getChannel().open(Flow.BOTH, "*");
-                                    entry.getChannel().on(ChannelPublishedEvent.TYPE, new ChannelEventHandler() {
+                                    
+                                    final ChannelEventHandler handler = new ChannelEventHandler() {
                                         @Override public void onChannelPublishedEvent(ChannelPublishedEvent event) {
                                             //increment RCV column in channel table
+                                            System.out.println("__onChannelPublishedEvent()");
                                         }
-                                        @Override public void onChannelUpdatedEvent(ChannelUpdatedEvent event) { }
-                                        @Override public void onChannelDeletedEvent(ChannelDeletedEvent event) { }
-                                    });
+                                        @Override public void onChannelUpdatedEvent(ChannelUpdatedEvent event) {
+                                            System.out.println("__onChannelUpdatedEvent()");
+                                        }
+                                        @Override public void onChannelDeletedEvent(ChannelDeletedEvent event) {
+                                            System.out.println("__onChannelDeletedEvent() : payloadId=" + event.getPayloadId());
+                                        }
+                                    };
+                                    entry.getChannel().on(ChannelPublishedEvent.TYPE, handler);
+                                    entry.getChannel().on(ChannelDeletedEvent.TYPE, handler);
                                     
                                 } else {
                                     entry.getChannel().close();
@@ -1310,12 +1330,10 @@ ChannelGroup tmpChannelGroup;
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
         
-        private class Handler implements ClientEventHandler {
+        private class Handler extends ClientEventHandlerAdapter {
             @Override
             public void onMessage(ClientMessageEvent event) {
-                
                 try {
-                    
                     final boolean isPublishMessage = event.getMessage().getCommand().getCommandCase() == CommandCase.CHANNEL_PUBLISH
                                                   || event.getMessage().getCommand().getCommandCase() == CommandCase.CHANNEL_GROUP_PUBLISH;
                     
@@ -1378,12 +1396,6 @@ ChannelGroup tmpChannelGroup;
                 } catch (Exception e) {
                     LOG.error(e.getMessage(), e);
                 }
-            }
-            @Override
-            public void onConnect(ClientConnectEvent event) {
-            }
-            @Override
-            public void onDisconnect(ClientDisconnectEvent event) {
             }
         }
     }

@@ -78,10 +78,10 @@ public class ChannelPublishProcessor implements CommandProcessor {
             
             try {
                 /*
-                 * Distribute to participants of channel.
+                 * Distribute to the other participants of channel.
                  */
                 LOG.debug("distribute: " + Utils.asString(res));
-                for (Member otherMember : channelManager.channelPublish(sessionId, command.getChannelName())) {
+                for (Member otherMember : channelManager.getMembers(sessionId, command.getChannelName())) {
                     LOG.debug("\t-> " + otherMember);
                     
                     if (!sessionManager.getOutboundQueue(otherMember.getSessionId()).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

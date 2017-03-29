@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.Serializer;
-import mil.emp3.mirrorcache.impl.spi.SerializerProviderFactory;
+import mil.emp3.mirrorcache.spi.SerializerProviderFactory;
 
 public class SerializeStageProcessor extends StageProcessor<Message> {
     static final private Logger LOG = LoggerFactory.getLogger(SerializeStageProcessor.class);

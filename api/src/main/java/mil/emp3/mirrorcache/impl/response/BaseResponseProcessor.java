@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 
 public abstract class BaseResponseProcessor implements ResponseProcessor, Runnable {
     static final private Logger LOG = LoggerFactory.getLogger(BaseResponseProcessor.class);

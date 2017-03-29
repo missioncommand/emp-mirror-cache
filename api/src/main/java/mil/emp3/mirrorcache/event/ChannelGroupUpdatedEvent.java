@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.event;
 
 /**
- * For when properties or attributes of a channelGroup have changed.
+ * For when data has been updated in a channelGroup.
  */
 public class ChannelGroupUpdatedEvent extends ChannelGroupEvent<ChannelGroupEventHandler> {
     static final public Type<ChannelGroupEventHandler> TYPE = new Type<ChannelGroupEventHandler>();

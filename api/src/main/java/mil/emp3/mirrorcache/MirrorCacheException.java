@@ -22,6 +22,11 @@ public class MirrorCacheException extends Exception {
         QUEUE_POLL_TIMEOUT                 ("Timeout while polling from queue."),
         QUEUE_OFFER_TIMEOUT                ("Timeout while offering to queue."),
         QUEUE_UNEXPECTED_ID                ("Unexpected id."),
+        GENERAL_TIMEOUT                    ("Timeout while waiting."),
+        
+        // client
+        GET_CLIENT_INFO_FAILURE            ("Unable to get client info."),
+        
         
         // channels
         CHANNEL_DNE                        ("Channel does not exist."),
@@ -30,6 +35,7 @@ public class MirrorCacheException extends Exception {
         CHANNEL_NOT_OPEN                   ("Channel not open."),
         CHANNEL_OPEN_FAILURE               ("Unable to open channel."),
         CHANNEL_CLOSE_FAILURE              ("Unable to close channel."),
+        CHANNEL_DELETE_FAILURE             ("Unable to delete channel."),
         CHANNEL_CACHE_FAILURE              ("Unable to get channel cache."),
         CHANNEL_HISTORY_FAILURE            ("Unable to get channel history."),
         EGRESS_PIPELINE_SESSION_NOT_FOUND  ("Egress pipeline not found for current session."),
@@ -46,10 +52,11 @@ public class MirrorCacheException extends Exception {
         // channelGroups
         CHANNELGROUP_DNE                    ("ChannelGroup does not exist."),
         CHANNELGROUP_ALREADY_EXISTS         ("ChannelGroup already exists."),
-        CHANNELGROUP_ALREADY_JOINED         ("ChannelGroup already joined."),
-        CHANNELGROUP_NOT_JOINED             ("ChannelGroup not joined."),
-        CHANNELGROUP_JOIN_FAILURE           ("Unable to join channelGroup."),
-        CHANNELGROUP_LEAVE_FAILURE          ("Unable to leave channelGroup."),
+        CHANNELGROUP_ALREADY_OPEN           ("ChannelGroup already open."),
+        CHANNELGROUP_NOT_OPEN               ("ChannelGroup not open."),
+        CHANNELGROUP_OPEN_FAILURE           ("Unable to open channelGroup."),
+        CHANNELGROUP_CLOSE_FAILURE          ("Unable to close channelGroup."),
+        CHANNELGROUP_DELETE_FAILURE         ("Unable to delete channelGroup."),
         CHANNELGROUP_ADD_CHANNEL_FAILURE    ("Unable to add channel to channelGroup."),
         CHANNELGROUP_REMOVE_CHANNEL_FAILURE ("Unable to remove channel from channelGroup."),
         CHANNELGROUP_CACHE_FAILURE          ("Unable to get channelGroup cache."),

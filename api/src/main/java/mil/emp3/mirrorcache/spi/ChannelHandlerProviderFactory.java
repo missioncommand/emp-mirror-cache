@@ -1,4 +1,4 @@
-package mil.emp3.mirrorcache.impl.spi;
+package mil.emp3.mirrorcache.spi;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,17 +6,11 @@ import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.channel.ChannelHandler;
-import mil.emp3.mirrorcache.spi.ChannelHandlerProvider;
 
 public class ChannelHandlerProviderFactory {
-    static final private Logger LOG = LoggerFactory.getLogger(ChannelHandlerProviderFactory.class);
-
     static private class Holder { // for synchronized initialization 
         static private ChannelHandlerProviderFactory instance = new ChannelHandlerProviderFactory();
     }
@@ -45,13 +39,9 @@ public class ChannelHandlerProviderFactory {
             }
             
         } catch (ServiceConfigurationError e) {
-            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e)
-                                          .withDetail("channelName: " + channelName);
+            throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("channelName: " + channelName);
         }
         
-        if (results.size() == 0) {
-            LOG.warn("Unable to locate suitable channelHandler.");
-        }
         return results;
     }
 }

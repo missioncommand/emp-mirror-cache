@@ -157,7 +157,16 @@ public class ChannelManager {
         channel.removeMember(member);
     }
     
-    public Set<Member> channelPublish(String sessionId, String channelName) throws MirrorCacheException {
+    /**
+     * Retrieves all {@code members} participating in {@code channelName}, including
+     * ChannlGroups this Channel is a part of.
+     * 
+     * @param sessionId the current sessionId
+     * @param channelName the channel name used to identify participants
+     * @return the participating members
+     * @throws MirrorCacheException If a MirrorCacheException occurs.
+     */
+    public Set<Member> getMembers(String sessionId, String channelName) throws MirrorCacheException {
         final Set<Member> results = new HashSet<>();
         
         final ServerChannel channel = get(channelName);

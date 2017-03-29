@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import mil.emp3.mirrorcache.Deserializer;
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MirrorCacheException;
-import mil.emp3.mirrorcache.impl.spi.DeserializerProviderFactory;
+import mil.emp3.mirrorcache.spi.DeserializerProviderFactory;
 
 public class DeserializeStageProcessor extends StageProcessor<Message> {
     static final private Logger LOG = LoggerFactory.getLogger(DeserializeStageProcessor.class);

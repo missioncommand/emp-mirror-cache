@@ -10,15 +10,15 @@ import mil.emp3.mirrorcache.client.table.ChannelTableModel.ChannelEntry;
 public class ChannelGroupRowModel implements RowModel {
     static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupRowModel.class);
     
-    static final public int COLUMN_CHANNELGROUP_JOIN   = 0;
+    static final public int COLUMN_CHANNELGROUP_OPEN   = 0;
     static final public int COLUMN_CHANNELGROUP_DELETE = 1;
     
-    final private String[] columnNames = { "Join", "" };
+    final private String[] columnNames = { "Open", "" };
 
     @Override
     public Class<?> getColumnClass(int column) {
         switch (column) {
-            case COLUMN_CHANNELGROUP_JOIN: return String.class;
+            case COLUMN_CHANNELGROUP_OPEN: return String.class;
             case COLUMN_CHANNELGROUP_DELETE: return String.class;
             default: throw new RuntimeException("unexpected column: " + column);
         }
@@ -39,9 +39,9 @@ public class ChannelGroupRowModel implements RowModel {
         LOG.trace("getValueFor() - node: " + node.getClass().getName() + ", column: " + column);
         
         switch (column) {
-            case COLUMN_CHANNELGROUP_JOIN: {
+            case COLUMN_CHANNELGROUP_OPEN: {
                 if (node instanceof ChannelGroupEntry) {
-                    return Boolean.valueOf(((ChannelGroupEntry) node).isJoinedSelected());
+                    return Boolean.valueOf(((ChannelGroupEntry) node).isOpenSelected());
                 }
                 break;
             }
@@ -63,8 +63,8 @@ public class ChannelGroupRowModel implements RowModel {
         if (node instanceof ChannelGroupEntry) {
             final ChannelGroupEntry entry = (ChannelGroupEntry) node;
             
-            if (column == COLUMN_CHANNELGROUP_JOIN) {
-                entry.setIsJoiendSelected((Boolean) value);
+            if (column == COLUMN_CHANNELGROUP_OPEN) {
+                entry.setIsOpenSelected((Boolean) value);
             }
         }
     }
@@ -72,7 +72,7 @@ public class ChannelGroupRowModel implements RowModel {
     @Override
     public boolean isCellEditable(Object node, int column) {
         if (node instanceof ChannelGroupEntry) { // for deleting channelGroups
-            return column == COLUMN_CHANNELGROUP_JOIN || column == COLUMN_CHANNELGROUP_DELETE;
+            return column == COLUMN_CHANNELGROUP_OPEN || column == COLUMN_CHANNELGROUP_DELETE;
             
         } else if (node instanceof ChannelEntry) { // for removing channels from channelGroups
             return column == COLUMN_CHANNELGROUP_DELETE;

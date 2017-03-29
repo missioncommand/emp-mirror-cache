@@ -21,10 +21,10 @@ public interface MirrorCacheClient {
     /** Register to receive client events. */
     <T extends EventHandler> EventRegistration on(MirrorCacheEvent.Type<T> type, T handler);
     
+    ClientInfo getClientInfo();
     
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
-    
     
     ChannelGroup createChannelGroup(String name) throws MirrorCacheException;
     void deleteChannelGroup(String name) throws MirrorCacheException;
@@ -41,5 +41,11 @@ public interface MirrorCacheClient {
     Future<Channel> createChannelAsync(String name, Channel.Visibility visibility, Channel.Type type);
     Future<Void> deleteChannelAsync(String name);
     Future<List<Channel>> findChannelsAsync(String filter);
-
+    
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
+    
+    public interface ClientInfo {
+        String clientId();
+    }
 }

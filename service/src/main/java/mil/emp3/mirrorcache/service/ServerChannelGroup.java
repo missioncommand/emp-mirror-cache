@@ -55,8 +55,8 @@ public class ServerChannelGroup extends ChannelGroupAdaptor {
         }
     }
     
-    /** Determine if this channelGroup should be considered joined to this member. */
-    public boolean isJoined(Member member) {
+    /** Determine if this channelGroup should be considered open to this member. */
+    public boolean isOpen(Member member) {
         return members.contains(member);
     }
 }

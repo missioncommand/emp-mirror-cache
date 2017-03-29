@@ -197,7 +197,7 @@ public class ChannelGroupTreeModel implements TreeModel {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
 
     static public class ChannelGroupEntry extends ChannelGroupAdaptor {
-        private boolean isJoinedSelected;
+        private boolean isOpenSelected;
         
         final private ChannelSet channelSet;
         final private MemberSet memberSet;
@@ -211,7 +211,7 @@ public class ChannelGroupTreeModel implements TreeModel {
             this.channelSet   = new ChannelSet(((ClientChannelGroup) channelGroup).getChannels());
             this.memberSet    = new MemberSet(((ClientChannelGroup) channelGroup).getMembers());
             
-            this.isJoinedSelected = channelGroup.isJoined();
+            this.isOpenSelected = channelGroup.isOpen();
         }
 
         public ChannelSet getChannels() {
@@ -224,17 +224,17 @@ public class ChannelGroupTreeModel implements TreeModel {
             return channelGroup;
         }
         
-        public void setIsJoiendSelected(boolean isJoinedSelected) {
-            this.isJoinedSelected = isJoinedSelected;
+        public void setIsOpenSelected(boolean isOpenSelected) {
+            this.isOpenSelected = isOpenSelected;
         }
         
-        public boolean isJoinedSelected() {
-            return isJoinedSelected;
+        public boolean isOpenSelected() {
+            return isOpenSelected;
         }
         
         @Override
-        public boolean isJoined() {
-            return isJoinedSelected;
+        public boolean isOpen() {
+            return isOpenSelected;
         }
     }
     

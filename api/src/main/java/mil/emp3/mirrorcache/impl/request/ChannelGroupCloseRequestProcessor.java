@@ -1,23 +1,23 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupLeaveCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCloseCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 
-public class ChannelGroupLeaveRequestProcessor extends BaseRequestProcessor<Message, Void> {
-    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupLeaveRequestProcessor.class);
+public class ChannelGroupCloseRequestProcessor extends BaseRequestProcessor<Message, Void> {
+    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupCloseRequestProcessor.class);
     
     final private MessageDispatcher dispatcher;
     
-    public ChannelGroupLeaveRequestProcessor(MessageDispatcher dispatcher) {
+    public ChannelGroupCloseRequestProcessor(MessageDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
     
@@ -32,9 +32,9 @@ public class ChannelGroupLeaveRequestProcessor extends BaseRequestProcessor<Mess
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupLeaveCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_LEAVE);
+            final ChannelGroupCloseCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_CLOSE);
             if (!(command.getStatus() == Status.SUCCESS)) {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_LEAVE_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
+                throw new MirrorCacheException(Reason.CHANNELGROUP_CLOSE_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
             }
             
         } catch (InterruptedException e) {

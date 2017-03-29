@@ -20,16 +20,19 @@ buildscript {
 }
 
 ext {
+    versionFile = new File(project.rootDir, 'gradle.properties')
+    
     empUsername = System.getenv("CI_USERNAME") ?: empUsername
     empPassword = System.getenv("CI_PASSWORD") ?: empPassword
 
     bintrayUser = System.getenv("BINTRAY_USER") ?: project.hasProperty('bintrayUser') ? bintrayUser : ''
     bintrayKey  = System.getenv("BINTRAY_KEY")  ?: project.hasProperty('bintrayKey') ? bintrayKey : ''
 
-    version_cmapi         = "0.0.5"
-    version_protoc        = "3.2.0"
-    version_logback       = "1.1.11"
-    version_websocketsJsr = "1.2.9.Final"
+    version_cmapi       = "0.0.7"
+    version_protoc      = "3.2.0"
+    version_logback     = "1.1.11"
+    version_ws_undertow = "1.2.9.Final"
+    version_ws_nv       = "1.31"
     
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
@@ -55,7 +58,8 @@ allprojects {
             
             dependency ("uk.gov.nationalarchives.thirdparty.netbeans:org-netbeans-swing-outline:7.2")
             
-            dependency ("io.undertow:undertow-websockets-jsr:${version_websocketsJsr}")
+            dependency ("io.undertow:undertow-websockets-jsr:${version_ws_undertow}")
+            dependency ("com.neovisionaries:nv-websocket-client:${version_ws_nv}")
         }
     }
     
@@ -65,7 +69,7 @@ allprojects {
         //mavenCentral()
 		
         maven {
-            url 'http://repository.jboss.org/nexus/content/groups/public-jboss'
+            url 'https://repository.jboss.org/nexus/content/groups/public-jboss'
         }
 		
 		maven {
@@ -95,6 +99,12 @@ task wrapper(type: Wrapper, description: "Generates gradlew[.bat] scripts") {
     gradleVersion = '3.4.1'
 }
 
+task nextMinorVersion(description: "Increments the version property in ${versionFile}.") {
+    doFirst {
+        nextMinorVersion()
+    }
+}
+
 if (JavaVersion.current().isJava8Compatible()) { // disable lint for java8
     allprojects {
         tasks.withType(Javadoc) {
@@ -110,5 +120,48 @@ def publishableModules() {
         , project(":mirrorcache-model")
         , project(":mirrorcache-service")
         //, project(":mirrorcache-client")
+        , project(":mirrorcache-impl-transport-ws-nv")
+        , project(":mirrorcache-impl-transport-ws-undertow")
     ]
+}
+
+void nextMinorVersion() {
+    def version = readVersion()
+
+    def octet = version['version'].split("\\.|-")
+
+    def versionMajor = octet[0] as int
+    def versionMinor = octet[1] as int
+    def versionPatch = 0
+
+    versionMinor++
+
+    if (project.hasProperty('isSnapshot')) {
+        version['version'] = "${versionMajor}.${versionMinor}.${versionPatch}-SNAPSHOT".toString()
+    } else {
+        version['version'] = "${versionMajor}.${versionMinor}.${versionPatch}".toString()
+    }
+
+    println "Setting version to: ${version['version']}"
+
+    def stream = new FileOutputStream(versionFile)
+    try {
+        version.store(stream, null)
+    } finally {
+        stream.close()
+    }
+}
+
+Properties readVersion() {
+    def version = new Properties()
+    def stream
+    try {
+        stream = new FileInputStream(versionFile)
+        version.load(stream)
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } finally {
+        if (stream != null) stream.close()
+    }
+    return version
 }

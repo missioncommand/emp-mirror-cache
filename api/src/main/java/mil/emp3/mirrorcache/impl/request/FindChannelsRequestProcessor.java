@@ -11,13 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.channel.Channel;
 import mil.emp3.mirrorcache.channel.Channel.Type;
 import mil.emp3.mirrorcache.channel.Channel.Visibility;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 import mil.emp3.mirrorcache.impl.channel.ClientChannel;
 
 public class FindChannelsRequestProcessor extends BaseRequestProcessor<Message, List<Channel>> {

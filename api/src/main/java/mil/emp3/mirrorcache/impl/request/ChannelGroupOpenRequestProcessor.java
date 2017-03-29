@@ -1,23 +1,23 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupJoinCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenCommand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.Message;
+import mil.emp3.mirrorcache.MessageDispatcher;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
-import mil.emp3.mirrorcache.impl.MessageDispatcher;
 
-public class ChannelGroupJoinRequestProcessor extends BaseRequestProcessor<Message, Void> {
-    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupJoinRequestProcessor.class);
+public class ChannelGroupOpenRequestProcessor extends BaseRequestProcessor<Message, Void> {
+    static final private Logger LOG = LoggerFactory.getLogger(ChannelGroupOpenRequestProcessor.class);
     
     final private MessageDispatcher dispatcher;
     
-    public ChannelGroupJoinRequestProcessor(MessageDispatcher dispatcher) {
+    public ChannelGroupOpenRequestProcessor(MessageDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
     
@@ -32,9 +32,9 @@ public class ChannelGroupJoinRequestProcessor extends BaseRequestProcessor<Messa
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupJoinCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_JOIN);
+            final ChannelGroupOpenCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_OPEN);
             if (!(command.getStatus() == Status.SUCCESS)) {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_JOIN_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
+                throw new MirrorCacheException(Reason.CHANNELGROUP_OPEN_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
             }
             
         } catch (InterruptedException e) {
