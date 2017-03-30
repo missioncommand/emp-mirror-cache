@@ -24,7 +24,8 @@ before_install:
 install: true
 
 script:
- - ./gradlew build --refresh-dependencies --stacktrace
+ - ./gradlew build publishToMavenLocal --refresh-dependencies --stacktrace
+ - mvn -f wildfly-swarm/pom.xml clean install --settings gradle/settings.xml -e
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
