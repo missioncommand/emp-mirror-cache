@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        version_wildfly_swarm = "2017.2.0"
+        version_wildfly_swarm = "2017.3.3"
     }
     
     repositories {
@@ -69,7 +69,7 @@ allprojects {
         //mavenCentral()
 		
         maven {
-            url 'https://repository.jboss.org/nexus/content/groups/public-jboss'
+            url "https://repository.jboss.org/nexus/content/groups/public-jboss"
         }
 		
 		maven {

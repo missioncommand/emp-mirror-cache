@@ -10,6 +10,7 @@ echo '[release] TRAVIS_PULL_REQUEST='$TRAVIS_PULL_REQUEST
 # we only publish if a tag and for specific branches, but not NOT PRs
 if [[ -n $TRAVIS_TAG ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
     ./gradlew bintray --stacktrace
+    mvn -f wildfly-swarm/pom.xml deploy --settings gradle/settings.xml -DskipTests=true -e
 
     REMOTE_URL=$(git config --get remote.origin.url)
     REMOTE_URL=$(echo $REMOTE_URL | sed -e "s#://#://$GITHUB_API_KEY@#g") > /dev/null 2>&1
@@ -37,8 +38,8 @@ if [[ -n $TRAVIS_TAG ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
     git commit -m "[travis] Merge branch '$RELEASE_BRANCH' [ci skip]"
 
     echo '[release] Setting next development version..'
-    chmod +x gradlew
     ./gradlew :nextMinorVersion -PisSnapshot
+    mvn -f wildfly-swarm/pom.xml --settings gradle/settings.xml build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}.\${parsedVersion.incrementalVersion}-SNAPSHOT versions:commit
     git commit -am "[travis] Bump version"
     git push --quiet > /dev/null 2>&1
 

@@ -3,22 +3,30 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>mil.army.missioncommand</groupId>
-    <artifactId>wildfly-swarm</artifactId>
+    <artifactId>mirrorcache-wildfly-swarm</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <repositories>
+    <scm>
+        <connection>scm:git:https://github.com/missioncommand/emp3-mirror-cache.git</connection>
+        <developerConnection>scm:git:https://github.com/missioncommand/emp3-mirror-cache.git</developerConnection>
+        <url>https://github.com/missioncommand/emp3-mirror-cache</url>
+    </scm>
+
+    <distributionManagement>
         <repository>
-            <id>di2e.snapshots</id>
-            <name>DI2E Snapshot Repository</name>
-            <url>https://nexus.di2e.net/nexus/content/repositories/releases/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
+            <id>bintray-missioncommand-maven</id>
+            <name>missioncommand-maven</name>
+            <url>https://api.bintray.com/maven/missioncommand/maven/emp3-mirror-cache/;publish=1</url>
         </repository>
+        <snapshotRepository>
+            <id>ojo-missioncommand-maven</id>
+            <name>missioncommand-maven</name>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
         <repository>
             <id>di2e.releases</id>
             <name>DI2E Release Repository</name>
@@ -33,7 +41,7 @@
     </repositories>
 
     <properties>
-        <maven.enforcer.mavenVer>3.3.9</maven.enforcer.mavenVer>
+        <maven.enforcer.mavenVer>3.2.5</maven.enforcer.mavenVer>
         <maven.enforcer.javaVer>[1.8,)</maven.enforcer.javaVer>
         
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -45,7 +53,7 @@
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
         <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
         
-        <wildfly-swarm.version>2017.2.0</wildfly-swarm.version>
+        <wildfly-swarm.version>2017.3.3</wildfly-swarm.version>
         <protobuf-java-util.version>3.2.0</protobuf-java-util.version>
     </properties>
 

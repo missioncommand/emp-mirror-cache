@@ -1,0 +1,20 @@
+<settings>
+    <servers>
+        <server>
+            <id>bintray-missioncommand-maven</id>
+            <username>${env.BINTRAY_USER}</username>
+            <password>${env.BINTRAY_KEY}</password>
+        </server>
+        <server>
+            <id>ojo-missioncommand-maven</id>
+            <username>${env.BINTRAY_USER}</username>
+            <password>${env.BINTRAY_KEY}</password>
+        </server>
+
+        <server>
+            <id>di2e.releases</id>
+            <username>${env.CI_USERNAME}</username>
+            <password>${env.CI_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>
