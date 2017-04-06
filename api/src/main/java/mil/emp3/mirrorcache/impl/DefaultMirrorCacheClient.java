@@ -81,17 +81,19 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
                 /*
                  * Retrieve 'clientInfo' from server.
                  */
-                final Message reqMessage = new Message();
-                reqMessage.setCommand(CommandCase.GET_CLIENT_INFO, GetClientInfoCommmand.newBuilder()
-                                                                                        .build());
 
                 try {
-                    final ClientInfo clientInfo = getMessageDispatcher().getRequestProcessor(GetClientInfoRequestProcessor.class).executeSync(reqMessage);
-                    DefaultMirrorCacheClient.this.clientId = clientInfo;
+                            final Message reqMessage = new Message();
+                            reqMessage.setCommand(OneOfCommand.newBuilder()
+                                                              .setGetClientInfo(GetClientInfoCommmand.newBuilder())
+                                                              .build());
 
-                } catch (MirrorCacheException e) {
-                    throw new IllegalStateException("Unable to retrieve clientInfo: " + e.getMessage(), e);
-                }
+                                final ClientInfo clientInfo = getMessageDispatcher().getRequestProcessor(GetClientInfoRequestProcessor.class).executeSync(reqMessage);
+                                DefaultMirrorCacheClient.this.clientId = clientInfo;
+
+                            } catch (MirrorCacheException e) {
+                                throw new IllegalStateException("Unable to retrieve clientInfo: " + e.getMessage(), e);
+                            }
             }
         });
     }
