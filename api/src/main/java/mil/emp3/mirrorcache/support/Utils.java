@@ -2,12 +2,17 @@ package mil.emp3.mirrorcache.support;
 
 import org.cmapi.primitives.GeoContainer;
 import org.cmapi.primitives.GeoMilSymbol;
+import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 
 import com.google.protobuf.util.JsonFormat;
 
 public class Utils {
 
     private Utils() { }
+    
+    static public String asString(ProtoMessage message) {
+        return message.toString();
+    }
     
     static public String asString(com.google.protobuf.Message message) {
         try {

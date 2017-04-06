@@ -1,7 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupAddChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class ChannelGroupAddChannelRequestProcessor extends BaseRequestProcessor
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupAddChannelCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_ADD_CHANNEL);
+            final ChannelGroupAddChannelCommand command = resMessage.getCommand().getChannelGroupAddChannel();
             if (!(command.getStatus() == Status.SUCCESS)) {
                 throw new MirrorCacheException(Reason.CHANNELGROUP_ADD_CHANNEL_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName())
                                                                                        .withDetail("channelName: " + command.getChannelName());

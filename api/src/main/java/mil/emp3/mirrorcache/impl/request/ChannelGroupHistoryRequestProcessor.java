@@ -7,7 +7,6 @@ import org.cmapi.primitives.proto.CmapiProto.ChannelGroupHistoryCommand;
 import org.cmapi.primitives.proto.CmapiProto.HistoryInfo;
 import org.cmapi.primitives.proto.CmapiProto.LogEntry;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ public class ChannelGroupHistoryRequestProcessor extends BaseRequestProcessor<Me
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupHistoryCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_HISTORY);
+            final ChannelGroupHistoryCommand command = resMessage.getCommand().getChannelGroupHistory();
             if (command.getStatus() == Status.SUCCESS) {
 
                 final List<Entry<OneOfCommand>> entries = new ArrayList<>();

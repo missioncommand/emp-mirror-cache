@@ -25,7 +25,7 @@ public class ChannelGroupPublishRequestProcessor extends BaseRequestProcessor<Me
 //        try {
 //            final Message resMessage = dispatcher.awaitResponse(reqMessage);
 //            
-//                final ChannelGroupPublishCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_PUBLISH);
+//                final ChannelGroupPublishCommand command = resMessage.getCommand().getChannelGroupPublish();
 //                if (!(command.getStatus() == Status.SUCCESS)) {
 //                    throw new MirrorCacheException(Reason.CHANNELGROUP_PUBLISH_FAILURE);
 //                }

@@ -3,7 +3,6 @@ package mil.emp3.mirrorcache.impl.request;
 import java.util.HashSet;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCacheCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,7 @@ public class ChannelGroupCacheRequestProcessor extends BaseRequestProcessor<Mess
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupCacheCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_CACHE);
+            final ChannelGroupCacheCommand command = resMessage.getCommand().getChannelGroupCache();
             if (command.getStatus() == Status.SUCCESS) {
                 
                 final ChannelGroupCache cache = new ClientChannelGroupCache(command.getChannelGroupName(), new HashSet<>(command.getEntityIdList()));
