@@ -11,7 +11,6 @@ import org.cmapi.primitives.proto.CmapiProto.DeleteChannelGroupCommand;
 import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsCommand;
 import org.cmapi.primitives.proto.CmapiProto.FindChannelsCommand;
 import org.cmapi.primitives.proto.CmapiProto.GetClientInfoCommmand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
 
 import mil.emp3.mirrorcache.Message;
@@ -40,6 +39,8 @@ import mil.emp3.mirrorcache.spi.TransportProviderFactory;
 
 public class DefaultMirrorCacheClient implements MirrorCacheClient {
 
+    volatile private boolean isInitialized;
+    
     private ClientInfo clientId;
     private EventRegistration clientEventRegistration;
     
@@ -74,32 +75,41 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public void init() {
-        getMessageDispatcher().init();
-        
-        this.clientEventRegistration = on(ClientConnectEvent.TYPE, new ClientEventHandlerAdapter() {
-            @Override public void onConnect(ClientConnectEvent event) {
-                /*
-                 * Retrieve 'clientInfo' from server.
-                 */
+        if (!isInitialized) {
+            synchronized(this) {
+                if (!isInitialized) {
 
-                try {
+                    getMessageDispatcher().init();
+                    
+                    this.clientEventRegistration = getMessageDispatcher().on(ClientConnectEvent.TYPE, new ClientEventHandlerAdapter() {
+                        @Override public void onConnect(ClientConnectEvent event) {
+                            /*
+                             * Retrieve 'clientInfo' from server.
+                             */
                             final Message reqMessage = new Message();
                             reqMessage.setCommand(OneOfCommand.newBuilder()
                                                               .setGetClientInfo(GetClientInfoCommmand.newBuilder())
                                                               .build());
 
+                            try {
                                 final ClientInfo clientInfo = getMessageDispatcher().getRequestProcessor(GetClientInfoRequestProcessor.class).executeSync(reqMessage);
                                 DefaultMirrorCacheClient.this.clientId = clientInfo;
 
                             } catch (MirrorCacheException e) {
                                 throw new IllegalStateException("Unable to retrieve clientInfo: " + e.getMessage(), e);
                             }
+                        }
+                    });
+                    
+                    isInitialized = true;
+                } 
             }
-        });
+        }
     }
     
     @Override
     public void shutdown() throws MirrorCacheException {
+        initCheck();
         /*
          * We are no longer interested in receiving ClientConnectEvent events.
          */
@@ -114,16 +124,19 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public void connect() throws MirrorCacheException {
+        initCheck();
         getTransport().connect();
     }
 
     @Override
     public void disconnect() throws MirrorCacheException {
+        initCheck();
         getTransport().disconnect();
     }
     
     @Override
     public <T extends EventHandler> EventRegistration on(MirrorCacheEvent.Type<T> type, T handler) {
+        initCheck();
         return getMessageDispatcher().on(type, handler);
     }
 
@@ -134,6 +147,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public Channel createChannel(String name, Channel.Visibility visibility, Channel.Type type) throws MirrorCacheException {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setCreateChannel(CreateChannelCommand.newBuilder()
@@ -148,6 +162,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public Future<Channel> createChannelAsync(final String name, final Channel.Visibility visibility, final Channel.Type type) {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setCreateChannel(CreateChannelCommand.newBuilder()
@@ -162,6 +177,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public void deleteChannel(String name) throws MirrorCacheException {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setDeleteChannel(DeleteChannelCommand.newBuilder()
@@ -173,6 +189,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
 
     @Override
     public Future<Void> deleteChannelAsync(String name) {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setDeleteChannel(DeleteChannelCommand.newBuilder()
@@ -185,6 +202,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
 
     @Override
     public List<Channel> findChannels(String filter) throws MirrorCacheException {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setFindChannels(FindChannelsCommand.newBuilder()
@@ -197,6 +215,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public Future<List<Channel>> findChannelsAsync(String filter) {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setFindChannels(FindChannelsCommand.newBuilder()
@@ -209,6 +228,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public ChannelGroup createChannelGroup(String name) throws MirrorCacheException {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setCreateChannelGroup(CreateChannelGroupCommand.newBuilder()
@@ -221,6 +241,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public Future<ChannelGroup> createChannelGroupAsync(String name) {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setCreateChannelGroup(CreateChannelGroupCommand.newBuilder()
@@ -233,6 +254,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public void deleteChannelGroup(String name) throws MirrorCacheException {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setDeleteChannelGroup(DeleteChannelGroupCommand.newBuilder()
@@ -244,6 +266,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public Future<Void> deleteChannelGroupAsync(String name) {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setDeleteChannelGroup(DeleteChannelGroupCommand.newBuilder()
@@ -256,6 +279,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public List<ChannelGroup> findChannelGroups(String filter) throws MirrorCacheException {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setFindChannelGroups(FindChannelGroupsCommand.newBuilder()
@@ -268,6 +292,7 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     @Override
     public Future<List<ChannelGroup>> findChannelGroupsAsync(String filter) {
+        initCheck();
         final Message reqMessage = new Message();
         reqMessage.setCommand(OneOfCommand.newBuilder()
                                           .setFindChannelGroups(FindChannelGroupsCommand.newBuilder()
@@ -288,5 +313,11 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     
     private MessageDispatcher getMessageDispatcher() {
         return messageDispatcher;
+    }
+    
+    private void initCheck() {
+        if (!isInitialized) {
+            throw new IllegalStateException("!isInitialized");
+        }
     }
 }

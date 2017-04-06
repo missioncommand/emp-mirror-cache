@@ -174,7 +174,7 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
          * be extracted and sent to a queue where registered response processors may interrogate it. This is a non-blocking
          * call as the message queue will be consumed by the response processors in a different thread.
          */
-        this.clientEventRegistration = client.on(ClientMessageEvent.TYPE, new ClientEventHandlerAdapter() {
+        this.clientEventRegistration = on(ClientMessageEvent.TYPE, new ClientEventHandlerAdapter() {
             @Override public void onMessage(ClientMessageEvent event) {
                 localResponseProcessor.processMessage(event.getMessage());
             }
