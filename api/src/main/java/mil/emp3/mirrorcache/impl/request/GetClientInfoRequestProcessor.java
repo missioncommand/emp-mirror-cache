@@ -1,7 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
 import org.cmapi.primitives.proto.CmapiProto.GetClientInfoCommmand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ public class GetClientInfoRequestProcessor extends BaseRequestProcessor<Message,
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final GetClientInfoCommmand command = resMessage.getCommand(CommandCase.GET_CLIENT_INFO);
+            final GetClientInfoCommmand command = resMessage.getCommand().getGetClientInfo();
             if (command.getStatus() == Status.SUCCESS) {
 
                 final String clientId = command.getClientInfo().getClientId();

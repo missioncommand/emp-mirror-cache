@@ -3,6 +3,8 @@ package mil.emp3.mirrorcache.impl.spi;
 import org.cmapi.primitives.proto.CmapiProto.Container;
 import org.cmapi.primitives.proto.CmapiProto.MilStdSymbol;
 
+import com.google.protobuf.MessageLite;
+
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.Payload;
@@ -38,7 +40,10 @@ public class DefaultSerializerProvider implements SerializerProvider {
             
             if (payload instanceof com.google.protobuf.Message) {
                 final byte[] serializedPayload = ((com.google.protobuf.Message) payload).toByteArray();
+                message.setPayload(new Payload<>(message.getPayload().getId(), payload.getClass().getName(), serializedPayload));
                 
+            } else if (payload instanceof MessageLite) {
+                final byte[] serializedPayload = ((MessageLite) payload).toByteArray();
                 message.setPayload(new Payload<>(message.getPayload().getId(), payload.getClass().getName(), serializedPayload));
                 
             } else {

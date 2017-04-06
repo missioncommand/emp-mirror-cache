@@ -1,7 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
 import org.cmapi.primitives.proto.CmapiProto.DeleteChannelGroupCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class DeleteChannelGroupRequestProcessor extends BaseRequestProcessor<Mes
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final DeleteChannelGroupCommand command = resMessage.getCommand(CommandCase.DELETE_CHANNEL_GROUP);
+            final DeleteChannelGroupCommand command = resMessage.getCommand().getDeleteChannelGroup();
             if (command.getStatus() == Status.SUCCESS) {
                 return null;
                 

@@ -382,12 +382,12 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
             final List<ChannelHandler> channelHandlers = new ArrayList<>();
             
             if (CommandCase.CHANNEL_PUBLISH == message.getCommand().getCommandCase()) {
-                final ChannelPublishCommand command = message.getCommand(CommandCase.CHANNEL_PUBLISH);
+                final ChannelPublishCommand command = message.getCommand().getChannelPublish();
                 channelHandlers.addAll(ChannelHandlerProviderFactory.getChannelHandlers(command.getChannelName()));
                 
             } else if (CommandCase.CHANNEL_GROUP_PUBLISH == message.getCommand().getCommandCase()) {
 //TODO
-//                final ChannelGroupPublishCommand command = message.getCommand(CommandCase.CHANNEL_GROUP_PUBLISH);
+//                final ChannelGroupPublishCommand command = message.getCommand().getChannelGroupPublish();
 //                channelHandlers.addAll(ChannelHandlerProviderFactory.getChannelHandlers(command.getChannelGroupName()));
             }
             

@@ -6,7 +6,8 @@ apply plugin: 'nebula.compile-api'
 sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.targetCompatibility
 
-sourceSets.main.java.srcDirs += "$buildDir/generated-sources/proto/main/java"
+//sourceSets.main.java.srcDirs += "$buildDir/generated-sources/proto/main/java"
+sourceSets.main.java.srcDirs += "$buildDir/generated-sources/proto/main/javalite"
 
 dependencies {
     compileApi ("org.cmapi.primitives:common-map-geospatial-notation")
@@ -20,9 +21,9 @@ protobuf {
         artifact = "com.google.protobuf:protoc:${version_protoc}"
     }
     plugins {
-//        javalite {
-//            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
-//        }
+        javalite {
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+        }
     }
     generateProtoTasks {
         all().each { task ->
@@ -31,7 +32,7 @@ protobuf {
             task.descriptorSetOptions.includeImports = true
             
             task.builtins {
-                //remove java
+                remove java
                 js {
                     option 'library=cmapi_proto'
                     option 'binary'
@@ -39,7 +40,7 @@ protobuf {
                 }
             }
             task.plugins {
-                //javalite { }
+                javalite { }
             }
         }
     }

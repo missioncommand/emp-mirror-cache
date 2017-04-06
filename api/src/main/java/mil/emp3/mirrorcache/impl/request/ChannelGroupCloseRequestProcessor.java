@@ -1,7 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCloseCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class ChannelGroupCloseRequestProcessor extends BaseRequestProcessor<Mess
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupCloseCommand command = resMessage.getCommand(CommandCase.CHANNEL_GROUP_CLOSE);
+            final ChannelGroupCloseCommand command = resMessage.getCommand().getChannelGroupClose();
             if (!(command.getStatus() == Status.SUCCESS)) {
                 throw new MirrorCacheException(Reason.CHANNELGROUP_CLOSE_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
             }

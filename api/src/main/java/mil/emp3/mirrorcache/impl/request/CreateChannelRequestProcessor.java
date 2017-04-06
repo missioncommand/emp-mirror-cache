@@ -1,7 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
 import org.cmapi.primitives.proto.CmapiProto.CreateChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class CreateChannelRequestProcessor extends BaseRequestProcessor<Message,
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final CreateChannelCommand command = resMessage.getCommand(CommandCase.CREATE_CHANNEL);
+            final CreateChannelCommand command = resMessage.getCommand().getCreateChannel();
             if (command.getStatus() == Status.SUCCESS) {
             
                 final Channel channel = new ClientChannel(command.getChannelName(),

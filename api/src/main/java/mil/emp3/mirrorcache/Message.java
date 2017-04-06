@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 
 import mil.emp3.mirrorcache.event.MirrorCacheEvent;
 
@@ -42,10 +41,6 @@ public class Message {
         return command;
     }
     
-    @SuppressWarnings("unchecked")
-    public <T> T getCommand(CommandCase commandCase) {
-        return (T) getCommand().getField(OneOfCommand.getDescriptor().findFieldByNumber(commandCase.getNumber()));
-    }
     public MirrorCacheEvent.Type<?> getEventType() {
         return eventType;
     }
@@ -69,13 +64,6 @@ public class Message {
     }
     public Message setCommand(OneOfCommand command) {
         this.command = command;
-        return this;
-    }
-    public Message setCommand(CommandCase command, Object value) {
-        this.command = OneOfCommand.newBuilder()
-                                   .setField(OneOfCommand.getDescriptor()
-                                                         .findFieldByNumber(command.getNumber()), value)
-                                   .build();
         return this;
     }
     public Message setPayload(Payload<?> payload) {

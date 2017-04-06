@@ -12,7 +12,7 @@ import org.cmapi.primitives.proto.CmapiProto.ChannelGroupHistoryCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupPublishCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupRemoveChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
+import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,10 +105,10 @@ public class ClientChannelGroup implements ChannelGroup {
 //        }
         
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_ADD_CHANNEL, ChannelGroupAddChannelCommand.newBuilder()
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelGroupAddChannel(ChannelGroupAddChannelCommand.newBuilder()
                                                                                                   .setChannelGroupName(name)
-                                                                                                  .setChannelName(channelName)
-                                                                                                  .build());
+                                                                                                  .setChannelName(channelName)).build());
 
         dispatcher.getRequestProcessor(ChannelGroupAddChannelRequestProcessor.class).executeSync(reqMessage);
     }
@@ -122,10 +122,11 @@ public class ClientChannelGroup implements ChannelGroup {
 //        }
         
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_REMOVE_CHANNEL, ChannelGroupRemoveChannelCommand.newBuilder()
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelGroupRemoveChannel(ChannelGroupRemoveChannelCommand.newBuilder()
                                                                                                         .setChannelGroupName(name)
-                                                                                                        .setChannelName(channelName)
-                                                                                                        .build());
+                                                                                                        .setChannelName(channelName))
+                                          .build());
 
         dispatcher.getRequestProcessor(ChannelGroupRemoveChannelRequestProcessor.class).executeSync(reqMessage);
     }
@@ -135,9 +136,10 @@ public class ClientChannelGroup implements ChannelGroup {
         LOG.debug("ChannelGroup[" + name + "].open()");
 
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_OPEN, ChannelGroupOpenCommand.newBuilder()
-                                                                                     .setChannelGroupName(name)
-                                                                                     .build());
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                         .setChannelGroupOpen(ChannelGroupOpenCommand.newBuilder()
+                                                                                     .setChannelGroupName(name))
+                                         .build());
 
         dispatcher.getRequestProcessor(ChannelGroupOpenRequestProcessor.class).executeSync(reqMessage);
         
@@ -149,9 +151,10 @@ public class ClientChannelGroup implements ChannelGroup {
         LOG.debug("ChannelGroup[" + name + "].close()");
 
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_CLOSE, ChannelGroupCloseCommand.newBuilder()
-                                                                                       .setChannelGroupName(name)
-                                                                                       .build());
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelGroupClose(ChannelGroupCloseCommand.newBuilder()
+                                                                                        .setChannelGroupName(name))
+                                          .build());
 
         dispatcher.getRequestProcessor(ChannelGroupCloseRequestProcessor.class).executeSync(reqMessage);
         
@@ -168,9 +171,10 @@ public class ClientChannelGroup implements ChannelGroup {
         
         final Message reqMessage = new Message();
         reqMessage.setPayload(new Payload<>(id, type.getName(), payload));
-        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_PUBLISH, ChannelGroupPublishCommand.newBuilder()
-                                                                                           .setChannelGroupName(name)
-                                                                                           .build());
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelGroupPublish(ChannelGroupPublishCommand.newBuilder()
+                                                                                            .setChannelGroupName(name))
+                                          .build());
         
         dispatcher.getRequestProcessor(ChannelGroupPublishRequestProcessor.class).executeSync(reqMessage);
     }
@@ -183,11 +187,12 @@ public class ClientChannelGroup implements ChannelGroup {
             throw new MirrorCacheException(Reason.CHANNELGROUP_NOT_OPEN);
         }
 
-        final Message reqMessage = new Message().setCommand(CommandCase.CHANNEL_GROUP_DELETE,
-                                                            ChannelGroupDeleteCommand.newBuilder()
-                                                                                     .setChannelGroupName(name)
-                                                                                     .setPayloadId(id)
-                                                                                     .build());
+        final Message reqMessage = new Message();
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelGroupDelete(ChannelGroupDeleteCommand.newBuilder()
+                                                                                          .setChannelGroupName(name)
+                                                                                          .setPayloadId(id))
+                                          .build());
 
         dispatcher.getRequestProcessor(ChannelGroupDeleteRequestProcessor.class).executeSync(reqMessage);
     }
@@ -201,9 +206,10 @@ public class ClientChannelGroup implements ChannelGroup {
       }
       
       final Message reqMessage = new Message();
-      reqMessage.setCommand(CommandCase.CHANNEL_GROUP_CACHE, ChannelGroupCacheCommand.newBuilder()
-                                                                                     .setChannelGroupName(name)
-                                                                                     .build());
+      reqMessage.setCommand(OneOfCommand.newBuilder()
+                                        .setChannelGroupCache(ChannelGroupCacheCommand.newBuilder()
+                                                                                      .setChannelGroupName(name))
+                                        .build());
 
       final ChannelGroupCache channelGroupCache = dispatcher.getRequestProcessor(ChannelGroupCacheRequestProcessor.class).executeSync(reqMessage);
       return channelGroupCache;
@@ -218,9 +224,10 @@ public class ClientChannelGroup implements ChannelGroup {
         }
         
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_GROUP_HISTORY, ChannelGroupHistoryCommand.newBuilder()
-                                                                                     .setChannelGroupName(name)
-                                                                                     .build());
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelGroupHistory(ChannelGroupHistoryCommand.newBuilder()
+                                                                                            .setChannelGroupName(name))
+                                          .build());
 
         final ChannelGroupHistory channelGroupHistory = dispatcher.getRequestProcessor(ChannelGroupHistoryRequestProcessor.class).executeSync(reqMessage);
         return channelGroupHistory;

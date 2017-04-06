@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        version_wildfly_swarm = "2017.3.3"
+        version_wildfly_swarm = "2017.2.0"
     }
     
     repositories {

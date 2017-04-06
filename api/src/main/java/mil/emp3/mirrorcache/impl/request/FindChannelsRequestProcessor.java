@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelInfo;
 import org.cmapi.primitives.proto.CmapiProto.FindChannelsCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class FindChannelsRequestProcessor extends BaseRequestProcessor<Message, 
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final FindChannelsCommand command = resMessage.getCommand(CommandCase.FIND_CHANNELS);
+            final FindChannelsCommand command = resMessage.getCommand().getFindChannels();
             if (command.getStatus() == Status.SUCCESS) {
                 
                 final List<Channel> results = new ArrayList<>();

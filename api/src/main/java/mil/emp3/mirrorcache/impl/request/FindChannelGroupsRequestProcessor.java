@@ -9,7 +9,6 @@ import org.cmapi.primitives.proto.CmapiProto.ChannelGroupInfo;
 import org.cmapi.primitives.proto.CmapiProto.ChannelInfo;
 import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsCommand;
 import org.cmapi.primitives.proto.CmapiProto.MemberInfo;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,7 @@ public class FindChannelGroupsRequestProcessor extends BaseRequestProcessor<Mess
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final FindChannelGroupsCommand command = resMessage.getCommand(CommandCase.FIND_CHANNEL_GROUPS);
+            final FindChannelGroupsCommand command = resMessage.getCommand().getFindChannelGroups();
             if (command.getStatus() == Status.SUCCESS) {
                 final List<ChannelGroup> results = new ArrayList<>();
 

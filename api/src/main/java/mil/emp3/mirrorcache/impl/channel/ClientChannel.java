@@ -6,7 +6,7 @@ import org.cmapi.primitives.proto.CmapiProto.ChannelDeleteCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelHistoryCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelOpenCommand;
 import org.cmapi.primitives.proto.CmapiProto.ChannelPublishCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
+import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,9 +85,10 @@ public class ClientChannel implements Channel {
       }
       
       final Message reqMessage = new Message();
-      reqMessage.setCommand(CommandCase.CHANNEL_CACHE, ChannelCacheCommand.newBuilder()
-                                                                          .setChannelName(name)
-                                                                          .build());
+      reqMessage.setCommand(OneOfCommand.newBuilder()
+                                        .setChannelCache(ChannelCacheCommand.newBuilder()
+                                                                            .setChannelName(name))
+                                        .build());
 
       final ChannelCache channelCache = dispatcher.getRequestProcessor(ChannelCacheRequestProcessor.class).executeSync(reqMessage);
       return channelCache;
@@ -102,9 +103,10 @@ public class ClientChannel implements Channel {
         }
         
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_HISTORY, ChannelHistoryCommand.newBuilder()
-                                                                                .setChannelName(name)
-                                                                                .build());
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelHistory(ChannelHistoryCommand.newBuilder()
+                                                                                  .setChannelName(name))
+                                          .build());
 
         final ChannelHistory channelHistory = dispatcher.getRequestProcessor(ChannelHistoryRequestProcessor.class).executeSync(reqMessage);
         return channelHistory;
@@ -120,9 +122,10 @@ public class ClientChannel implements Channel {
         
         final Message reqMessage = new Message();
         reqMessage.setPayload(new Payload<>(id, type.getName(), payload));
-        reqMessage.setCommand(CommandCase.CHANNEL_PUBLISH, ChannelPublishCommand.newBuilder()
-                                                                                .setChannelName(name)
-                                                                                .build());
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelPublish(ChannelPublishCommand.newBuilder()
+                                                                                  .setChannelName(name))
+                                          .build());
         
         dispatcher.getRequestProcessor(ChannelPublishRequestProcessor.class).executeSync(reqMessage);
     }
@@ -135,10 +138,12 @@ public class ClientChannel implements Channel {
             throw new MirrorCacheException(Reason.CHANNEL_NOT_OPEN);
         }
 
-        final Message reqMessage = new Message().setCommand(CommandCase.CHANNEL_DELETE, ChannelDeleteCommand.newBuilder()
-                                                                                                            .setChannelName(name)
-                                                                                                            .setPayloadId(id)
-                                                                                                            .build());
+        final Message reqMessage = new Message();
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelDelete(ChannelDeleteCommand.newBuilder()
+                                                                                .setChannelName(name)
+                                                                                .setPayloadId(id))
+                                          .build());
 
         dispatcher.getRequestProcessor(ChannelDeleteRequestProcessor.class).executeSync(reqMessage);
     }
@@ -148,11 +153,12 @@ public class ClientChannel implements Channel {
         LOG.debug("Channel[" + name + "].open()");
 
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_OPEN, ChannelOpenCommand.newBuilder()
-                                                                          .setChannelName(name)
-                                                                          .setFlow(flow.name())
-                                                                          .setFilter(filter)
-                                                                          .build());
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelOpen(ChannelOpenCommand.newBuilder()
+                                                                            .setChannelName(name)
+                                                                            .setFlow(flow.name())
+                                                                            .setFilter(filter))
+                                          .build());
         
         dispatcher.getRequestProcessor(ChannelOpenRequestProcessor.class).executeSync(reqMessage);
         
@@ -164,9 +170,10 @@ public class ClientChannel implements Channel {
         LOG.debug("Channel[" + name + "].close()");
         
         final Message reqMessage = new Message();
-        reqMessage.setCommand(CommandCase.CHANNEL_CLOSE, ChannelCloseCommand.newBuilder()
-                                                                            .setChannelName(name)
-                                                                            .build());
+        reqMessage.setCommand(OneOfCommand.newBuilder()
+                                          .setChannelClose(ChannelCloseCommand.newBuilder()
+                                                                              .setChannelName(name))
+                                          .build());
         
         dispatcher.getRequestProcessor(ChannelCloseRequestProcessor.class).executeSync(reqMessage);
         

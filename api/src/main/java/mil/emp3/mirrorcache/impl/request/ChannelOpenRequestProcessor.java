@@ -1,7 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelOpenCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class ChannelOpenRequestProcessor extends BaseRequestProcessor<Message, V
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelOpenCommand command = resMessage.getCommand(CommandCase.CHANNEL_OPEN);
+            final ChannelOpenCommand command = resMessage.getCommand().getChannelOpen();
             if (!(command.getStatus() == Status.SUCCESS)) {
                 throw new MirrorCacheException(Reason.CHANNEL_OPEN_FAILURE).withDetail("channelName: " + command.getChannelName());
             }

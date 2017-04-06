@@ -1,7 +1,6 @@
 package mil.emp3.mirrorcache.impl.request;
 
 import org.cmapi.primitives.proto.CmapiProto.CreateChannelGroupCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class CreateChannelGroupRequestProcessor extends BaseRequestProcessor<Mes
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final CreateChannelGroupCommand command = resMessage.getCommand(CommandCase.CREATE_CHANNEL_GROUP);
+            final CreateChannelGroupCommand command = resMessage.getCommand().getCreateChannelGroup();
             if (command.getStatus() == Status.SUCCESS) {
             
                 final ChannelGroup channelGroup = new ClientChannelGroup(command.getChannelGroupName(), false, dispatcher);
