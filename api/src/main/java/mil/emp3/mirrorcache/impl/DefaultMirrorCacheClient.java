@@ -12,6 +12,7 @@ import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsCommand;
 import org.cmapi.primitives.proto.CmapiProto.FindChannelsCommand;
 import org.cmapi.primitives.proto.CmapiProto.GetClientInfoCommmand;
 import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
+import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
 
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MessageDispatcher;
