@@ -30,6 +30,7 @@ ext {
 
     version_cmapi       = "0.0.7"
     version_protoc      = "3.2.0"
+    version_slf4j       = "1.7.25"
     version_logback     = "1.1.11"
     version_ws_undertow = "1.2.9.Final"
     version_ws_nv       = "1.31"
@@ -51,6 +52,7 @@ allprojects {
         dependencies {
             dependency ("org.cmapi.primitives:common-map-geospatial-notation:${version_cmapi}")
             
+            dependency ("org.slf4j:slf4j-api:${version_slf4j}")
             dependency ("ch.qos.logback:logback-classic:${version_logback}")
             
             dependency ("com.google.protobuf:protobuf-java:${version_protoc}")

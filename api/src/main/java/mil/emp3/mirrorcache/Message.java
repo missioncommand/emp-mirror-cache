@@ -5,19 +5,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
-
 import mil.emp3.mirrorcache.event.MirrorCacheEvent;
 
 
 public class Message {
-
     final private Map<String, String> properties;
     
     private String id;
     private Priority priority;
     private Payload<?> payload;
-    private OneOfCommand command;
+    private Operation operation;
     private MirrorCacheEvent.Type<?> eventType;
     private Throwable error;
     
@@ -37,10 +34,14 @@ public class Message {
     public Priority getPriority() {
         return priority;
     }
-    public OneOfCommand getCommand() {
-        return command;
+    public Operation getOperation() {
+        return operation;
     }
     
+    public Message setOperation(Operation operation) {
+        this.operation = operation;
+        return this;
+    }
     public MirrorCacheEvent.Type<?> getEventType() {
         return eventType;
     }
@@ -60,10 +61,6 @@ public class Message {
     }
     public Message setPriority(Priority priority) {
         this.priority = priority;
-        return this;
-    }
-    public Message setCommand(OneOfCommand command) {
-        this.command = command;
         return this;
     }
     public Message setPayload(Payload<?> payload) {

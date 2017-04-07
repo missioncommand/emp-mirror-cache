@@ -16,7 +16,7 @@ import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.channel.ChannelCache;
 import mil.emp3.mirrorcache.service.CacheManager;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
 public class ChannelCacheProcessor implements CommandProcessor {

@@ -28,6 +28,8 @@ project(':mirrorcache-impl-transport-ws-nv').projectDir = new File(settingsDir, 
 include 'mirrorcache-impl-transport-ws-undertow'
 project(':mirrorcache-impl-transport-ws-undertow').projectDir = new File(settingsDir, 'impl/transport/ws-undertow')
 
+include 'mirrorcache-impl-core'
+project(':mirrorcache-impl-core').projectDir = new File(settingsDir, 'impl/core')
 
 //
 //include ':samples'

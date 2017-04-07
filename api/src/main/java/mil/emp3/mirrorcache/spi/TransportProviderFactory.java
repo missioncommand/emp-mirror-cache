@@ -43,6 +43,6 @@ public class TransportProviderFactory {
             throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("type: " + args.type());
         }
         
-        throw new IllegalStateException("Unable to locate suitable transport.");
+        throw new IllegalStateException("Unable to locate suitable transport implementation.");
     }
 }

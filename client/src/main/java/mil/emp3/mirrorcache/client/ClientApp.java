@@ -51,7 +51,6 @@ import org.cmapi.primitives.IGeoAltitudeMode.AltitudeMode;
 import org.cmapi.primitives.IGeoMilSymbol;
 import org.cmapi.primitives.IGeoMilSymbol.Modifier;
 import org.cmapi.primitives.IGeoMilSymbol.SymbolStandard;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
 import org.slf4j.Logger;
@@ -83,10 +82,10 @@ import mil.emp3.mirrorcache.event.ChannelPublishedEvent;
 import mil.emp3.mirrorcache.event.ChannelUpdatedEvent;
 import mil.emp3.mirrorcache.event.ClientEventHandlerAdapter;
 import mil.emp3.mirrorcache.event.ClientMessageEvent;
+import mil.emp3.mirrorcache.impl.Utils;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProvider;
 import mil.emp3.mirrorcache.spi.MirrorCacheClientProviderFactory;
 import mil.emp3.mirrorcache.support.ItemTracker;
-import mil.emp3.mirrorcache.support.Utils;
 
 public class ClientApp {
 
@@ -1334,8 +1333,8 @@ ChannelGroup tmpChannelGroup;
             @Override
             public void onMessage(ClientMessageEvent event) {
                 try {
-                    final boolean isPublishMessage = event.getMessage().getCommand().getCommandCase() == CommandCase.CHANNEL_PUBLISH
-                                                  || event.getMessage().getCommand().getCommandCase() == CommandCase.CHANNEL_GROUP_PUBLISH;
+                    final boolean isPublishMessage = event.getMessage().getOperation().name().equals("CHANNEL_PUBLISH")
+                                                  || event.getMessage().getOperation().name().equals("CHANNEL_GROUP_PUBLISH");
                     
                     if (isPublishMessage || getJCheckBoxLogAll().isSelected()) {
                         tracker.track();
@@ -1364,7 +1363,7 @@ ChannelGroup tmpChannelGroup;
                                     }
                                     
                                 } else {
-                                    payloadStr = event.getMessage().getCommand().toString();
+                                    payloadStr = event.getMessage().getOperation().toString();
                                 }
                                 
                                 logReceive("(payload) " + payloadStr);
@@ -1380,9 +1379,9 @@ ChannelGroup tmpChannelGroup;
                                     
                                     //TODO we want to access a cached list of channels/channelGroups
                                     //     and not make a request back to the server just to publish..
-                                    if (event.getMessage().getCommand().getCommandCase() == CommandCase.CHANNEL_GROUP_PUBLISH) {
+                                    if (event.getMessage().getOperation().name().equals("CHANNEL_GROUP_PUBLISH")) {
                                         
-                                    } else if (event.getMessage().getCommand().getCommandCase() == CommandCase.CHANNEL_PUBLISH) {
+                                    } else if (event.getMessage().getOperation().name().equals("CHANNEL_PUBLISH")) {
                                         
                                     }
                                 }

@@ -30,8 +30,8 @@ import org.slf4j.Logger;
 import mil.emp3.mirrorcache.service.entity.SessionInfo;
 import mil.emp3.mirrorcache.service.event.ConnectEvent;
 import mil.emp3.mirrorcache.service.event.DisconnectEvent;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 import mil.emp3.mirrorcache.service.thread.ClientConsumer;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
 
 @ApplicationScoped
 public class SessionManager {

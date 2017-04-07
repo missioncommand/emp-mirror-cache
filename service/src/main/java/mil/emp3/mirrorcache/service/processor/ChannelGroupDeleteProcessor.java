@@ -14,12 +14,12 @@ import org.slf4j.Logger;
 import mil.emp3.mirrorcache.Member;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
+import mil.emp3.mirrorcache.impl.Utils;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.service.CacheManager;
 import mil.emp3.mirrorcache.service.ChannelGroupManager;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
-import mil.emp3.mirrorcache.support.Utils;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
 public class ChannelGroupDeleteProcessor implements CommandProcessor {

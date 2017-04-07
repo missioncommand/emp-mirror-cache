@@ -16,7 +16,7 @@ import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.service.ChannelGroupManager;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
 public class ChannelGroupAddChannelProcessor implements CommandProcessor {

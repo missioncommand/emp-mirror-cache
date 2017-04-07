@@ -45,6 +45,6 @@ public class TranslatorProviderFactory {
             throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("from: " + args.from());
         }
         
-        throw new IllegalStateException("Unable to locate suitable translator.");
+        throw new IllegalStateException("Unable to locate suitable translator implementation.");
     }
 }

@@ -19,8 +19,8 @@ import mil.emp3.mirrorcache.channel.ChannelHistory;
 @ApplicationScoped
 public class HistoryManager {
 
-    private Map<String, ChannelHistory> channelHistoryMap;           // map<channelName, history>
-    private Map<String, ChannelGroupHistory> channelGroupHistoryMap; // map<channelGroupName, history>
+    private Map<String, ChannelHistory<OneOfCommand>> channelHistoryMap;           // map<channelName, history>
+    private Map<String, ChannelGroupHistory<OneOfCommand>> channelGroupHistoryMap; // map<channelGroupName, history>
     
     @PostConstruct
     public void init() {
@@ -35,7 +35,7 @@ public class HistoryManager {
             
             final List<LogEntry> entries = new ArrayList<>();
             
-            final ChannelHistory channelHistory = channelHistoryMap.get(channelName);
+            final ChannelHistory<OneOfCommand> channelHistory = channelHistoryMap.get(channelName);
             for (Entry<OneOfCommand> entry : channelHistory.getEntries()) {
                 entries.add(LogEntry.newBuilder()
                                     .setId(entry.getId())
@@ -60,7 +60,7 @@ public class HistoryManager {
             
             final List<LogEntry> entries = new ArrayList<>();
             
-            final ChannelGroupHistory channelGroupHistory = channelGroupHistoryMap.get(channelGroupName);
+            final ChannelGroupHistory<OneOfCommand> channelGroupHistory = channelGroupHistoryMap.get(channelGroupName);
             for (Entry<OneOfCommand> entry : channelGroupHistory.getEntries()) {
                 entries.add(LogEntry.newBuilder()
                                     .setId(entry.getId())

@@ -37,6 +37,6 @@ public class DeserializerProviderFactory {
             throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("type: " + type);
         }
         
-        throw new IllegalStateException("Unable to locate suitable deserializer.");
+        throw new IllegalStateException("Unable to locate suitable deserializer implementation.");
     }
 }
