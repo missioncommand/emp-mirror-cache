@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelCacheCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelCacheOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -16,10 +16,10 @@ import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.channel.ChannelCache;
 import mil.emp3.mirrorcache.service.CacheManager;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelCacheProcessor implements CommandProcessor {
+public class ChannelCacheProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -32,17 +32,17 @@ public class ChannelCacheProcessor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final ChannelCacheCommand command = req.getCommand().getChannelCache();
+        final ChannelCacheOperation operation = req.getOperation().getChannelCache();
 
-        final ChannelCache channelCache = cacheManager.getChannelCache(sessionId, command.getChannelName());
+        final ChannelCache channelCache = cacheManager.getChannelCache(sessionId, operation.getChannelName());
         
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setPriority(Priority.MEDIUM.getValue())
-                .setCommand(OneOfCommand.newBuilder()
-                                        .setChannelCache(ChannelCacheCommand.newBuilder(command)
-                                                                            .setStatus(Status.SUCCESS)
-                                                                            .addAllEntityId(channelCache.getEntityIds())))
-                .build();
+                                             .setPriority(Priority.MEDIUM.getValue())
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setChannelCache(ChannelCacheOperation.newBuilder(operation)
+                                                                                                               .setStatus(Status.SUCCESS)
+                                                                                                               .addAllEntityId(channelCache.getEntityIds())))
+                                             .build();
         
         try {
             if (!sessionManager.getOutboundQueue(sessionId).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation.OperationCase;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 
 import mil.emp3.mirrorcache.service.event.MessageEvent;
@@ -26,7 +26,7 @@ import mil.emp3.mirrorcache.service.processor.ChannelGroupRemoveChannelProcessor
 import mil.emp3.mirrorcache.service.processor.ChannelHistoryProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelOpenProcessor;
 import mil.emp3.mirrorcache.service.processor.ChannelPublishProcessor;
-import mil.emp3.mirrorcache.service.processor.CommandProcessor;
+import mil.emp3.mirrorcache.service.processor.OperationProcessor;
 import mil.emp3.mirrorcache.service.processor.CreateChannelGroupProcessor;
 import mil.emp3.mirrorcache.service.processor.CreateChannelProcessor;
 import mil.emp3.mirrorcache.service.processor.DeleteChannelGroupProcessor;
@@ -62,47 +62,47 @@ public class MessageManager {
     @Inject private ChannelGroupCacheProcessor channelGroupCacheProcessor;
     @Inject private ChannelGroupHistoryProcessor channelGroupHistoryProcessor;
     
-    private Map<CommandCase, CommandProcessor> commandProcessors;
+    private Map<OperationCase, OperationProcessor> operationProcessors;
     
     @PostConstruct
     public void init() {
-        this.commandProcessors = new EnumMap<>(CommandCase.class);
-        this.commandProcessors.put(CommandCase.GET_CLIENT_INFO, getClientInfoProcessor);
+        this.operationProcessors = new EnumMap<>(OperationCase.class);
+        this.operationProcessors.put(OperationCase.GET_CLIENT_INFO, getClientInfoProcessor);
         
-        this.commandProcessors.put(CommandCase.CREATE_CHANNEL , createChannelProcessor);
-        this.commandProcessors.put(CommandCase.DELETE_CHANNEL , deleteChannelProcessor);
-        this.commandProcessors.put(CommandCase.FIND_CHANNELS  , findChannelsProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_OPEN   , channelOpenProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_CLOSE  , channelCloseProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_PUBLISH, channelPublishProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_DELETE , channelDeleteProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_CACHE  , channelCacheProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_HISTORY, channelHistoryProcessor);
+        this.operationProcessors.put(OperationCase.CREATE_CHANNEL , createChannelProcessor);
+        this.operationProcessors.put(OperationCase.DELETE_CHANNEL , deleteChannelProcessor);
+        this.operationProcessors.put(OperationCase.FIND_CHANNELS  , findChannelsProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_OPEN   , channelOpenProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_CLOSE  , channelCloseProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_PUBLISH, channelPublishProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_DELETE , channelDeleteProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_CACHE  , channelCacheProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_HISTORY, channelHistoryProcessor);
         
-        this.commandProcessors.put(CommandCase.CREATE_CHANNEL_GROUP        , createChannelGroupProcessor);
-        this.commandProcessors.put(CommandCase.DELETE_CHANNEL_GROUP        , deleteChannelGroupProcessor);
-        this.commandProcessors.put(CommandCase.FIND_CHANNEL_GROUPS         , findChannelGroupsProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_OPEN          , channelGroupOpenProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_CLOSE         , channelGroupCloseProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_ADD_CHANNEL   , channelGroupAddChannelProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_REMOVE_CHANNEL, channelGroupRemoveChannelProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_PUBLISH       , channelGroupPublishProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_DELETE        , channelGroupDeleteProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_CACHE         , channelGroupCacheProcessor);
-        this.commandProcessors.put(CommandCase.CHANNEL_GROUP_HISTORY       , channelGroupHistoryProcessor);
+        this.operationProcessors.put(OperationCase.CREATE_CHANNEL_GROUP        , createChannelGroupProcessor);
+        this.operationProcessors.put(OperationCase.DELETE_CHANNEL_GROUP        , deleteChannelGroupProcessor);
+        this.operationProcessors.put(OperationCase.FIND_CHANNEL_GROUPS         , findChannelGroupsProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_GROUP_OPEN          , channelGroupOpenProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_GROUP_CLOSE         , channelGroupCloseProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_GROUP_ADD_CHANNEL   , channelGroupAddChannelProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_GROUP_REMOVE_CHANNEL, channelGroupRemoveChannelProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_GROUP_PUBLISH       , channelGroupPublishProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_GROUP_DELETE        , channelGroupDeleteProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_GROUP_CACHE         , channelGroupCacheProcessor);
+        this.operationProcessors.put(OperationCase.CHANNEL_GROUP_HISTORY       , channelGroupHistoryProcessor);
     }
     
     public void onMessage(@Observes MessageEvent event) {
         final ProtoMessage message = event.getMessage();
         
-        final CommandCase command = message.getCommand().getCommandCase();
+        final OperationCase operation = message.getOperation().getOperationCase();
         
-        final CommandProcessor processor = commandProcessors.get(command);
+        final OperationProcessor processor = operationProcessors.get(operation);
         if (processor != null) {
             processor.process(event.getSessionId(), message);
             
         } else {
-            throw new IllegalStateException("Unable to locate processor for: " + command);
+            throw new IllegalStateException("Unable to locate processor for: " + operation);
         }
     }
 }

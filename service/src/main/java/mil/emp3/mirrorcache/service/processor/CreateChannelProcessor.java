@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.CreateChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.CreateChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -16,10 +16,10 @@ import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.channel.Channel;
 import mil.emp3.mirrorcache.service.ChannelManager;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class CreateChannelProcessor implements CommandProcessor {
+public class CreateChannelProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -32,14 +32,14 @@ public class CreateChannelProcessor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final CreateChannelCommand command = req.getCommand().getCreateChannel();
+        final CreateChannelOperation operation = req.getOperation().getCreateChannel();
         
         Status status = Status.SUCCESS;
         try {
             channelManager.createChannel(sessionId,
-                                         command.getChannelName(),
-                                         Channel.Visibility.valueOf(command.getVisibility()),
-                                         Channel.Type.valueOf(command.getType()));
+                                         operation.getChannelName(),
+                                         Channel.Visibility.valueOf(operation.getVisibility()),
+                                         Channel.Type.valueOf(operation.getType()));
             
         } catch (MirrorCacheException e) {
             LOG.error("ERROR: " + e.getMessage(), e);
@@ -47,9 +47,10 @@ public class CreateChannelProcessor implements CommandProcessor {
         }
 
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setCommand(OneOfCommand.newBuilder().setCreateChannel(CreateChannelCommand.newBuilder(command)
-                                                                                           .setStatus(status)))
-                .build();
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setCreateChannel(CreateChannelOperation.newBuilder(operation)
+                                                                         .setStatus(status)))
+                                             .build();
         
         try {
             if (!sessionManager.getOutboundQueue(sessionId).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

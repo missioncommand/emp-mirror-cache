@@ -7,8 +7,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelInfo;
-import org.cmapi.primitives.proto.CmapiProto.FindChannelsCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.FindChannelsOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -17,10 +17,10 @@ import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.service.ChannelManager;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class FindChannelsProcesor implements CommandProcessor {
+public class FindChannelsProcesor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -34,17 +34,17 @@ public class FindChannelsProcesor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final FindChannelsCommand command = req.getCommand().getFindChannels();
+        final FindChannelsOperation operation = req.getOperation().getFindChannels();
 
-        final List<ChannelInfo> channelInfos = channelManager.findChannels(sessionId, command.getFilter());
+        final List<ChannelInfo> channelInfos = channelManager.findChannels(sessionId, operation.getFilter());
         
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setPriority(Priority.MEDIUM.getValue())
-                .setCommand(OneOfCommand.newBuilder()
-                                        .setFindChannels(FindChannelsCommand.newBuilder(command)
-                                                                            .setStatus(Status.SUCCESS)
-                                                                            .addAllChannel(channelInfos)))
-                .build();
+                                             .setPriority(Priority.MEDIUM.getValue())
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setFindChannels(FindChannelsOperation.newBuilder(operation)
+                                                                                                               .setStatus(Status.SUCCESS)
+                                                                                                               .addAllChannel(channelInfos)))
+                                             .build();
         
         try {
             if (!sessionManager.getOutboundQueue(sessionId).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

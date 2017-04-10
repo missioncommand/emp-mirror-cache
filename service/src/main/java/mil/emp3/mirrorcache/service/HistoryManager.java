@@ -10,7 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.cmapi.primitives.proto.CmapiProto.HistoryInfo;
 import org.cmapi.primitives.proto.CmapiProto.LogEntry;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 
 import mil.emp3.mirrorcache.History.Entry;
 import mil.emp3.mirrorcache.channel.ChannelGroupHistory;
@@ -19,8 +19,8 @@ import mil.emp3.mirrorcache.channel.ChannelHistory;
 @ApplicationScoped
 public class HistoryManager {
 
-    private Map<String, ChannelHistory> channelHistoryMap;           // map<channelName, history>
-    private Map<String, ChannelGroupHistory> channelGroupHistoryMap; // map<channelGroupName, history>
+    private Map<String, ChannelHistory<OneOfOperation>> channelHistoryMap;           // map<channelName, history>
+    private Map<String, ChannelGroupHistory<OneOfOperation>> channelGroupHistoryMap; // map<channelGroupName, history>
     
     @PostConstruct
     public void init() {
@@ -35,12 +35,12 @@ public class HistoryManager {
             
             final List<LogEntry> entries = new ArrayList<>();
             
-            final ChannelHistory channelHistory = channelHistoryMap.get(channelName);
-            for (Entry<OneOfCommand> entry : channelHistory.getEntries()) {
+            final ChannelHistory<OneOfOperation> channelHistory = channelHistoryMap.get(channelName);
+            for (Entry<OneOfOperation> entry : channelHistory.getEntries()) {
                 entries.add(LogEntry.newBuilder()
                                     .setId(entry.getId())
                                     .setTime(entry.getTime())
-                                    .setCommand(entry.getValue())
+                                    .setOperation(entry.getValue())
                                     .build());
             }
             
@@ -60,12 +60,12 @@ public class HistoryManager {
             
             final List<LogEntry> entries = new ArrayList<>();
             
-            final ChannelGroupHistory channelGroupHistory = channelGroupHistoryMap.get(channelGroupName);
-            for (Entry<OneOfCommand> entry : channelGroupHistory.getEntries()) {
+            final ChannelGroupHistory<OneOfOperation> channelGroupHistory = channelGroupHistoryMap.get(channelGroupName);
+            for (Entry<OneOfOperation> entry : channelGroupHistory.getEntries()) {
                 entries.add(LogEntry.newBuilder()
                                     .setId(entry.getId())
                                     .setTime(entry.getTime())
-                                    .setCommand(entry.getValue())
+                                    .setOperation(entry.getValue())
                                     .build());
             }
             
@@ -80,10 +80,10 @@ public class HistoryManager {
         }
     }
     
-    public void logChannelEntry(String sessionId, String channelName, OneOfCommand command) {
+    public void logChannelEntry(String sessionId, String channelName, OneOfOperation operation) {
         throw new RuntimeException("not implemented");
     }
-    public void logChannelGroupEntry(String sessionId, String channelGroupName, OneOfCommand command) {
+    public void logChannelGroupEntry(String sessionId, String channelGroupName, OneOfOperation operation) {
         throw new RuntimeException("not implemented");
     }
 }

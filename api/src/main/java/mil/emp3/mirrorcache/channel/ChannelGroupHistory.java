@@ -1,12 +1,10 @@
 package mil.emp3.mirrorcache.channel;
 
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
-
 import mil.emp3.mirrorcache.History;
 
 /**
- * A history of channelGroup commands.
+ * A history of channelGroup operations.
  */
-public interface ChannelGroupHistory extends History<OneOfCommand> {
+public interface ChannelGroupHistory<T> extends History<T> {
 
 }

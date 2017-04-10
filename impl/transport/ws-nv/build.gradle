@@ -7,7 +7,7 @@ targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
     compileApi project (":mirrorcache-api")
+    
     compileApi         ("com.neovisionaries:nv-websocket-client")
-
-    compileApi         ("ch.qos.logback:logback-classic")
+    compileApi         ("org.slf4j:slf4j-api")
 }

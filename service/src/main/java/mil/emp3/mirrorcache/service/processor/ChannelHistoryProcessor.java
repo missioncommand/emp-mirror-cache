@@ -5,9 +5,9 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelHistoryCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelHistoryOperation;
 import org.cmapi.primitives.proto.CmapiProto.HistoryInfo;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -16,10 +16,10 @@ import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.service.HistoryManager;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelHistoryProcessor implements CommandProcessor {
+public class ChannelHistoryProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -33,20 +33,20 @@ public class ChannelHistoryProcessor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final ChannelHistoryCommand command = req.getCommand().getChannelHistory();
+        final ChannelHistoryOperation operation = req.getOperation().getChannelHistory();
 
         final HistoryInfo history = historyManager.getChannelHistory(sessionId,
-                                                                     command.getChannelName(),
-                                                                     command.getStartTime(),
-                                                                     command.getEndTime());
+                                                                     operation.getChannelName(),
+                                                                     operation.getStartTime(),
+                                                                     operation.getEndTime());
         
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setPriority(Priority.MEDIUM.getValue())
-                .setCommand(OneOfCommand.newBuilder()
-                                        .setChannelHistory(ChannelHistoryCommand.newBuilder(command)
-                                                                                .setStatus(Status.SUCCESS)
-                                                                                .setHistory(history)))
-                .build();
+                                             .setPriority(Priority.MEDIUM.getValue())
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setChannelHistory(ChannelHistoryOperation.newBuilder(operation)
+                                                                                                                   .setStatus(Status.SUCCESS)
+                                                                                                                   .setHistory(history)))
+                                             .build();
         
         try {
             if (!sessionManager.getOutboundQueue(sessionId).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

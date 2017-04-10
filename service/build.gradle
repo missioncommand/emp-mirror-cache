@@ -8,6 +8,8 @@ targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
     compileApi project (":mirrorcache-api")
+    compileApi project (":mirrorcache-model")
+    compileApi project (":mirrorcache-impl-core")
     
     compileApi         ("com.google.protobuf:protobuf-java-util")
     compileApi         ("ch.qos.logback:logback-classic")

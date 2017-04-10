@@ -8,30 +8,32 @@
 
 goog.provide('proto.cmapi.AltitudeMode');
 goog.provide('proto.cmapi.CacheInfo');
-goog.provide('proto.cmapi.ChannelCacheCommand');
-goog.provide('proto.cmapi.ChannelCloseCommand');
-goog.provide('proto.cmapi.ChannelGroupAddChannelCommand');
-goog.provide('proto.cmapi.ChannelGroupCacheCommand');
-goog.provide('proto.cmapi.ChannelGroupHistoryCommand');
+goog.provide('proto.cmapi.ChannelCacheOperation');
+goog.provide('proto.cmapi.ChannelCloseOperation');
+goog.provide('proto.cmapi.ChannelDeleteOperation');
+goog.provide('proto.cmapi.ChannelGroupAddChannelOperation');
+goog.provide('proto.cmapi.ChannelGroupCacheOperation');
+goog.provide('proto.cmapi.ChannelGroupCloseOperation');
+goog.provide('proto.cmapi.ChannelGroupDeleteOperation');
+goog.provide('proto.cmapi.ChannelGroupHistoryOperation');
 goog.provide('proto.cmapi.ChannelGroupInfo');
-goog.provide('proto.cmapi.ChannelGroupJoinCommand');
-goog.provide('proto.cmapi.ChannelGroupLeaveCommand');
-goog.provide('proto.cmapi.ChannelGroupPublishCommand');
-goog.provide('proto.cmapi.ChannelGroupRemoveChannelCommand');
-goog.provide('proto.cmapi.ChannelHistoryCommand');
+goog.provide('proto.cmapi.ChannelGroupOpenOperation');
+goog.provide('proto.cmapi.ChannelGroupPublishOperation');
+goog.provide('proto.cmapi.ChannelGroupRemoveChannelOperation');
+goog.provide('proto.cmapi.ChannelHistoryOperation');
 goog.provide('proto.cmapi.ChannelInfo');
-goog.provide('proto.cmapi.ChannelOpenCommand');
-goog.provide('proto.cmapi.ChannelPublishCommand');
+goog.provide('proto.cmapi.ChannelOpenOperation');
+goog.provide('proto.cmapi.ChannelPublishOperation');
 goog.provide('proto.cmapi.Circle');
 goog.provide('proto.cmapi.Container');
-goog.provide('proto.cmapi.CreateChannelCommand');
-goog.provide('proto.cmapi.CreateChannelGroupCommand');
-goog.provide('proto.cmapi.DeleteChannelCommand');
-goog.provide('proto.cmapi.DeleteChannelGroupCommand');
+goog.provide('proto.cmapi.CreateChannelGroupOperation');
+goog.provide('proto.cmapi.CreateChannelOperation');
+goog.provide('proto.cmapi.DeleteChannelGroupOperation');
+goog.provide('proto.cmapi.DeleteChannelOperation');
 goog.provide('proto.cmapi.EntityInfo');
 goog.provide('proto.cmapi.FillPattern');
-goog.provide('proto.cmapi.FindChannelGroupsCommand');
-goog.provide('proto.cmapi.FindChannelsCommand');
+goog.provide('proto.cmapi.FindChannelGroupsOperation');
+goog.provide('proto.cmapi.FindChannelsOperation');
 goog.provide('proto.cmapi.GeoColor');
 goog.provide('proto.cmapi.GeoFillStyle');
 goog.provide('proto.cmapi.GeoLabelStyle');
@@ -39,14 +41,16 @@ goog.provide('proto.cmapi.GeoPosition');
 goog.provide('proto.cmapi.GeoRenderable');
 goog.provide('proto.cmapi.GeoStrokeStyle');
 goog.provide('proto.cmapi.GeoTimeSpan');
+goog.provide('proto.cmapi.GetClientInfoCommmand');
 goog.provide('proto.cmapi.HistoryInfo');
 goog.provide('proto.cmapi.Justification');
 goog.provide('proto.cmapi.LogEntry');
 goog.provide('proto.cmapi.MemberInfo');
 goog.provide('proto.cmapi.MilStdSymbol');
 goog.provide('proto.cmapi.Modifier');
-goog.provide('proto.cmapi.OneOfCommand');
 goog.provide('proto.cmapi.OneOfFeature');
+goog.provide('proto.cmapi.OneOfOperation');
+goog.provide('proto.cmapi.ProtoClientInfo');
 goog.provide('proto.cmapi.ProtoMessage');
 goog.provide('proto.cmapi.ProtoPayload');
 goog.provide('proto.cmapi.QueueInfo');
@@ -57,6 +61,7 @@ goog.provide('proto.cmapi.Typeface');
 goog.require('jspb.Message');
 goog.require('jspb.BinaryReader');
 goog.require('jspb.BinaryWriter');
+goog.require('jspb.Map');
 goog.require('proto.google.protobuf.Timestamp');
 
 
@@ -166,49 +171,39 @@ proto.cmapi.GeoPosition.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.GeoPosition} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.GeoPosition.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.GeoPosition.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.GeoPosition.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.GeoPosition} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.GeoPosition.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.GeoPosition.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getLatitude();
+  f = message.getLatitude();
   if (f !== 0.0) {
     writer.writeDouble(
       1,
       f
     );
   }
-  f = this.getLongitude();
+  f = message.getLongitude();
   if (f !== 0.0) {
     writer.writeDouble(
       2,
       f
     );
   }
-  f = this.getAltitude();
+  f = message.getAltitude();
   if (f !== 0.0) {
     writer.writeDouble(
       3,
@@ -313,8 +308,8 @@ proto.cmapi.GeoColor.toObject = function(includeInstance, msg) {
     green: jspb.Message.getFieldWithDefault(msg, 2, 0),
     blue: jspb.Message.getFieldWithDefault(msg, 3, 0),
     alpha: +jspb.Message.getFieldWithDefault(msg, 4, 0.0),
-    customUserData1Map: (f = msg.getCustomUserData1Map()) ? f.toArray() : [],
-    customUserData2Map: (f = msg.getCustomUserData2Map()) ? f.toArray() : []
+    customUserData1Map: (f = msg.getCustomUserData1Map()) ? f.toObject(includeInstance, undefined) : [],
+    customUserData2Map: (f = msg.getCustomUserData2Map()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -389,67 +384,57 @@ proto.cmapi.GeoColor.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.GeoColor} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.GeoColor.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.GeoColor.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.GeoColor.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.GeoColor} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.GeoColor.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.GeoColor.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getRed();
+  f = message.getRed();
   if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = this.getGreen();
+  f = message.getGreen();
   if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = this.getBlue();
+  f = message.getBlue();
   if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = this.getAlpha();
+  f = message.getAlpha();
   if (f !== 0.0) {
     writer.writeDouble(
       4,
       f
     );
   }
-  f = this.getCustomUserData1Map(true);
+  f = message.getCustomUserData1Map(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(5, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
   }
-  f = this.getCustomUserData2Map(true);
+  f = message.getCustomUserData2Map(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(6, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeBytes);
   }
@@ -660,35 +645,25 @@ proto.cmapi.GeoFillStyle.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.GeoFillStyle} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.GeoFillStyle.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.GeoFillStyle.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.GeoFillStyle.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.GeoFillStyle} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.GeoFillStyle.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.GeoFillStyle.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getFillColor();
+  f = message.getFillColor();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -696,14 +671,14 @@ proto.cmapi.GeoFillStyle.prototype.serializeBinaryToWriter = function (writer) {
       proto.cmapi.GeoColor.serializeBinaryToWriter
     );
   }
-  f = this.getFillPattern();
+  f = message.getFillPattern();
   if (f !== 0.0) {
     writer.writeEnum(
       2,
       f
     );
   }
-  f = this.getDescription();
+  f = message.getDescription();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -886,35 +861,25 @@ proto.cmapi.GeoStrokeStyle.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.GeoStrokeStyle} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.GeoStrokeStyle.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.GeoStrokeStyle.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.GeoStrokeStyle.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.GeoStrokeStyle} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.GeoStrokeStyle.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.GeoStrokeStyle.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStrokeColor();
+  f = message.getStrokeColor();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -922,21 +887,21 @@ proto.cmapi.GeoStrokeStyle.prototype.serializeBinaryToWriter = function (writer)
       proto.cmapi.GeoColor.serializeBinaryToWriter
     );
   }
-  f = this.getStipplingPattern();
+  f = message.getStipplingPattern();
   if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = this.getStipplingFactor();
+  f = message.getStipplingFactor();
   if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = this.getStrokeWidth();
+  f = message.getStrokeWidth();
   if (f !== 0.0) {
     writer.writeDouble(
       4,
@@ -1145,35 +1110,25 @@ proto.cmapi.GeoLabelStyle.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.GeoLabelStyle} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.GeoLabelStyle.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.GeoLabelStyle.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.GeoLabelStyle.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.GeoLabelStyle} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.GeoLabelStyle.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.GeoLabelStyle.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getColor();
+  f = message.getColor();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -1181,7 +1136,7 @@ proto.cmapi.GeoLabelStyle.prototype.serializeBinaryToWriter = function (writer) 
       proto.cmapi.GeoColor.serializeBinaryToWriter
     );
   }
-  f = this.getOutlineColor();
+  f = message.getOutlineColor();
   if (f != null) {
     writer.writeMessage(
       2,
@@ -1189,28 +1144,28 @@ proto.cmapi.GeoLabelStyle.prototype.serializeBinaryToWriter = function (writer) 
       proto.cmapi.GeoColor.serializeBinaryToWriter
     );
   }
-  f = this.getJustification();
+  f = message.getJustification();
   if (f !== 0.0) {
     writer.writeEnum(
       3,
       f
     );
   }
-  f = this.getFontFamily();
+  f = message.getFontFamily();
   if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = this.getTypeface();
+  f = message.getTypeface();
   if (f !== 0.0) {
     writer.writeEnum(
       5,
       f
     );
   }
-  f = this.getSize();
+  f = message.getSize();
   if (f !== 0.0) {
     writer.writeDouble(
       6,
@@ -1444,35 +1399,25 @@ proto.cmapi.GeoTimeSpan.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.GeoTimeSpan} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.GeoTimeSpan.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.GeoTimeSpan.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.GeoTimeSpan.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.GeoTimeSpan} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.GeoTimeSpan.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.GeoTimeSpan.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getBegin();
+  f = message.getBegin();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -1480,7 +1425,7 @@ proto.cmapi.GeoTimeSpan.prototype.serializeBinaryToWriter = function (writer) {
       proto.google.protobuf.Timestamp.serializeBinaryToWriter
     );
   }
-  f = this.getEnd();
+  f = message.getEnd();
   if (f != null) {
     writer.writeMessage(
       2,
@@ -1713,42 +1658,32 @@ proto.cmapi.GeoRenderable.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.GeoRenderable} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.GeoRenderable.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.GeoRenderable.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.GeoRenderable.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.GeoRenderable} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.GeoRenderable.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.GeoRenderable.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getAltitudeMode();
+  f = message.getAltitudeMode();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getPositionList();
+  f = message.getPositionList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       2,
@@ -1756,7 +1691,7 @@ proto.cmapi.GeoRenderable.prototype.serializeBinaryToWriter = function (writer) 
       proto.cmapi.GeoPosition.serializeBinaryToWriter
     );
   }
-  f = this.getTimeStamp();
+  f = message.getTimeStamp();
   if (f != null) {
     writer.writeMessage(
       3,
@@ -1764,7 +1699,7 @@ proto.cmapi.GeoRenderable.prototype.serializeBinaryToWriter = function (writer) 
       proto.google.protobuf.Timestamp.serializeBinaryToWriter
     );
   }
-  f = this.getTimeSpanList();
+  f = message.getTimeSpanList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       4,
@@ -1772,7 +1707,7 @@ proto.cmapi.GeoRenderable.prototype.serializeBinaryToWriter = function (writer) 
       proto.cmapi.GeoTimeSpan.serializeBinaryToWriter
     );
   }
-  f = this.getLabelStyle();
+  f = message.getLabelStyle();
   if (f != null) {
     writer.writeMessage(
       5,
@@ -1780,7 +1715,7 @@ proto.cmapi.GeoRenderable.prototype.serializeBinaryToWriter = function (writer) 
       proto.cmapi.GeoLabelStyle.serializeBinaryToWriter
     );
   }
-  f = this.getStrokeStyle();
+  f = message.getStrokeStyle();
   if (f != null) {
     writer.writeMessage(
       6,
@@ -1788,7 +1723,7 @@ proto.cmapi.GeoRenderable.prototype.serializeBinaryToWriter = function (writer) 
       proto.cmapi.GeoStrokeStyle.serializeBinaryToWriter
     );
   }
-  f = this.getFillStyle();
+  f = message.getFillStyle();
   if (f != null) {
     writer.writeMessage(
       7,
@@ -1796,28 +1731,28 @@ proto.cmapi.GeoRenderable.prototype.serializeBinaryToWriter = function (writer) 
       proto.cmapi.GeoFillStyle.serializeBinaryToWriter
     );
   }
-  f = this.getExtrude();
+  f = message.getExtrude();
   if (f) {
     writer.writeBool(
       8,
       f
     );
   }
-  f = this.getTessellate();
+  f = message.getTessellate();
   if (f) {
     writer.writeBool(
       9,
       f
     );
   }
-  f = this.getBuffer();
+  f = message.getBuffer();
   if (f !== 0.0) {
     writer.writeDouble(
       10,
       f
     );
   }
-  f = this.getAzimuth();
+  f = message.getAzimuth();
   if (f !== 0.0) {
     writer.writeDouble(
       11,
@@ -2152,7 +2087,7 @@ proto.cmapi.MilStdSymbol.toObject = function(includeInstance, msg) {
     altitudeMode: jspb.Message.getFieldWithDefault(msg, 5, 0),
     positionList: jspb.Message.toObjectList(msg.getPositionList(),
     proto.cmapi.GeoPosition.toObject, includeInstance),
-    modifierMap: (f = msg.getModifierMap()) ? f.toArray() : [],
+    modifierMap: (f = msg.getModifierMap()) ? f.toObject(includeInstance, undefined) : [],
     fillStyle: (f = msg.getFillStyle()) && proto.cmapi.GeoFillStyle.toObject(includeInstance, f),
     strokeStyle: (f = msg.getStrokeStyle()) && proto.cmapi.GeoStrokeStyle.toObject(includeInstance, f),
     labelStyle: (f = msg.getLabelStyle()) && proto.cmapi.GeoLabelStyle.toObject(includeInstance, f),
@@ -2258,70 +2193,60 @@ proto.cmapi.MilStdSymbol.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.MilStdSymbol} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.MilStdSymbol.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.MilStdSymbol.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.MilStdSymbol.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.MilStdSymbol} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.MilStdSymbol.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.MilStdSymbol.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getGeoId();
+  f = message.getGeoId();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = this.getName();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getSymbolCode();
+  f = message.getSymbolCode();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = this.getSymbolStandard();
+  f = message.getSymbolStandard();
   if (f !== 0.0) {
     writer.writeEnum(
       4,
       f
     );
   }
-  f = this.getAltitudeMode();
+  f = message.getAltitudeMode();
   if (f !== 0.0) {
     writer.writeEnum(
       5,
       f
     );
   }
-  f = this.getPositionList();
+  f = message.getPositionList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       6,
@@ -2329,11 +2254,11 @@ proto.cmapi.MilStdSymbol.prototype.serializeBinaryToWriter = function (writer) {
       proto.cmapi.GeoPosition.serializeBinaryToWriter
     );
   }
-  f = this.getModifierMap(true);
+  f = message.getModifierMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(7, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
   }
-  f = this.getFillStyle();
+  f = message.getFillStyle();
   if (f != null) {
     writer.writeMessage(
       8,
@@ -2341,7 +2266,7 @@ proto.cmapi.MilStdSymbol.prototype.serializeBinaryToWriter = function (writer) {
       proto.cmapi.GeoFillStyle.serializeBinaryToWriter
     );
   }
-  f = this.getStrokeStyle();
+  f = message.getStrokeStyle();
   if (f != null) {
     writer.writeMessage(
       9,
@@ -2349,7 +2274,7 @@ proto.cmapi.MilStdSymbol.prototype.serializeBinaryToWriter = function (writer) {
       proto.cmapi.GeoStrokeStyle.serializeBinaryToWriter
     );
   }
-  f = this.getLabelStyle();
+  f = message.getLabelStyle();
   if (f != null) {
     writer.writeMessage(
       10,
@@ -2357,14 +2282,14 @@ proto.cmapi.MilStdSymbol.prototype.serializeBinaryToWriter = function (writer) {
       proto.cmapi.GeoLabelStyle.serializeBinaryToWriter
     );
   }
-  f = this.getIsSelected();
+  f = message.getIsSelected();
   if (f) {
     writer.writeBool(
       11,
       f
     );
   }
-  f = this.getMirrorKey();
+  f = message.getMirrorKey();
   if (f.length > 0) {
     writer.writeString(
       12,
@@ -2719,35 +2644,25 @@ proto.cmapi.Circle.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.Circle} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.Circle.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.Circle.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.Circle.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.Circle} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.Circle.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.Circle.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getRadius();
+  f = message.getRadius();
   if (f !== 0.0) {
     writer.writeDouble(
       1,
@@ -2902,35 +2817,25 @@ proto.cmapi.OneOfFeature.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.OneOfFeature} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.OneOfFeature.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.OneOfFeature.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.OneOfFeature.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.OneOfFeature} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.OneOfFeature.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.OneOfFeature.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getSymbol();
+  f = message.getSymbol();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -2938,7 +2843,7 @@ proto.cmapi.OneOfFeature.prototype.serializeBinaryToWriter = function (writer) {
       proto.cmapi.MilStdSymbol.serializeBinaryToWriter
     );
   }
-  f = this.getCircle();
+  f = message.getCircle();
   if (f != null) {
     writer.writeMessage(
       2,
@@ -3125,49 +3030,39 @@ proto.cmapi.Container.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.Container} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.Container.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.Container.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.Container.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.Container} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.Container.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.Container.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getGeoId();
+  f = message.getGeoId();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = this.getName();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getFeatureList();
+  f = message.getFeatureList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       3,
@@ -3238,6 +3133,146 @@ proto.cmapi.Container.prototype.addFeature = function(opt_value, opt_index) {
 
 proto.cmapi.Container.prototype.clearFeatureList = function() {
   this.setFeatureList([]);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.cmapi.ProtoClientInfo = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.cmapi.ProtoClientInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.cmapi.ProtoClientInfo.displayName = 'proto.cmapi.ProtoClientInfo';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.cmapi.ProtoClientInfo.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ProtoClientInfo.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.cmapi.ProtoClientInfo} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.cmapi.ProtoClientInfo.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    clientId: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.cmapi.ProtoClientInfo}
+ */
+proto.cmapi.ProtoClientInfo.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.cmapi.ProtoClientInfo;
+  return proto.cmapi.ProtoClientInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.cmapi.ProtoClientInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.cmapi.ProtoClientInfo}
+ */
+proto.cmapi.ProtoClientInfo.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setClientId(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.cmapi.ProtoClientInfo.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.cmapi.ProtoClientInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ProtoClientInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.cmapi.ProtoClientInfo.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getClientId();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string client_id = 1;
+ * @return {string}
+ */
+proto.cmapi.ProtoClientInfo.prototype.getClientId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.cmapi.ProtoClientInfo.prototype.setClientId = function(value) {
+  jspb.Message.setField(this, 1, value);
 };
 
 
@@ -3350,42 +3385,32 @@ proto.cmapi.QueueInfo.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.QueueInfo} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.QueueInfo.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.QueueInfo.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.QueueInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.QueueInfo} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.QueueInfo.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.QueueInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getQueueName();
+  f = message.getQueueName();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = this.getEntryList();
+  f = message.getEntryList();
   if (f.length > 0) {
     writer.writeRepeatedString(
       2,
@@ -3550,42 +3575,32 @@ proto.cmapi.CacheInfo.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.CacheInfo} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.CacheInfo.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.CacheInfo.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.CacheInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.CacheInfo} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.CacheInfo.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.CacheInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getName();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = this.getEntityidList();
+  f = message.getEntityidList();
   if (f.length > 0) {
     writer.writePackedInt32(
       2,
@@ -3738,35 +3753,25 @@ proto.cmapi.MemberInfo.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.MemberInfo} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.MemberInfo.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.MemberInfo.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.MemberInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.MemberInfo} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.MemberInfo.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.MemberInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getSessionId();
+  f = message.getSessionId();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -3917,63 +3922,53 @@ proto.cmapi.ChannelInfo.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelInfo} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelInfo.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.ChannelInfo.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelInfo} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelInfo.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getName();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = this.getVisibility();
+  f = message.getVisibility();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getType();
+  f = message.getType();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = this.getIsOpen();
+  f = message.getIsOpen();
   if (f) {
     writer.writeBool(
       4,
       f
     );
   }
-  f = this.getMemberList();
+  f = message.getMemberList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       5,
@@ -4133,7 +4128,7 @@ proto.cmapi.ChannelGroupInfo.prototype.toObject = function(opt_includeInstance) 
 proto.cmapi.ChannelGroupInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    isJoined: jspb.Message.getFieldWithDefault(msg, 2, false),
+    isOpen: jspb.Message.getFieldWithDefault(msg, 2, false),
     channelList: jspb.Message.toObjectList(msg.getChannelList(),
     proto.cmapi.ChannelInfo.toObject, includeInstance),
     memberList: jspb.Message.toObjectList(msg.getMemberList(),
@@ -4180,7 +4175,7 @@ proto.cmapi.ChannelGroupInfo.deserializeBinaryFromReader = function(msg, reader)
       break;
     case 2:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsJoined(value);
+      msg.setIsOpen(value);
       break;
     case 3:
       var value = new proto.cmapi.ChannelInfo;
@@ -4202,49 +4197,39 @@ proto.cmapi.ChannelGroupInfo.deserializeBinaryFromReader = function(msg, reader)
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelGroupInfo} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelGroupInfo.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.ChannelGroupInfo.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelGroupInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupInfo} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelGroupInfo.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelGroupInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getName();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = this.getIsJoined();
+  f = message.getIsOpen();
   if (f) {
     writer.writeBool(
       2,
       f
     );
   }
-  f = this.getChannelList();
+  f = message.getChannelList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       3,
@@ -4252,7 +4237,7 @@ proto.cmapi.ChannelGroupInfo.prototype.serializeBinaryToWriter = function (write
       proto.cmapi.ChannelInfo.serializeBinaryToWriter
     );
   }
-  f = this.getMemberList();
+  f = message.getMemberList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       4,
@@ -4279,18 +4264,18 @@ proto.cmapi.ChannelGroupInfo.prototype.setName = function(value) {
 
 
 /**
- * optional bool is_joined = 2;
+ * optional bool is_open = 2;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.cmapi.ChannelGroupInfo.prototype.getIsJoined = function() {
+proto.cmapi.ChannelGroupInfo.prototype.getIsOpen = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 2, false));
 };
 
 
 /** @param {boolean} value */
-proto.cmapi.ChannelGroupInfo.prototype.setIsJoined = function(value) {
+proto.cmapi.ChannelGroupInfo.prototype.setIsOpen = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -4488,77 +4473,67 @@ proto.cmapi.EntityInfo.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.EntityInfo} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.EntityInfo.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.EntityInfo.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.EntityInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.EntityInfo} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.EntityInfo.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.EntityInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getId();
+  f = message.getId();
   if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = this.getVersion();
+  f = message.getVersion();
   if (f !== 0) {
     writer.writeInt32(
       2,
       f
     );
   }
-  f = this.getPayloadId();
+  f = message.getPayloadId();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = this.getPayloadType();
+  f = message.getPayloadType();
   if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = this.getPayloadData_asU8();
+  f = message.getPayloadData_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       5,
       f
     );
   }
-  f = this.getCreatedTime();
+  f = message.getCreatedTime();
   if (f !== 0) {
     writer.writeInt64(
       6,
       f
     );
   }
-  f = this.getUpdatedTime();
+  f = message.getUpdatedTime();
   if (f !== 0) {
     writer.writeInt64(
       7,
@@ -4745,7 +4720,7 @@ proto.cmapi.LogEntry.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
     time: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    command: (f = msg.getCommand()) && proto.cmapi.OneOfCommand.toObject(includeInstance, f)
+    operation: (f = msg.getOperation()) && proto.cmapi.OneOfOperation.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -4791,9 +4766,9 @@ proto.cmapi.LogEntry.deserializeBinaryFromReader = function(msg, reader) {
       msg.setTime(value);
       break;
     case 3:
-      var value = new proto.cmapi.OneOfCommand;
-      reader.readMessage(value,proto.cmapi.OneOfCommand.deserializeBinaryFromReader);
-      msg.setCommand(value);
+      var value = new proto.cmapi.OneOfOperation;
+      reader.readMessage(value,proto.cmapi.OneOfOperation.deserializeBinaryFromReader);
+      msg.setOperation(value);
       break;
     default:
       reader.skipField();
@@ -4805,54 +4780,44 @@ proto.cmapi.LogEntry.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.LogEntry} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.LogEntry.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.LogEntry.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.LogEntry.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.LogEntry} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.LogEntry.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.LogEntry.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getId();
+  f = message.getId();
   if (f !== 0) {
     writer.writeInt32(
       1,
       f
     );
   }
-  f = this.getTime();
+  f = message.getTime();
   if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = this.getCommand();
+  f = message.getOperation();
   if (f != null) {
     writer.writeMessage(
       3,
       f,
-      proto.cmapi.OneOfCommand.serializeBinaryToWriter
+      proto.cmapi.OneOfOperation.serializeBinaryToWriter
     );
   }
 };
@@ -4889,23 +4854,23 @@ proto.cmapi.LogEntry.prototype.setTime = function(value) {
 
 
 /**
- * optional OneOfCommand command = 3;
- * @return {?proto.cmapi.OneOfCommand}
+ * optional OneOfOperation operation = 3;
+ * @return {?proto.cmapi.OneOfOperation}
  */
-proto.cmapi.LogEntry.prototype.getCommand = function() {
-  return /** @type{?proto.cmapi.OneOfCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.OneOfCommand, 3));
+proto.cmapi.LogEntry.prototype.getOperation = function() {
+  return /** @type{?proto.cmapi.OneOfOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.OneOfOperation, 3));
 };
 
 
-/** @param {?proto.cmapi.OneOfCommand|undefined} value */
-proto.cmapi.LogEntry.prototype.setCommand = function(value) {
+/** @param {?proto.cmapi.OneOfOperation|undefined} value */
+proto.cmapi.LogEntry.prototype.setOperation = function(value) {
   jspb.Message.setWrapperField(this, 3, value);
 };
 
 
-proto.cmapi.LogEntry.prototype.clearCommand = function() {
-  this.setCommand(undefined);
+proto.cmapi.LogEntry.prototype.clearOperation = function() {
+  this.setOperation(undefined);
 };
 
 
@@ -4913,7 +4878,7 @@ proto.cmapi.LogEntry.prototype.clearCommand = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.LogEntry.prototype.hasCommand = function() {
+proto.cmapi.LogEntry.prototype.hasOperation = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -5034,49 +4999,39 @@ proto.cmapi.HistoryInfo.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.HistoryInfo} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.HistoryInfo.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.HistoryInfo.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.HistoryInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.HistoryInfo} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.HistoryInfo.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.HistoryInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStartTime();
+  f = message.getStartTime();
   if (f !== 0) {
     writer.writeInt64(
       1,
       f
     );
   }
-  f = this.getEndTime();
+  f = message.getEndTime();
   if (f !== 0) {
     writer.writeInt64(
       2,
       f
     );
   }
-  f = this.getLogList();
+  f = message.getLogList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       3,
@@ -5161,12 +5116,12 @@ proto.cmapi.HistoryInfo.prototype.clearLogList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.OneOfCommand = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.cmapi.OneOfCommand.oneofGroups_);
+proto.cmapi.OneOfOperation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.cmapi.OneOfOperation.oneofGroups_);
 };
-goog.inherits(proto.cmapi.OneOfCommand, jspb.Message);
+goog.inherits(proto.cmapi.OneOfOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.OneOfCommand.displayName = 'proto.cmapi.OneOfCommand';
+  proto.cmapi.OneOfOperation.displayName = 'proto.cmapi.OneOfOperation';
 }
 /**
  * Oneof group definitions for this message. Each group defines the field
@@ -5176,38 +5131,41 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.cmapi.OneOfCommand.oneofGroups_ = [[100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117]];
+proto.cmapi.OneOfOperation.oneofGroups_ = [[100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120]];
 
 /**
  * @enum {number}
  */
-proto.cmapi.OneOfCommand.CommandCase = {
-  COMMAND_NOT_SET: 0,
+proto.cmapi.OneOfOperation.OperationCase = {
+  OPERATION_NOT_SET: 0,
   CREATE_CHANNEL: 100,
   DELETE_CHANNEL: 101,
   FIND_CHANNELS: 102,
   CHANNEL_OPEN: 103,
   CHANNEL_CLOSE: 104,
   CHANNEL_PUBLISH: 105,
-  CHANNEL_CACHE: 106,
-  CHANNEL_HISTORY: 107,
-  CREATE_CHANNEL_GROUP: 108,
-  DELETE_CHANNEL_GROUP: 109,
-  FIND_CHANNEL_GROUPS: 110,
-  CHANNEL_GROUP_JOIN: 111,
-  CHANNEL_GROUP_LEAVE: 112,
-  CHANNEL_GROUP_ADD_CHANNEL: 113,
-  CHANNEL_GROUP_REMOVE_CHANNEL: 114,
-  CHANNEL_GROUP_PUBLISH: 115,
-  CHANNEL_GROUP_CACHE: 116,
-  CHANNEL_GROUP_HISTORY: 117
+  CHANNEL_DELETE: 106,
+  CHANNEL_CACHE: 107,
+  CHANNEL_HISTORY: 108,
+  CREATE_CHANNEL_GROUP: 109,
+  DELETE_CHANNEL_GROUP: 110,
+  FIND_CHANNEL_GROUPS: 111,
+  CHANNEL_GROUP_OPEN: 112,
+  CHANNEL_GROUP_CLOSE: 113,
+  CHANNEL_GROUP_ADD_CHANNEL: 114,
+  CHANNEL_GROUP_REMOVE_CHANNEL: 115,
+  CHANNEL_GROUP_PUBLISH: 116,
+  CHANNEL_GROUP_DELETE: 117,
+  CHANNEL_GROUP_CACHE: 118,
+  CHANNEL_GROUP_HISTORY: 119,
+  GET_CLIENT_INFO: 120
 };
 
 /**
- * @return {proto.cmapi.OneOfCommand.CommandCase}
+ * @return {proto.cmapi.OneOfOperation.OperationCase}
  */
-proto.cmapi.OneOfCommand.prototype.getCommandCase = function() {
-  return /** @type {proto.cmapi.OneOfCommand.CommandCase} */(jspb.Message.computeOneofCase(this, proto.cmapi.OneOfCommand.oneofGroups_[0]));
+proto.cmapi.OneOfOperation.prototype.getOperationCase = function() {
+  return /** @type {proto.cmapi.OneOfOperation.OperationCase} */(jspb.Message.computeOneofCase(this, proto.cmapi.OneOfOperation.oneofGroups_[0]));
 };
 
 
@@ -5223,8 +5181,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.OneOfCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.OneOfCommand.toObject(opt_includeInstance, this);
+proto.cmapi.OneOfOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.OneOfOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -5233,29 +5191,32 @@ proto.cmapi.OneOfCommand.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.OneOfCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.OneOfOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.OneOfCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.OneOfOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
-    createChannel: (f = msg.getCreateChannel()) && proto.cmapi.CreateChannelCommand.toObject(includeInstance, f),
-    deleteChannel: (f = msg.getDeleteChannel()) && proto.cmapi.DeleteChannelCommand.toObject(includeInstance, f),
-    findChannels: (f = msg.getFindChannels()) && proto.cmapi.FindChannelsCommand.toObject(includeInstance, f),
-    channelOpen: (f = msg.getChannelOpen()) && proto.cmapi.ChannelOpenCommand.toObject(includeInstance, f),
-    channelClose: (f = msg.getChannelClose()) && proto.cmapi.ChannelCloseCommand.toObject(includeInstance, f),
-    channelPublish: (f = msg.getChannelPublish()) && proto.cmapi.ChannelPublishCommand.toObject(includeInstance, f),
-    channelCache: (f = msg.getChannelCache()) && proto.cmapi.ChannelCacheCommand.toObject(includeInstance, f),
-    channelHistory: (f = msg.getChannelHistory()) && proto.cmapi.ChannelHistoryCommand.toObject(includeInstance, f),
-    createChannelGroup: (f = msg.getCreateChannelGroup()) && proto.cmapi.CreateChannelGroupCommand.toObject(includeInstance, f),
-    deleteChannelGroup: (f = msg.getDeleteChannelGroup()) && proto.cmapi.DeleteChannelGroupCommand.toObject(includeInstance, f),
-    findChannelGroups: (f = msg.getFindChannelGroups()) && proto.cmapi.FindChannelGroupsCommand.toObject(includeInstance, f),
-    channelGroupJoin: (f = msg.getChannelGroupJoin()) && proto.cmapi.ChannelGroupJoinCommand.toObject(includeInstance, f),
-    channelGroupLeave: (f = msg.getChannelGroupLeave()) && proto.cmapi.ChannelGroupLeaveCommand.toObject(includeInstance, f),
-    channelGroupAddChannel: (f = msg.getChannelGroupAddChannel()) && proto.cmapi.ChannelGroupAddChannelCommand.toObject(includeInstance, f),
-    channelGroupRemoveChannel: (f = msg.getChannelGroupRemoveChannel()) && proto.cmapi.ChannelGroupRemoveChannelCommand.toObject(includeInstance, f),
-    channelGroupPublish: (f = msg.getChannelGroupPublish()) && proto.cmapi.ChannelGroupPublishCommand.toObject(includeInstance, f),
-    channelGroupCache: (f = msg.getChannelGroupCache()) && proto.cmapi.ChannelGroupCacheCommand.toObject(includeInstance, f),
-    channelGroupHistory: (f = msg.getChannelGroupHistory()) && proto.cmapi.ChannelGroupHistoryCommand.toObject(includeInstance, f)
+    createChannel: (f = msg.getCreateChannel()) && proto.cmapi.CreateChannelOperation.toObject(includeInstance, f),
+    deleteChannel: (f = msg.getDeleteChannel()) && proto.cmapi.DeleteChannelOperation.toObject(includeInstance, f),
+    findChannels: (f = msg.getFindChannels()) && proto.cmapi.FindChannelsOperation.toObject(includeInstance, f),
+    channelOpen: (f = msg.getChannelOpen()) && proto.cmapi.ChannelOpenOperation.toObject(includeInstance, f),
+    channelClose: (f = msg.getChannelClose()) && proto.cmapi.ChannelCloseOperation.toObject(includeInstance, f),
+    channelPublish: (f = msg.getChannelPublish()) && proto.cmapi.ChannelPublishOperation.toObject(includeInstance, f),
+    channelDelete: (f = msg.getChannelDelete()) && proto.cmapi.ChannelDeleteOperation.toObject(includeInstance, f),
+    channelCache: (f = msg.getChannelCache()) && proto.cmapi.ChannelCacheOperation.toObject(includeInstance, f),
+    channelHistory: (f = msg.getChannelHistory()) && proto.cmapi.ChannelHistoryOperation.toObject(includeInstance, f),
+    createChannelGroup: (f = msg.getCreateChannelGroup()) && proto.cmapi.CreateChannelGroupOperation.toObject(includeInstance, f),
+    deleteChannelGroup: (f = msg.getDeleteChannelGroup()) && proto.cmapi.DeleteChannelGroupOperation.toObject(includeInstance, f),
+    findChannelGroups: (f = msg.getFindChannelGroups()) && proto.cmapi.FindChannelGroupsOperation.toObject(includeInstance, f),
+    channelGroupOpen: (f = msg.getChannelGroupOpen()) && proto.cmapi.ChannelGroupOpenOperation.toObject(includeInstance, f),
+    channelGroupClose: (f = msg.getChannelGroupClose()) && proto.cmapi.ChannelGroupCloseOperation.toObject(includeInstance, f),
+    channelGroupAddChannel: (f = msg.getChannelGroupAddChannel()) && proto.cmapi.ChannelGroupAddChannelOperation.toObject(includeInstance, f),
+    channelGroupRemoveChannel: (f = msg.getChannelGroupRemoveChannel()) && proto.cmapi.ChannelGroupRemoveChannelOperation.toObject(includeInstance, f),
+    channelGroupPublish: (f = msg.getChannelGroupPublish()) && proto.cmapi.ChannelGroupPublishOperation.toObject(includeInstance, f),
+    channelGroupDelete: (f = msg.getChannelGroupDelete()) && proto.cmapi.ChannelGroupDeleteOperation.toObject(includeInstance, f),
+    channelGroupCache: (f = msg.getChannelGroupCache()) && proto.cmapi.ChannelGroupCacheOperation.toObject(includeInstance, f),
+    channelGroupHistory: (f = msg.getChannelGroupHistory()) && proto.cmapi.ChannelGroupHistoryOperation.toObject(includeInstance, f),
+    getClientInfo: (f = msg.getGetClientInfo()) && proto.cmapi.GetClientInfoCommmand.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5269,23 +5230,23 @@ proto.cmapi.OneOfCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.OneOfCommand}
+ * @return {!proto.cmapi.OneOfOperation}
  */
-proto.cmapi.OneOfCommand.deserializeBinary = function(bytes) {
+proto.cmapi.OneOfOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.OneOfCommand;
-  return proto.cmapi.OneOfCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.OneOfOperation;
+  return proto.cmapi.OneOfOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.OneOfCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.OneOfOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.OneOfCommand}
+ * @return {!proto.cmapi.OneOfOperation}
  */
-proto.cmapi.OneOfCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.OneOfOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -5293,94 +5254,109 @@ proto.cmapi.OneOfCommand.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 100:
-      var value = new proto.cmapi.CreateChannelCommand;
-      reader.readMessage(value,proto.cmapi.CreateChannelCommand.deserializeBinaryFromReader);
+      var value = new proto.cmapi.CreateChannelOperation;
+      reader.readMessage(value,proto.cmapi.CreateChannelOperation.deserializeBinaryFromReader);
       msg.setCreateChannel(value);
       break;
     case 101:
-      var value = new proto.cmapi.DeleteChannelCommand;
-      reader.readMessage(value,proto.cmapi.DeleteChannelCommand.deserializeBinaryFromReader);
+      var value = new proto.cmapi.DeleteChannelOperation;
+      reader.readMessage(value,proto.cmapi.DeleteChannelOperation.deserializeBinaryFromReader);
       msg.setDeleteChannel(value);
       break;
     case 102:
-      var value = new proto.cmapi.FindChannelsCommand;
-      reader.readMessage(value,proto.cmapi.FindChannelsCommand.deserializeBinaryFromReader);
+      var value = new proto.cmapi.FindChannelsOperation;
+      reader.readMessage(value,proto.cmapi.FindChannelsOperation.deserializeBinaryFromReader);
       msg.setFindChannels(value);
       break;
     case 103:
-      var value = new proto.cmapi.ChannelOpenCommand;
-      reader.readMessage(value,proto.cmapi.ChannelOpenCommand.deserializeBinaryFromReader);
+      var value = new proto.cmapi.ChannelOpenOperation;
+      reader.readMessage(value,proto.cmapi.ChannelOpenOperation.deserializeBinaryFromReader);
       msg.setChannelOpen(value);
       break;
     case 104:
-      var value = new proto.cmapi.ChannelCloseCommand;
-      reader.readMessage(value,proto.cmapi.ChannelCloseCommand.deserializeBinaryFromReader);
+      var value = new proto.cmapi.ChannelCloseOperation;
+      reader.readMessage(value,proto.cmapi.ChannelCloseOperation.deserializeBinaryFromReader);
       msg.setChannelClose(value);
       break;
     case 105:
-      var value = new proto.cmapi.ChannelPublishCommand;
-      reader.readMessage(value,proto.cmapi.ChannelPublishCommand.deserializeBinaryFromReader);
+      var value = new proto.cmapi.ChannelPublishOperation;
+      reader.readMessage(value,proto.cmapi.ChannelPublishOperation.deserializeBinaryFromReader);
       msg.setChannelPublish(value);
       break;
     case 106:
-      var value = new proto.cmapi.ChannelCacheCommand;
-      reader.readMessage(value,proto.cmapi.ChannelCacheCommand.deserializeBinaryFromReader);
-      msg.setChannelCache(value);
+      var value = new proto.cmapi.ChannelDeleteOperation;
+      reader.readMessage(value,proto.cmapi.ChannelDeleteOperation.deserializeBinaryFromReader);
+      msg.setChannelDelete(value);
       break;
     case 107:
-      var value = new proto.cmapi.ChannelHistoryCommand;
-      reader.readMessage(value,proto.cmapi.ChannelHistoryCommand.deserializeBinaryFromReader);
-      msg.setChannelHistory(value);
+      var value = new proto.cmapi.ChannelCacheOperation;
+      reader.readMessage(value,proto.cmapi.ChannelCacheOperation.deserializeBinaryFromReader);
+      msg.setChannelCache(value);
       break;
     case 108:
-      var value = new proto.cmapi.CreateChannelGroupCommand;
-      reader.readMessage(value,proto.cmapi.CreateChannelGroupCommand.deserializeBinaryFromReader);
-      msg.setCreateChannelGroup(value);
+      var value = new proto.cmapi.ChannelHistoryOperation;
+      reader.readMessage(value,proto.cmapi.ChannelHistoryOperation.deserializeBinaryFromReader);
+      msg.setChannelHistory(value);
       break;
     case 109:
-      var value = new proto.cmapi.DeleteChannelGroupCommand;
-      reader.readMessage(value,proto.cmapi.DeleteChannelGroupCommand.deserializeBinaryFromReader);
-      msg.setDeleteChannelGroup(value);
+      var value = new proto.cmapi.CreateChannelGroupOperation;
+      reader.readMessage(value,proto.cmapi.CreateChannelGroupOperation.deserializeBinaryFromReader);
+      msg.setCreateChannelGroup(value);
       break;
     case 110:
-      var value = new proto.cmapi.FindChannelGroupsCommand;
-      reader.readMessage(value,proto.cmapi.FindChannelGroupsCommand.deserializeBinaryFromReader);
-      msg.setFindChannelGroups(value);
+      var value = new proto.cmapi.DeleteChannelGroupOperation;
+      reader.readMessage(value,proto.cmapi.DeleteChannelGroupOperation.deserializeBinaryFromReader);
+      msg.setDeleteChannelGroup(value);
       break;
     case 111:
-      var value = new proto.cmapi.ChannelGroupJoinCommand;
-      reader.readMessage(value,proto.cmapi.ChannelGroupJoinCommand.deserializeBinaryFromReader);
-      msg.setChannelGroupJoin(value);
+      var value = new proto.cmapi.FindChannelGroupsOperation;
+      reader.readMessage(value,proto.cmapi.FindChannelGroupsOperation.deserializeBinaryFromReader);
+      msg.setFindChannelGroups(value);
       break;
     case 112:
-      var value = new proto.cmapi.ChannelGroupLeaveCommand;
-      reader.readMessage(value,proto.cmapi.ChannelGroupLeaveCommand.deserializeBinaryFromReader);
-      msg.setChannelGroupLeave(value);
+      var value = new proto.cmapi.ChannelGroupOpenOperation;
+      reader.readMessage(value,proto.cmapi.ChannelGroupOpenOperation.deserializeBinaryFromReader);
+      msg.setChannelGroupOpen(value);
       break;
     case 113:
-      var value = new proto.cmapi.ChannelGroupAddChannelCommand;
-      reader.readMessage(value,proto.cmapi.ChannelGroupAddChannelCommand.deserializeBinaryFromReader);
-      msg.setChannelGroupAddChannel(value);
+      var value = new proto.cmapi.ChannelGroupCloseOperation;
+      reader.readMessage(value,proto.cmapi.ChannelGroupCloseOperation.deserializeBinaryFromReader);
+      msg.setChannelGroupClose(value);
       break;
     case 114:
-      var value = new proto.cmapi.ChannelGroupRemoveChannelCommand;
-      reader.readMessage(value,proto.cmapi.ChannelGroupRemoveChannelCommand.deserializeBinaryFromReader);
-      msg.setChannelGroupRemoveChannel(value);
+      var value = new proto.cmapi.ChannelGroupAddChannelOperation;
+      reader.readMessage(value,proto.cmapi.ChannelGroupAddChannelOperation.deserializeBinaryFromReader);
+      msg.setChannelGroupAddChannel(value);
       break;
     case 115:
-      var value = new proto.cmapi.ChannelGroupPublishCommand;
-      reader.readMessage(value,proto.cmapi.ChannelGroupPublishCommand.deserializeBinaryFromReader);
-      msg.setChannelGroupPublish(value);
+      var value = new proto.cmapi.ChannelGroupRemoveChannelOperation;
+      reader.readMessage(value,proto.cmapi.ChannelGroupRemoveChannelOperation.deserializeBinaryFromReader);
+      msg.setChannelGroupRemoveChannel(value);
       break;
     case 116:
-      var value = new proto.cmapi.ChannelGroupCacheCommand;
-      reader.readMessage(value,proto.cmapi.ChannelGroupCacheCommand.deserializeBinaryFromReader);
-      msg.setChannelGroupCache(value);
+      var value = new proto.cmapi.ChannelGroupPublishOperation;
+      reader.readMessage(value,proto.cmapi.ChannelGroupPublishOperation.deserializeBinaryFromReader);
+      msg.setChannelGroupPublish(value);
       break;
     case 117:
-      var value = new proto.cmapi.ChannelGroupHistoryCommand;
-      reader.readMessage(value,proto.cmapi.ChannelGroupHistoryCommand.deserializeBinaryFromReader);
+      var value = new proto.cmapi.ChannelGroupDeleteOperation;
+      reader.readMessage(value,proto.cmapi.ChannelGroupDeleteOperation.deserializeBinaryFromReader);
+      msg.setChannelGroupDelete(value);
+      break;
+    case 118:
+      var value = new proto.cmapi.ChannelGroupCacheOperation;
+      reader.readMessage(value,proto.cmapi.ChannelGroupCacheOperation.deserializeBinaryFromReader);
+      msg.setChannelGroupCache(value);
+      break;
+    case 119:
+      var value = new proto.cmapi.ChannelGroupHistoryOperation;
+      reader.readMessage(value,proto.cmapi.ChannelGroupHistoryOperation.deserializeBinaryFromReader);
       msg.setChannelGroupHistory(value);
+      break;
+    case 120:
+      var value = new proto.cmapi.GetClientInfoCommmand;
+      reader.readMessage(value,proto.cmapi.GetClientInfoCommmand.deserializeBinaryFromReader);
+      msg.setGetClientInfo(value);
       break;
     default:
       reader.skipField();
@@ -5392,198 +5368,212 @@ proto.cmapi.OneOfCommand.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.OneOfCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.OneOfCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.OneOfCommand.prototype.serializeBinary = function() {
+proto.cmapi.OneOfOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.OneOfOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.OneOfOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.OneOfCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.OneOfOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getCreateChannel();
+  f = message.getCreateChannel();
   if (f != null) {
     writer.writeMessage(
       100,
       f,
-      proto.cmapi.CreateChannelCommand.serializeBinaryToWriter
+      proto.cmapi.CreateChannelOperation.serializeBinaryToWriter
     );
   }
-  f = this.getDeleteChannel();
+  f = message.getDeleteChannel();
   if (f != null) {
     writer.writeMessage(
       101,
       f,
-      proto.cmapi.DeleteChannelCommand.serializeBinaryToWriter
+      proto.cmapi.DeleteChannelOperation.serializeBinaryToWriter
     );
   }
-  f = this.getFindChannels();
+  f = message.getFindChannels();
   if (f != null) {
     writer.writeMessage(
       102,
       f,
-      proto.cmapi.FindChannelsCommand.serializeBinaryToWriter
+      proto.cmapi.FindChannelsOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelOpen();
+  f = message.getChannelOpen();
   if (f != null) {
     writer.writeMessage(
       103,
       f,
-      proto.cmapi.ChannelOpenCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelOpenOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelClose();
+  f = message.getChannelClose();
   if (f != null) {
     writer.writeMessage(
       104,
       f,
-      proto.cmapi.ChannelCloseCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelCloseOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelPublish();
+  f = message.getChannelPublish();
   if (f != null) {
     writer.writeMessage(
       105,
       f,
-      proto.cmapi.ChannelPublishCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelPublishOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelCache();
+  f = message.getChannelDelete();
   if (f != null) {
     writer.writeMessage(
       106,
       f,
-      proto.cmapi.ChannelCacheCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelDeleteOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelHistory();
+  f = message.getChannelCache();
   if (f != null) {
     writer.writeMessage(
       107,
       f,
-      proto.cmapi.ChannelHistoryCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelCacheOperation.serializeBinaryToWriter
     );
   }
-  f = this.getCreateChannelGroup();
+  f = message.getChannelHistory();
   if (f != null) {
     writer.writeMessage(
       108,
       f,
-      proto.cmapi.CreateChannelGroupCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelHistoryOperation.serializeBinaryToWriter
     );
   }
-  f = this.getDeleteChannelGroup();
+  f = message.getCreateChannelGroup();
   if (f != null) {
     writer.writeMessage(
       109,
       f,
-      proto.cmapi.DeleteChannelGroupCommand.serializeBinaryToWriter
+      proto.cmapi.CreateChannelGroupOperation.serializeBinaryToWriter
     );
   }
-  f = this.getFindChannelGroups();
+  f = message.getDeleteChannelGroup();
   if (f != null) {
     writer.writeMessage(
       110,
       f,
-      proto.cmapi.FindChannelGroupsCommand.serializeBinaryToWriter
+      proto.cmapi.DeleteChannelGroupOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelGroupJoin();
+  f = message.getFindChannelGroups();
   if (f != null) {
     writer.writeMessage(
       111,
       f,
-      proto.cmapi.ChannelGroupJoinCommand.serializeBinaryToWriter
+      proto.cmapi.FindChannelGroupsOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelGroupLeave();
+  f = message.getChannelGroupOpen();
   if (f != null) {
     writer.writeMessage(
       112,
       f,
-      proto.cmapi.ChannelGroupLeaveCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelGroupOpenOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelGroupAddChannel();
+  f = message.getChannelGroupClose();
   if (f != null) {
     writer.writeMessage(
       113,
       f,
-      proto.cmapi.ChannelGroupAddChannelCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelGroupCloseOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelGroupRemoveChannel();
+  f = message.getChannelGroupAddChannel();
   if (f != null) {
     writer.writeMessage(
       114,
       f,
-      proto.cmapi.ChannelGroupRemoveChannelCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelGroupAddChannelOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelGroupPublish();
+  f = message.getChannelGroupRemoveChannel();
   if (f != null) {
     writer.writeMessage(
       115,
       f,
-      proto.cmapi.ChannelGroupPublishCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelGroupRemoveChannelOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelGroupCache();
+  f = message.getChannelGroupPublish();
   if (f != null) {
     writer.writeMessage(
       116,
       f,
-      proto.cmapi.ChannelGroupCacheCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelGroupPublishOperation.serializeBinaryToWriter
     );
   }
-  f = this.getChannelGroupHistory();
+  f = message.getChannelGroupDelete();
   if (f != null) {
     writer.writeMessage(
       117,
       f,
-      proto.cmapi.ChannelGroupHistoryCommand.serializeBinaryToWriter
+      proto.cmapi.ChannelGroupDeleteOperation.serializeBinaryToWriter
+    );
+  }
+  f = message.getChannelGroupCache();
+  if (f != null) {
+    writer.writeMessage(
+      118,
+      f,
+      proto.cmapi.ChannelGroupCacheOperation.serializeBinaryToWriter
+    );
+  }
+  f = message.getChannelGroupHistory();
+  if (f != null) {
+    writer.writeMessage(
+      119,
+      f,
+      proto.cmapi.ChannelGroupHistoryOperation.serializeBinaryToWriter
+    );
+  }
+  f = message.getGetClientInfo();
+  if (f != null) {
+    writer.writeMessage(
+      120,
+      f,
+      proto.cmapi.GetClientInfoCommmand.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional CreateChannelCommand create_channel = 100;
- * @return {?proto.cmapi.CreateChannelCommand}
+ * optional CreateChannelOperation create_channel = 100;
+ * @return {?proto.cmapi.CreateChannelOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getCreateChannel = function() {
-  return /** @type{?proto.cmapi.CreateChannelCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.CreateChannelCommand, 100));
+proto.cmapi.OneOfOperation.prototype.getCreateChannel = function() {
+  return /** @type{?proto.cmapi.CreateChannelOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.CreateChannelOperation, 100));
 };
 
 
-/** @param {?proto.cmapi.CreateChannelCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setCreateChannel = function(value) {
-  jspb.Message.setOneofWrapperField(this, 100, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.CreateChannelOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setCreateChannel = function(value) {
+  jspb.Message.setOneofWrapperField(this, 100, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearCreateChannel = function() {
+proto.cmapi.OneOfOperation.prototype.clearCreateChannel = function() {
   this.setCreateChannel(undefined);
 };
 
@@ -5592,28 +5582,28 @@ proto.cmapi.OneOfCommand.prototype.clearCreateChannel = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasCreateChannel = function() {
+proto.cmapi.OneOfOperation.prototype.hasCreateChannel = function() {
   return jspb.Message.getField(this, 100) != null;
 };
 
 
 /**
- * optional DeleteChannelCommand delete_channel = 101;
- * @return {?proto.cmapi.DeleteChannelCommand}
+ * optional DeleteChannelOperation delete_channel = 101;
+ * @return {?proto.cmapi.DeleteChannelOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getDeleteChannel = function() {
-  return /** @type{?proto.cmapi.DeleteChannelCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.DeleteChannelCommand, 101));
+proto.cmapi.OneOfOperation.prototype.getDeleteChannel = function() {
+  return /** @type{?proto.cmapi.DeleteChannelOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.DeleteChannelOperation, 101));
 };
 
 
-/** @param {?proto.cmapi.DeleteChannelCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setDeleteChannel = function(value) {
-  jspb.Message.setOneofWrapperField(this, 101, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.DeleteChannelOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setDeleteChannel = function(value) {
+  jspb.Message.setOneofWrapperField(this, 101, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearDeleteChannel = function() {
+proto.cmapi.OneOfOperation.prototype.clearDeleteChannel = function() {
   this.setDeleteChannel(undefined);
 };
 
@@ -5622,28 +5612,28 @@ proto.cmapi.OneOfCommand.prototype.clearDeleteChannel = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasDeleteChannel = function() {
+proto.cmapi.OneOfOperation.prototype.hasDeleteChannel = function() {
   return jspb.Message.getField(this, 101) != null;
 };
 
 
 /**
- * optional FindChannelsCommand find_channels = 102;
- * @return {?proto.cmapi.FindChannelsCommand}
+ * optional FindChannelsOperation find_channels = 102;
+ * @return {?proto.cmapi.FindChannelsOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getFindChannels = function() {
-  return /** @type{?proto.cmapi.FindChannelsCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.FindChannelsCommand, 102));
+proto.cmapi.OneOfOperation.prototype.getFindChannels = function() {
+  return /** @type{?proto.cmapi.FindChannelsOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.FindChannelsOperation, 102));
 };
 
 
-/** @param {?proto.cmapi.FindChannelsCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setFindChannels = function(value) {
-  jspb.Message.setOneofWrapperField(this, 102, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.FindChannelsOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setFindChannels = function(value) {
+  jspb.Message.setOneofWrapperField(this, 102, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearFindChannels = function() {
+proto.cmapi.OneOfOperation.prototype.clearFindChannels = function() {
   this.setFindChannels(undefined);
 };
 
@@ -5652,28 +5642,28 @@ proto.cmapi.OneOfCommand.prototype.clearFindChannels = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasFindChannels = function() {
+proto.cmapi.OneOfOperation.prototype.hasFindChannels = function() {
   return jspb.Message.getField(this, 102) != null;
 };
 
 
 /**
- * optional ChannelOpenCommand channel_open = 103;
- * @return {?proto.cmapi.ChannelOpenCommand}
+ * optional ChannelOpenOperation channel_open = 103;
+ * @return {?proto.cmapi.ChannelOpenOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelOpen = function() {
-  return /** @type{?proto.cmapi.ChannelOpenCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelOpenCommand, 103));
+proto.cmapi.OneOfOperation.prototype.getChannelOpen = function() {
+  return /** @type{?proto.cmapi.ChannelOpenOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelOpenOperation, 103));
 };
 
 
-/** @param {?proto.cmapi.ChannelOpenCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelOpen = function(value) {
-  jspb.Message.setOneofWrapperField(this, 103, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelOpenOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelOpen = function(value) {
+  jspb.Message.setOneofWrapperField(this, 103, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelOpen = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelOpen = function() {
   this.setChannelOpen(undefined);
 };
 
@@ -5682,28 +5672,28 @@ proto.cmapi.OneOfCommand.prototype.clearChannelOpen = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelOpen = function() {
+proto.cmapi.OneOfOperation.prototype.hasChannelOpen = function() {
   return jspb.Message.getField(this, 103) != null;
 };
 
 
 /**
- * optional ChannelCloseCommand channel_close = 104;
- * @return {?proto.cmapi.ChannelCloseCommand}
+ * optional ChannelCloseOperation channel_close = 104;
+ * @return {?proto.cmapi.ChannelCloseOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelClose = function() {
-  return /** @type{?proto.cmapi.ChannelCloseCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelCloseCommand, 104));
+proto.cmapi.OneOfOperation.prototype.getChannelClose = function() {
+  return /** @type{?proto.cmapi.ChannelCloseOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelCloseOperation, 104));
 };
 
 
-/** @param {?proto.cmapi.ChannelCloseCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelClose = function(value) {
-  jspb.Message.setOneofWrapperField(this, 104, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelCloseOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelClose = function(value) {
+  jspb.Message.setOneofWrapperField(this, 104, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelClose = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelClose = function() {
   this.setChannelClose(undefined);
 };
 
@@ -5712,28 +5702,28 @@ proto.cmapi.OneOfCommand.prototype.clearChannelClose = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelClose = function() {
+proto.cmapi.OneOfOperation.prototype.hasChannelClose = function() {
   return jspb.Message.getField(this, 104) != null;
 };
 
 
 /**
- * optional ChannelPublishCommand channel_publish = 105;
- * @return {?proto.cmapi.ChannelPublishCommand}
+ * optional ChannelPublishOperation channel_publish = 105;
+ * @return {?proto.cmapi.ChannelPublishOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelPublish = function() {
-  return /** @type{?proto.cmapi.ChannelPublishCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelPublishCommand, 105));
+proto.cmapi.OneOfOperation.prototype.getChannelPublish = function() {
+  return /** @type{?proto.cmapi.ChannelPublishOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelPublishOperation, 105));
 };
 
 
-/** @param {?proto.cmapi.ChannelPublishCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelPublish = function(value) {
-  jspb.Message.setOneofWrapperField(this, 105, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelPublishOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelPublish = function(value) {
+  jspb.Message.setOneofWrapperField(this, 105, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelPublish = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelPublish = function() {
   this.setChannelPublish(undefined);
 };
 
@@ -5742,28 +5732,58 @@ proto.cmapi.OneOfCommand.prototype.clearChannelPublish = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelPublish = function() {
+proto.cmapi.OneOfOperation.prototype.hasChannelPublish = function() {
   return jspb.Message.getField(this, 105) != null;
 };
 
 
 /**
- * optional ChannelCacheCommand channel_cache = 106;
- * @return {?proto.cmapi.ChannelCacheCommand}
+ * optional ChannelDeleteOperation channel_delete = 106;
+ * @return {?proto.cmapi.ChannelDeleteOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelCache = function() {
-  return /** @type{?proto.cmapi.ChannelCacheCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelCacheCommand, 106));
+proto.cmapi.OneOfOperation.prototype.getChannelDelete = function() {
+  return /** @type{?proto.cmapi.ChannelDeleteOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelDeleteOperation, 106));
 };
 
 
-/** @param {?proto.cmapi.ChannelCacheCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelCache = function(value) {
-  jspb.Message.setOneofWrapperField(this, 106, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelDeleteOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelDelete = function(value) {
+  jspb.Message.setOneofWrapperField(this, 106, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelCache = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelDelete = function() {
+  this.setChannelDelete(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.cmapi.OneOfOperation.prototype.hasChannelDelete = function() {
+  return jspb.Message.getField(this, 106) != null;
+};
+
+
+/**
+ * optional ChannelCacheOperation channel_cache = 107;
+ * @return {?proto.cmapi.ChannelCacheOperation}
+ */
+proto.cmapi.OneOfOperation.prototype.getChannelCache = function() {
+  return /** @type{?proto.cmapi.ChannelCacheOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelCacheOperation, 107));
+};
+
+
+/** @param {?proto.cmapi.ChannelCacheOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelCache = function(value) {
+  jspb.Message.setOneofWrapperField(this, 107, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
+};
+
+
+proto.cmapi.OneOfOperation.prototype.clearChannelCache = function() {
   this.setChannelCache(undefined);
 };
 
@@ -5772,28 +5792,28 @@ proto.cmapi.OneOfCommand.prototype.clearChannelCache = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelCache = function() {
-  return jspb.Message.getField(this, 106) != null;
+proto.cmapi.OneOfOperation.prototype.hasChannelCache = function() {
+  return jspb.Message.getField(this, 107) != null;
 };
 
 
 /**
- * optional ChannelHistoryCommand channel_history = 107;
- * @return {?proto.cmapi.ChannelHistoryCommand}
+ * optional ChannelHistoryOperation channel_history = 108;
+ * @return {?proto.cmapi.ChannelHistoryOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelHistory = function() {
-  return /** @type{?proto.cmapi.ChannelHistoryCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelHistoryCommand, 107));
+proto.cmapi.OneOfOperation.prototype.getChannelHistory = function() {
+  return /** @type{?proto.cmapi.ChannelHistoryOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelHistoryOperation, 108));
 };
 
 
-/** @param {?proto.cmapi.ChannelHistoryCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelHistory = function(value) {
-  jspb.Message.setOneofWrapperField(this, 107, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelHistoryOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelHistory = function(value) {
+  jspb.Message.setOneofWrapperField(this, 108, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelHistory = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelHistory = function() {
   this.setChannelHistory(undefined);
 };
 
@@ -5802,28 +5822,28 @@ proto.cmapi.OneOfCommand.prototype.clearChannelHistory = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelHistory = function() {
-  return jspb.Message.getField(this, 107) != null;
+proto.cmapi.OneOfOperation.prototype.hasChannelHistory = function() {
+  return jspb.Message.getField(this, 108) != null;
 };
 
 
 /**
- * optional CreateChannelGroupCommand create_channel_group = 108;
- * @return {?proto.cmapi.CreateChannelGroupCommand}
+ * optional CreateChannelGroupOperation create_channel_group = 109;
+ * @return {?proto.cmapi.CreateChannelGroupOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getCreateChannelGroup = function() {
-  return /** @type{?proto.cmapi.CreateChannelGroupCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.CreateChannelGroupCommand, 108));
+proto.cmapi.OneOfOperation.prototype.getCreateChannelGroup = function() {
+  return /** @type{?proto.cmapi.CreateChannelGroupOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.CreateChannelGroupOperation, 109));
 };
 
 
-/** @param {?proto.cmapi.CreateChannelGroupCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setCreateChannelGroup = function(value) {
-  jspb.Message.setOneofWrapperField(this, 108, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.CreateChannelGroupOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setCreateChannelGroup = function(value) {
+  jspb.Message.setOneofWrapperField(this, 109, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearCreateChannelGroup = function() {
+proto.cmapi.OneOfOperation.prototype.clearCreateChannelGroup = function() {
   this.setCreateChannelGroup(undefined);
 };
 
@@ -5832,28 +5852,28 @@ proto.cmapi.OneOfCommand.prototype.clearCreateChannelGroup = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasCreateChannelGroup = function() {
-  return jspb.Message.getField(this, 108) != null;
+proto.cmapi.OneOfOperation.prototype.hasCreateChannelGroup = function() {
+  return jspb.Message.getField(this, 109) != null;
 };
 
 
 /**
- * optional DeleteChannelGroupCommand delete_channel_group = 109;
- * @return {?proto.cmapi.DeleteChannelGroupCommand}
+ * optional DeleteChannelGroupOperation delete_channel_group = 110;
+ * @return {?proto.cmapi.DeleteChannelGroupOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getDeleteChannelGroup = function() {
-  return /** @type{?proto.cmapi.DeleteChannelGroupCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.DeleteChannelGroupCommand, 109));
+proto.cmapi.OneOfOperation.prototype.getDeleteChannelGroup = function() {
+  return /** @type{?proto.cmapi.DeleteChannelGroupOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.DeleteChannelGroupOperation, 110));
 };
 
 
-/** @param {?proto.cmapi.DeleteChannelGroupCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setDeleteChannelGroup = function(value) {
-  jspb.Message.setOneofWrapperField(this, 109, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.DeleteChannelGroupOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setDeleteChannelGroup = function(value) {
+  jspb.Message.setOneofWrapperField(this, 110, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearDeleteChannelGroup = function() {
+proto.cmapi.OneOfOperation.prototype.clearDeleteChannelGroup = function() {
   this.setDeleteChannelGroup(undefined);
 };
 
@@ -5862,28 +5882,28 @@ proto.cmapi.OneOfCommand.prototype.clearDeleteChannelGroup = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasDeleteChannelGroup = function() {
-  return jspb.Message.getField(this, 109) != null;
+proto.cmapi.OneOfOperation.prototype.hasDeleteChannelGroup = function() {
+  return jspb.Message.getField(this, 110) != null;
 };
 
 
 /**
- * optional FindChannelGroupsCommand find_channel_groups = 110;
- * @return {?proto.cmapi.FindChannelGroupsCommand}
+ * optional FindChannelGroupsOperation find_channel_groups = 111;
+ * @return {?proto.cmapi.FindChannelGroupsOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getFindChannelGroups = function() {
-  return /** @type{?proto.cmapi.FindChannelGroupsCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.FindChannelGroupsCommand, 110));
+proto.cmapi.OneOfOperation.prototype.getFindChannelGroups = function() {
+  return /** @type{?proto.cmapi.FindChannelGroupsOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.FindChannelGroupsOperation, 111));
 };
 
 
-/** @param {?proto.cmapi.FindChannelGroupsCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setFindChannelGroups = function(value) {
-  jspb.Message.setOneofWrapperField(this, 110, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.FindChannelGroupsOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setFindChannelGroups = function(value) {
+  jspb.Message.setOneofWrapperField(this, 111, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearFindChannelGroups = function() {
+proto.cmapi.OneOfOperation.prototype.clearFindChannelGroups = function() {
   this.setFindChannelGroups(undefined);
 };
 
@@ -5892,59 +5912,29 @@ proto.cmapi.OneOfCommand.prototype.clearFindChannelGroups = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasFindChannelGroups = function() {
-  return jspb.Message.getField(this, 110) != null;
-};
-
-
-/**
- * optional ChannelGroupJoinCommand channel_group_join = 111;
- * @return {?proto.cmapi.ChannelGroupJoinCommand}
- */
-proto.cmapi.OneOfCommand.prototype.getChannelGroupJoin = function() {
-  return /** @type{?proto.cmapi.ChannelGroupJoinCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupJoinCommand, 111));
-};
-
-
-/** @param {?proto.cmapi.ChannelGroupJoinCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelGroupJoin = function(value) {
-  jspb.Message.setOneofWrapperField(this, 111, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
-};
-
-
-proto.cmapi.OneOfCommand.prototype.clearChannelGroupJoin = function() {
-  this.setChannelGroupJoin(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.cmapi.OneOfCommand.prototype.hasChannelGroupJoin = function() {
+proto.cmapi.OneOfOperation.prototype.hasFindChannelGroups = function() {
   return jspb.Message.getField(this, 111) != null;
 };
 
 
 /**
- * optional ChannelGroupLeaveCommand channel_group_leave = 112;
- * @return {?proto.cmapi.ChannelGroupLeaveCommand}
+ * optional ChannelGroupOpenOperation channel_group_open = 112;
+ * @return {?proto.cmapi.ChannelGroupOpenOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelGroupLeave = function() {
-  return /** @type{?proto.cmapi.ChannelGroupLeaveCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupLeaveCommand, 112));
+proto.cmapi.OneOfOperation.prototype.getChannelGroupOpen = function() {
+  return /** @type{?proto.cmapi.ChannelGroupOpenOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupOpenOperation, 112));
 };
 
 
-/** @param {?proto.cmapi.ChannelGroupLeaveCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelGroupLeave = function(value) {
-  jspb.Message.setOneofWrapperField(this, 112, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelGroupOpenOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelGroupOpen = function(value) {
+  jspb.Message.setOneofWrapperField(this, 112, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelGroupLeave = function() {
-  this.setChannelGroupLeave(undefined);
+proto.cmapi.OneOfOperation.prototype.clearChannelGroupOpen = function() {
+  this.setChannelGroupOpen(undefined);
 };
 
 
@@ -5952,28 +5942,58 @@ proto.cmapi.OneOfCommand.prototype.clearChannelGroupLeave = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelGroupLeave = function() {
+proto.cmapi.OneOfOperation.prototype.hasChannelGroupOpen = function() {
   return jspb.Message.getField(this, 112) != null;
 };
 
 
 /**
- * optional ChannelGroupAddChannelCommand channel_group_add_channel = 113;
- * @return {?proto.cmapi.ChannelGroupAddChannelCommand}
+ * optional ChannelGroupCloseOperation channel_group_close = 113;
+ * @return {?proto.cmapi.ChannelGroupCloseOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelGroupAddChannel = function() {
-  return /** @type{?proto.cmapi.ChannelGroupAddChannelCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupAddChannelCommand, 113));
+proto.cmapi.OneOfOperation.prototype.getChannelGroupClose = function() {
+  return /** @type{?proto.cmapi.ChannelGroupCloseOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupCloseOperation, 113));
 };
 
 
-/** @param {?proto.cmapi.ChannelGroupAddChannelCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelGroupAddChannel = function(value) {
-  jspb.Message.setOneofWrapperField(this, 113, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelGroupCloseOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelGroupClose = function(value) {
+  jspb.Message.setOneofWrapperField(this, 113, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelGroupAddChannel = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelGroupClose = function() {
+  this.setChannelGroupClose(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.cmapi.OneOfOperation.prototype.hasChannelGroupClose = function() {
+  return jspb.Message.getField(this, 113) != null;
+};
+
+
+/**
+ * optional ChannelGroupAddChannelOperation channel_group_add_channel = 114;
+ * @return {?proto.cmapi.ChannelGroupAddChannelOperation}
+ */
+proto.cmapi.OneOfOperation.prototype.getChannelGroupAddChannel = function() {
+  return /** @type{?proto.cmapi.ChannelGroupAddChannelOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupAddChannelOperation, 114));
+};
+
+
+/** @param {?proto.cmapi.ChannelGroupAddChannelOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelGroupAddChannel = function(value) {
+  jspb.Message.setOneofWrapperField(this, 114, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
+};
+
+
+proto.cmapi.OneOfOperation.prototype.clearChannelGroupAddChannel = function() {
   this.setChannelGroupAddChannel(undefined);
 };
 
@@ -5982,28 +6002,28 @@ proto.cmapi.OneOfCommand.prototype.clearChannelGroupAddChannel = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelGroupAddChannel = function() {
-  return jspb.Message.getField(this, 113) != null;
+proto.cmapi.OneOfOperation.prototype.hasChannelGroupAddChannel = function() {
+  return jspb.Message.getField(this, 114) != null;
 };
 
 
 /**
- * optional ChannelGroupRemoveChannelCommand channel_group_remove_channel = 114;
- * @return {?proto.cmapi.ChannelGroupRemoveChannelCommand}
+ * optional ChannelGroupRemoveChannelOperation channel_group_remove_channel = 115;
+ * @return {?proto.cmapi.ChannelGroupRemoveChannelOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelGroupRemoveChannel = function() {
-  return /** @type{?proto.cmapi.ChannelGroupRemoveChannelCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupRemoveChannelCommand, 114));
+proto.cmapi.OneOfOperation.prototype.getChannelGroupRemoveChannel = function() {
+  return /** @type{?proto.cmapi.ChannelGroupRemoveChannelOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupRemoveChannelOperation, 115));
 };
 
 
-/** @param {?proto.cmapi.ChannelGroupRemoveChannelCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelGroupRemoveChannel = function(value) {
-  jspb.Message.setOneofWrapperField(this, 114, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelGroupRemoveChannelOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelGroupRemoveChannel = function(value) {
+  jspb.Message.setOneofWrapperField(this, 115, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelGroupRemoveChannel = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelGroupRemoveChannel = function() {
   this.setChannelGroupRemoveChannel(undefined);
 };
 
@@ -6012,28 +6032,28 @@ proto.cmapi.OneOfCommand.prototype.clearChannelGroupRemoveChannel = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelGroupRemoveChannel = function() {
-  return jspb.Message.getField(this, 114) != null;
+proto.cmapi.OneOfOperation.prototype.hasChannelGroupRemoveChannel = function() {
+  return jspb.Message.getField(this, 115) != null;
 };
 
 
 /**
- * optional ChannelGroupPublishCommand channel_group_publish = 115;
- * @return {?proto.cmapi.ChannelGroupPublishCommand}
+ * optional ChannelGroupPublishOperation channel_group_publish = 116;
+ * @return {?proto.cmapi.ChannelGroupPublishOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelGroupPublish = function() {
-  return /** @type{?proto.cmapi.ChannelGroupPublishCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupPublishCommand, 115));
+proto.cmapi.OneOfOperation.prototype.getChannelGroupPublish = function() {
+  return /** @type{?proto.cmapi.ChannelGroupPublishOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupPublishOperation, 116));
 };
 
 
-/** @param {?proto.cmapi.ChannelGroupPublishCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelGroupPublish = function(value) {
-  jspb.Message.setOneofWrapperField(this, 115, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelGroupPublishOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelGroupPublish = function(value) {
+  jspb.Message.setOneofWrapperField(this, 116, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelGroupPublish = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelGroupPublish = function() {
   this.setChannelGroupPublish(undefined);
 };
 
@@ -6042,28 +6062,58 @@ proto.cmapi.OneOfCommand.prototype.clearChannelGroupPublish = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelGroupPublish = function() {
-  return jspb.Message.getField(this, 115) != null;
+proto.cmapi.OneOfOperation.prototype.hasChannelGroupPublish = function() {
+  return jspb.Message.getField(this, 116) != null;
 };
 
 
 /**
- * optional ChannelGroupCacheCommand channel_group_cache = 116;
- * @return {?proto.cmapi.ChannelGroupCacheCommand}
+ * optional ChannelGroupDeleteOperation channel_group_delete = 117;
+ * @return {?proto.cmapi.ChannelGroupDeleteOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelGroupCache = function() {
-  return /** @type{?proto.cmapi.ChannelGroupCacheCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupCacheCommand, 116));
+proto.cmapi.OneOfOperation.prototype.getChannelGroupDelete = function() {
+  return /** @type{?proto.cmapi.ChannelGroupDeleteOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupDeleteOperation, 117));
 };
 
 
-/** @param {?proto.cmapi.ChannelGroupCacheCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelGroupCache = function(value) {
-  jspb.Message.setOneofWrapperField(this, 116, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelGroupDeleteOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelGroupDelete = function(value) {
+  jspb.Message.setOneofWrapperField(this, 117, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelGroupCache = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelGroupDelete = function() {
+  this.setChannelGroupDelete(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.cmapi.OneOfOperation.prototype.hasChannelGroupDelete = function() {
+  return jspb.Message.getField(this, 117) != null;
+};
+
+
+/**
+ * optional ChannelGroupCacheOperation channel_group_cache = 118;
+ * @return {?proto.cmapi.ChannelGroupCacheOperation}
+ */
+proto.cmapi.OneOfOperation.prototype.getChannelGroupCache = function() {
+  return /** @type{?proto.cmapi.ChannelGroupCacheOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupCacheOperation, 118));
+};
+
+
+/** @param {?proto.cmapi.ChannelGroupCacheOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelGroupCache = function(value) {
+  jspb.Message.setOneofWrapperField(this, 118, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
+};
+
+
+proto.cmapi.OneOfOperation.prototype.clearChannelGroupCache = function() {
   this.setChannelGroupCache(undefined);
 };
 
@@ -6072,28 +6122,28 @@ proto.cmapi.OneOfCommand.prototype.clearChannelGroupCache = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelGroupCache = function() {
-  return jspb.Message.getField(this, 116) != null;
+proto.cmapi.OneOfOperation.prototype.hasChannelGroupCache = function() {
+  return jspb.Message.getField(this, 118) != null;
 };
 
 
 /**
- * optional ChannelGroupHistoryCommand channel_group_history = 117;
- * @return {?proto.cmapi.ChannelGroupHistoryCommand}
+ * optional ChannelGroupHistoryOperation channel_group_history = 119;
+ * @return {?proto.cmapi.ChannelGroupHistoryOperation}
  */
-proto.cmapi.OneOfCommand.prototype.getChannelGroupHistory = function() {
-  return /** @type{?proto.cmapi.ChannelGroupHistoryCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupHistoryCommand, 117));
+proto.cmapi.OneOfOperation.prototype.getChannelGroupHistory = function() {
+  return /** @type{?proto.cmapi.ChannelGroupHistoryOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ChannelGroupHistoryOperation, 119));
 };
 
 
-/** @param {?proto.cmapi.ChannelGroupHistoryCommand|undefined} value */
-proto.cmapi.OneOfCommand.prototype.setChannelGroupHistory = function(value) {
-  jspb.Message.setOneofWrapperField(this, 117, proto.cmapi.OneOfCommand.oneofGroups_[0], value);
+/** @param {?proto.cmapi.ChannelGroupHistoryOperation|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setChannelGroupHistory = function(value) {
+  jspb.Message.setOneofWrapperField(this, 119, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
 };
 
 
-proto.cmapi.OneOfCommand.prototype.clearChannelGroupHistory = function() {
+proto.cmapi.OneOfOperation.prototype.clearChannelGroupHistory = function() {
   this.setChannelGroupHistory(undefined);
 };
 
@@ -6102,8 +6152,38 @@ proto.cmapi.OneOfCommand.prototype.clearChannelGroupHistory = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.OneOfCommand.prototype.hasChannelGroupHistory = function() {
-  return jspb.Message.getField(this, 117) != null;
+proto.cmapi.OneOfOperation.prototype.hasChannelGroupHistory = function() {
+  return jspb.Message.getField(this, 119) != null;
+};
+
+
+/**
+ * optional GetClientInfoCommmand get_client_info = 120;
+ * @return {?proto.cmapi.GetClientInfoCommmand}
+ */
+proto.cmapi.OneOfOperation.prototype.getGetClientInfo = function() {
+  return /** @type{?proto.cmapi.GetClientInfoCommmand} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.GetClientInfoCommmand, 120));
+};
+
+
+/** @param {?proto.cmapi.GetClientInfoCommmand|undefined} value */
+proto.cmapi.OneOfOperation.prototype.setGetClientInfo = function(value) {
+  jspb.Message.setOneofWrapperField(this, 120, proto.cmapi.OneOfOperation.oneofGroups_[0], value);
+};
+
+
+proto.cmapi.OneOfOperation.prototype.clearGetClientInfo = function() {
+  this.setGetClientInfo(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.cmapi.OneOfOperation.prototype.hasGetClientInfo = function() {
+  return jspb.Message.getField(this, 120) != null;
 };
 
 
@@ -6214,49 +6294,39 @@ proto.cmapi.ProtoPayload.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ProtoPayload} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ProtoPayload.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.ProtoPayload.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ProtoPayload.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ProtoPayload} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ProtoPayload.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ProtoPayload.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getId();
+  f = message.getId();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = this.getType();
+  f = message.getType();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getData_asU8();
+  f = message.getData_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       3,
@@ -6382,9 +6452,9 @@ proto.cmapi.ProtoMessage.prototype.toObject = function(opt_includeInstance) {
 proto.cmapi.ProtoMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    propertyMap: (f = msg.getPropertyMap()) ? f.toArray() : [],
+    propertyMap: (f = msg.getPropertyMap()) ? f.toObject(includeInstance, undefined) : [],
     priority: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    command: (f = msg.getCommand()) && proto.cmapi.OneOfCommand.toObject(includeInstance, f),
+    operation: (f = msg.getOperation()) && proto.cmapi.OneOfOperation.toObject(includeInstance, f),
     payload: (f = msg.getPayload()) && proto.cmapi.ProtoPayload.toObject(includeInstance, f)
   };
 
@@ -6437,9 +6507,9 @@ proto.cmapi.ProtoMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPriority(value);
       break;
     case 4:
-      var value = new proto.cmapi.OneOfCommand;
-      reader.readMessage(value,proto.cmapi.OneOfCommand.deserializeBinaryFromReader);
-      msg.setCommand(value);
+      var value = new proto.cmapi.OneOfOperation;
+      reader.readMessage(value,proto.cmapi.OneOfOperation.deserializeBinaryFromReader);
+      msg.setOperation(value);
       break;
     case 5:
       var value = new proto.cmapi.ProtoPayload;
@@ -6456,61 +6526,51 @@ proto.cmapi.ProtoMessage.deserializeBinaryFromReader = function(msg, reader) {
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ProtoMessage} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ProtoMessage.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
 proto.cmapi.ProtoMessage.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ProtoMessage.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ProtoMessage} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ProtoMessage.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ProtoMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getId();
+  f = message.getId();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = this.getPropertyMap(true);
+  f = message.getPropertyMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
   }
-  f = this.getPriority();
+  f = message.getPriority();
   if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = this.getCommand();
+  f = message.getOperation();
   if (f != null) {
     writer.writeMessage(
       4,
       f,
-      proto.cmapi.OneOfCommand.serializeBinaryToWriter
+      proto.cmapi.OneOfOperation.serializeBinaryToWriter
     );
   }
-  f = this.getPayload();
+  f = message.getPayload();
   if (f != null) {
     writer.writeMessage(
       5,
@@ -6570,23 +6630,23 @@ proto.cmapi.ProtoMessage.prototype.setPriority = function(value) {
 
 
 /**
- * optional OneOfCommand command = 4;
- * @return {?proto.cmapi.OneOfCommand}
+ * optional OneOfOperation operation = 4;
+ * @return {?proto.cmapi.OneOfOperation}
  */
-proto.cmapi.ProtoMessage.prototype.getCommand = function() {
-  return /** @type{?proto.cmapi.OneOfCommand} */ (
-    jspb.Message.getWrapperField(this, proto.cmapi.OneOfCommand, 4));
+proto.cmapi.ProtoMessage.prototype.getOperation = function() {
+  return /** @type{?proto.cmapi.OneOfOperation} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.OneOfOperation, 4));
 };
 
 
-/** @param {?proto.cmapi.OneOfCommand|undefined} value */
-proto.cmapi.ProtoMessage.prototype.setCommand = function(value) {
+/** @param {?proto.cmapi.OneOfOperation|undefined} value */
+proto.cmapi.ProtoMessage.prototype.setOperation = function(value) {
   jspb.Message.setWrapperField(this, 4, value);
 };
 
 
-proto.cmapi.ProtoMessage.prototype.clearCommand = function() {
-  this.setCommand(undefined);
+proto.cmapi.ProtoMessage.prototype.clearOperation = function() {
+  this.setOperation(undefined);
 };
 
 
@@ -6594,7 +6654,7 @@ proto.cmapi.ProtoMessage.prototype.clearCommand = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.ProtoMessage.prototype.hasCommand = function() {
+proto.cmapi.ProtoMessage.prototype.hasOperation = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -6640,12 +6700,12 @@ proto.cmapi.ProtoMessage.prototype.hasPayload = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelGroupJoinCommand = function(opt_data) {
+proto.cmapi.GetClientInfoCommmand = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelGroupJoinCommand, jspb.Message);
+goog.inherits(proto.cmapi.GetClientInfoCommmand, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelGroupJoinCommand.displayName = 'proto.cmapi.ChannelGroupJoinCommand';
+  proto.cmapi.GetClientInfoCommmand.displayName = 'proto.cmapi.GetClientInfoCommmand';
 }
 
 
@@ -6660,8 +6720,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupJoinCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelGroupJoinCommand.toObject(opt_includeInstance, this);
+proto.cmapi.GetClientInfoCommmand.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.GetClientInfoCommmand.toObject(opt_includeInstance, this);
 };
 
 
@@ -6670,10 +6730,194 @@ proto.cmapi.ChannelGroupJoinCommand.prototype.toObject = function(opt_includeIns
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelGroupJoinCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.GetClientInfoCommmand} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupJoinCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.GetClientInfoCommmand.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    clientInfo: (f = msg.getClientInfo()) && proto.cmapi.ProtoClientInfo.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.cmapi.GetClientInfoCommmand}
+ */
+proto.cmapi.GetClientInfoCommmand.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.cmapi.GetClientInfoCommmand;
+  return proto.cmapi.GetClientInfoCommmand.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.cmapi.GetClientInfoCommmand} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.cmapi.GetClientInfoCommmand}
+ */
+proto.cmapi.GetClientInfoCommmand.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.cmapi.Status} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 2:
+      var value = new proto.cmapi.ProtoClientInfo;
+      reader.readMessage(value,proto.cmapi.ProtoClientInfo.deserializeBinaryFromReader);
+      msg.setClientInfo(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.cmapi.GetClientInfoCommmand.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.cmapi.GetClientInfoCommmand.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.GetClientInfoCommmand} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.cmapi.GetClientInfoCommmand.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getClientInfo();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      proto.cmapi.ProtoClientInfo.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional Status status = 1;
+ * @return {!proto.cmapi.Status}
+ */
+proto.cmapi.GetClientInfoCommmand.prototype.getStatus = function() {
+  return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.cmapi.Status} value */
+proto.cmapi.GetClientInfoCommmand.prototype.setStatus = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * optional ProtoClientInfo client_info = 2;
+ * @return {?proto.cmapi.ProtoClientInfo}
+ */
+proto.cmapi.GetClientInfoCommmand.prototype.getClientInfo = function() {
+  return /** @type{?proto.cmapi.ProtoClientInfo} */ (
+    jspb.Message.getWrapperField(this, proto.cmapi.ProtoClientInfo, 2));
+};
+
+
+/** @param {?proto.cmapi.ProtoClientInfo|undefined} value */
+proto.cmapi.GetClientInfoCommmand.prototype.setClientInfo = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+proto.cmapi.GetClientInfoCommmand.prototype.clearClientInfo = function() {
+  this.setClientInfo(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.cmapi.GetClientInfoCommmand.prototype.hasClientInfo = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.cmapi.ChannelGroupOpenOperation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.cmapi.ChannelGroupOpenOperation, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.cmapi.ChannelGroupOpenOperation.displayName = 'proto.cmapi.ChannelGroupOpenOperation';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.cmapi.ChannelGroupOpenOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelGroupOpenOperation.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.cmapi.ChannelGroupOpenOperation} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.cmapi.ChannelGroupOpenOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -6690,23 +6934,23 @@ proto.cmapi.ChannelGroupJoinCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelGroupJoinCommand}
+ * @return {!proto.cmapi.ChannelGroupOpenOperation}
  */
-proto.cmapi.ChannelGroupJoinCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelGroupOpenOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelGroupJoinCommand;
-  return proto.cmapi.ChannelGroupJoinCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelGroupOpenOperation;
+  return proto.cmapi.ChannelGroupOpenOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelGroupJoinCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelGroupOpenOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelGroupJoinCommand}
+ * @return {!proto.cmapi.ChannelGroupOpenOperation}
  */
-proto.cmapi.ChannelGroupJoinCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelGroupOpenOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6731,42 +6975,32 @@ proto.cmapi.ChannelGroupJoinCommand.deserializeBinaryFromReader = function(msg, 
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelGroupJoinCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelGroupJoinCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelGroupJoinCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelGroupOpenOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelGroupOpenOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupOpenOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelGroupJoinCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelGroupOpenOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -6780,13 +7014,13 @@ proto.cmapi.ChannelGroupJoinCommand.prototype.serializeBinaryToWriter = function
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelGroupJoinCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelGroupOpenOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelGroupJoinCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelGroupOpenOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -6795,13 +7029,13 @@ proto.cmapi.ChannelGroupJoinCommand.prototype.setStatus = function(value) {
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelGroupJoinCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.ChannelGroupOpenOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupJoinCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.ChannelGroupOpenOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -6817,12 +7051,12 @@ proto.cmapi.ChannelGroupJoinCommand.prototype.setChannelGroupName = function(val
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelGroupLeaveCommand = function(opt_data) {
+proto.cmapi.ChannelGroupCloseOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelGroupLeaveCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelGroupCloseOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelGroupLeaveCommand.displayName = 'proto.cmapi.ChannelGroupLeaveCommand';
+  proto.cmapi.ChannelGroupCloseOperation.displayName = 'proto.cmapi.ChannelGroupCloseOperation';
 }
 
 
@@ -6837,8 +7071,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupLeaveCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelGroupLeaveCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelGroupCloseOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelGroupCloseOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -6847,10 +7081,10 @@ proto.cmapi.ChannelGroupLeaveCommand.prototype.toObject = function(opt_includeIn
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelGroupLeaveCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelGroupCloseOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupLeaveCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelGroupCloseOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -6867,23 +7101,23 @@ proto.cmapi.ChannelGroupLeaveCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelGroupLeaveCommand}
+ * @return {!proto.cmapi.ChannelGroupCloseOperation}
  */
-proto.cmapi.ChannelGroupLeaveCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelGroupCloseOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelGroupLeaveCommand;
-  return proto.cmapi.ChannelGroupLeaveCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelGroupCloseOperation;
+  return proto.cmapi.ChannelGroupCloseOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelGroupLeaveCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelGroupCloseOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelGroupLeaveCommand}
+ * @return {!proto.cmapi.ChannelGroupCloseOperation}
  */
-proto.cmapi.ChannelGroupLeaveCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelGroupCloseOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6908,42 +7142,32 @@ proto.cmapi.ChannelGroupLeaveCommand.deserializeBinaryFromReader = function(msg,
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelGroupLeaveCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelGroupLeaveCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelGroupLeaveCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelGroupCloseOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelGroupCloseOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupCloseOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelGroupLeaveCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelGroupCloseOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -6957,13 +7181,13 @@ proto.cmapi.ChannelGroupLeaveCommand.prototype.serializeBinaryToWriter = functio
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelGroupLeaveCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelGroupCloseOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelGroupLeaveCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelGroupCloseOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -6972,13 +7196,13 @@ proto.cmapi.ChannelGroupLeaveCommand.prototype.setStatus = function(value) {
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelGroupLeaveCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.ChannelGroupCloseOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupLeaveCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.ChannelGroupCloseOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -6994,12 +7218,12 @@ proto.cmapi.ChannelGroupLeaveCommand.prototype.setChannelGroupName = function(va
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelGroupAddChannelCommand = function(opt_data) {
+proto.cmapi.ChannelGroupAddChannelOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelGroupAddChannelCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelGroupAddChannelOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelGroupAddChannelCommand.displayName = 'proto.cmapi.ChannelGroupAddChannelCommand';
+  proto.cmapi.ChannelGroupAddChannelOperation.displayName = 'proto.cmapi.ChannelGroupAddChannelOperation';
 }
 
 
@@ -7014,8 +7238,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelGroupAddChannelCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelGroupAddChannelOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelGroupAddChannelOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -7024,10 +7248,10 @@ proto.cmapi.ChannelGroupAddChannelCommand.prototype.toObject = function(opt_incl
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelGroupAddChannelCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelGroupAddChannelOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupAddChannelCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelGroupAddChannelOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -7045,23 +7269,23 @@ proto.cmapi.ChannelGroupAddChannelCommand.toObject = function(includeInstance, m
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelGroupAddChannelCommand}
+ * @return {!proto.cmapi.ChannelGroupAddChannelOperation}
  */
-proto.cmapi.ChannelGroupAddChannelCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelGroupAddChannelOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelGroupAddChannelCommand;
-  return proto.cmapi.ChannelGroupAddChannelCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelGroupAddChannelOperation;
+  return proto.cmapi.ChannelGroupAddChannelOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelGroupAddChannelCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelGroupAddChannelOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelGroupAddChannelCommand}
+ * @return {!proto.cmapi.ChannelGroupAddChannelOperation}
  */
-proto.cmapi.ChannelGroupAddChannelCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelGroupAddChannelOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7090,49 +7314,39 @@ proto.cmapi.ChannelGroupAddChannelCommand.deserializeBinaryFromReader = function
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelGroupAddChannelCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelGroupAddChannelCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelGroupAddChannelOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelGroupAddChannelOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupAddChannelOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelGroupAddChannelOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -7146,13 +7360,13 @@ proto.cmapi.ChannelGroupAddChannelCommand.prototype.serializeBinaryToWriter = fu
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelGroupAddChannelOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelGroupAddChannelOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -7161,13 +7375,13 @@ proto.cmapi.ChannelGroupAddChannelCommand.prototype.setStatus = function(value) 
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.ChannelGroupAddChannelOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.ChannelGroupAddChannelOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -7176,13 +7390,13 @@ proto.cmapi.ChannelGroupAddChannelCommand.prototype.setChannelGroupName = functi
  * optional string channel_name = 3;
  * @return {string}
  */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.getChannelName = function() {
+proto.cmapi.ChannelGroupAddChannelOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupAddChannelCommand.prototype.setChannelName = function(value) {
+proto.cmapi.ChannelGroupAddChannelOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
@@ -7198,12 +7412,12 @@ proto.cmapi.ChannelGroupAddChannelCommand.prototype.setChannelName = function(va
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand = function(opt_data) {
+proto.cmapi.ChannelGroupRemoveChannelOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelGroupRemoveChannelCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelGroupRemoveChannelOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelGroupRemoveChannelCommand.displayName = 'proto.cmapi.ChannelGroupRemoveChannelCommand';
+  proto.cmapi.ChannelGroupRemoveChannelOperation.displayName = 'proto.cmapi.ChannelGroupRemoveChannelOperation';
 }
 
 
@@ -7218,8 +7432,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelGroupRemoveChannelCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelGroupRemoveChannelOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelGroupRemoveChannelOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -7228,10 +7442,10 @@ proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.toObject = function(opt_i
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelGroupRemoveChannelCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelGroupRemoveChannelOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelGroupRemoveChannelOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -7249,23 +7463,23 @@ proto.cmapi.ChannelGroupRemoveChannelCommand.toObject = function(includeInstance
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelGroupRemoveChannelCommand}
+ * @return {!proto.cmapi.ChannelGroupRemoveChannelOperation}
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelGroupRemoveChannelOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelGroupRemoveChannelCommand;
-  return proto.cmapi.ChannelGroupRemoveChannelCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelGroupRemoveChannelOperation;
+  return proto.cmapi.ChannelGroupRemoveChannelOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelGroupRemoveChannelCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelGroupRemoveChannelOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelGroupRemoveChannelCommand}
+ * @return {!proto.cmapi.ChannelGroupRemoveChannelOperation}
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelGroupRemoveChannelOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7294,49 +7508,39 @@ proto.cmapi.ChannelGroupRemoveChannelCommand.deserializeBinaryFromReader = funct
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelGroupRemoveChannelCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelGroupRemoveChannelCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelGroupRemoveChannelOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelGroupRemoveChannelOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupRemoveChannelOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelGroupRemoveChannelOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -7350,13 +7554,13 @@ proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.serializeBinaryToWriter =
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelGroupRemoveChannelOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelGroupRemoveChannelOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -7365,13 +7569,13 @@ proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.setStatus = function(valu
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.ChannelGroupRemoveChannelOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.ChannelGroupRemoveChannelOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -7380,13 +7584,13 @@ proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.setChannelGroupName = fun
  * optional string channel_name = 3;
  * @return {string}
  */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.getChannelName = function() {
+proto.cmapi.ChannelGroupRemoveChannelOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.setChannelName = function(value) {
+proto.cmapi.ChannelGroupRemoveChannelOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
@@ -7402,12 +7606,12 @@ proto.cmapi.ChannelGroupRemoveChannelCommand.prototype.setChannelName = function
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelGroupPublishCommand = function(opt_data) {
+proto.cmapi.ChannelGroupPublishOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelGroupPublishCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelGroupPublishOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelGroupPublishCommand.displayName = 'proto.cmapi.ChannelGroupPublishCommand';
+  proto.cmapi.ChannelGroupPublishOperation.displayName = 'proto.cmapi.ChannelGroupPublishOperation';
 }
 
 
@@ -7422,8 +7626,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupPublishCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelGroupPublishCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelGroupPublishOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelGroupPublishOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -7432,10 +7636,10 @@ proto.cmapi.ChannelGroupPublishCommand.prototype.toObject = function(opt_include
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelGroupPublishCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelGroupPublishOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupPublishCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelGroupPublishOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -7452,23 +7656,23 @@ proto.cmapi.ChannelGroupPublishCommand.toObject = function(includeInstance, msg)
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelGroupPublishCommand}
+ * @return {!proto.cmapi.ChannelGroupPublishOperation}
  */
-proto.cmapi.ChannelGroupPublishCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelGroupPublishOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelGroupPublishCommand;
-  return proto.cmapi.ChannelGroupPublishCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelGroupPublishOperation;
+  return proto.cmapi.ChannelGroupPublishOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelGroupPublishCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelGroupPublishOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelGroupPublishCommand}
+ * @return {!proto.cmapi.ChannelGroupPublishOperation}
  */
-proto.cmapi.ChannelGroupPublishCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelGroupPublishOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7493,42 +7697,32 @@ proto.cmapi.ChannelGroupPublishCommand.deserializeBinaryFromReader = function(ms
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelGroupPublishCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelGroupPublishCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelGroupPublishCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelGroupPublishOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelGroupPublishOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupPublishOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelGroupPublishCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelGroupPublishOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -7542,13 +7736,13 @@ proto.cmapi.ChannelGroupPublishCommand.prototype.serializeBinaryToWriter = funct
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelGroupPublishCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelGroupPublishOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelGroupPublishCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelGroupPublishOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -7557,13 +7751,13 @@ proto.cmapi.ChannelGroupPublishCommand.prototype.setStatus = function(value) {
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelGroupPublishCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.ChannelGroupPublishOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupPublishCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.ChannelGroupPublishOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -7579,19 +7773,240 @@ proto.cmapi.ChannelGroupPublishCommand.prototype.setChannelGroupName = function(
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelGroupCacheCommand = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.cmapi.ChannelGroupCacheCommand.repeatedFields_, null);
+proto.cmapi.ChannelGroupDeleteOperation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelGroupCacheCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelGroupDeleteOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelGroupCacheCommand.displayName = 'proto.cmapi.ChannelGroupCacheCommand';
+  proto.cmapi.ChannelGroupDeleteOperation.displayName = 'proto.cmapi.ChannelGroupDeleteOperation';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelGroupDeleteOperation.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.cmapi.ChannelGroupDeleteOperation} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    payloadId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    sourceId: jspb.Message.getFieldWithDefault(msg, 4, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.cmapi.ChannelGroupDeleteOperation}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.cmapi.ChannelGroupDeleteOperation;
+  return proto.cmapi.ChannelGroupDeleteOperation.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.cmapi.ChannelGroupDeleteOperation} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.cmapi.ChannelGroupDeleteOperation}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.cmapi.Status} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setChannelGroupName(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPayloadId(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSourceId(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.cmapi.ChannelGroupDeleteOperation.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupDeleteOperation} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.cmapi.ChannelGroupDeleteOperation.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getChannelGroupName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getPayloadId();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getSourceId();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional Status status = 1;
+ * @return {!proto.cmapi.Status}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.getStatus = function() {
+  return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.cmapi.Status} value */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.setStatus = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * optional string channel_group_name = 2;
+ * @return {string}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.getChannelGroupName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.setChannelGroupName = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * optional string payload_id = 3;
+ * @return {string}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.getPayloadId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.setPayloadId = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * optional string source_id = 4;
+ * @return {string}
+ */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.getSourceId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.cmapi.ChannelGroupDeleteOperation.prototype.setSourceId = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.cmapi.ChannelGroupCacheOperation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.cmapi.ChannelGroupCacheOperation.repeatedFields_, null);
+};
+goog.inherits(proto.cmapi.ChannelGroupCacheOperation, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.cmapi.ChannelGroupCacheOperation.displayName = 'proto.cmapi.ChannelGroupCacheOperation';
 }
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.cmapi.ChannelGroupCacheCommand.repeatedFields_ = [3];
+proto.cmapi.ChannelGroupCacheOperation.repeatedFields_ = [3];
 
 
 
@@ -7606,8 +8021,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupCacheCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelGroupCacheCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelGroupCacheOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelGroupCacheOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -7616,10 +8031,10 @@ proto.cmapi.ChannelGroupCacheCommand.prototype.toObject = function(opt_includeIn
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelGroupCacheCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelGroupCacheOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupCacheCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelGroupCacheOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -7637,23 +8052,23 @@ proto.cmapi.ChannelGroupCacheCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelGroupCacheCommand}
+ * @return {!proto.cmapi.ChannelGroupCacheOperation}
  */
-proto.cmapi.ChannelGroupCacheCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelGroupCacheOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelGroupCacheCommand;
-  return proto.cmapi.ChannelGroupCacheCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelGroupCacheOperation;
+  return proto.cmapi.ChannelGroupCacheOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelGroupCacheCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelGroupCacheOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelGroupCacheCommand}
+ * @return {!proto.cmapi.ChannelGroupCacheOperation}
  */
-proto.cmapi.ChannelGroupCacheCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelGroupCacheOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7682,49 +8097,39 @@ proto.cmapi.ChannelGroupCacheCommand.deserializeBinaryFromReader = function(msg,
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelGroupCacheCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelGroupCacheCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelGroupCacheCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelGroupCacheOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelGroupCacheOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupCacheOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelGroupCacheCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelGroupCacheOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getEntityIdList();
+  f = message.getEntityIdList();
   if (f.length > 0) {
     writer.writePackedInt32(
       3,
@@ -7738,13 +8143,13 @@ proto.cmapi.ChannelGroupCacheCommand.prototype.serializeBinaryToWriter = functio
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelGroupCacheCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelGroupCacheOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelGroupCacheCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelGroupCacheOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -7753,13 +8158,13 @@ proto.cmapi.ChannelGroupCacheCommand.prototype.setStatus = function(value) {
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelGroupCacheCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.ChannelGroupCacheOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupCacheCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.ChannelGroupCacheOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -7770,13 +8175,13 @@ proto.cmapi.ChannelGroupCacheCommand.prototype.setChannelGroupName = function(va
  * replace the array itself, then you must call the setter to update it.
  * @return {!Array.<number>}
  */
-proto.cmapi.ChannelGroupCacheCommand.prototype.getEntityIdList = function() {
+proto.cmapi.ChannelGroupCacheOperation.prototype.getEntityIdList = function() {
   return /** @type {!Array.<number>} */ (jspb.Message.getField(this, 3));
 };
 
 
 /** @param {!Array.<number>} value */
-proto.cmapi.ChannelGroupCacheCommand.prototype.setEntityIdList = function(value) {
+proto.cmapi.ChannelGroupCacheOperation.prototype.setEntityIdList = function(value) {
   jspb.Message.setField(this, 3, value || []);
 };
 
@@ -7785,12 +8190,12 @@ proto.cmapi.ChannelGroupCacheCommand.prototype.setEntityIdList = function(value)
  * @param {!number} value
  * @param {number=} opt_index
  */
-proto.cmapi.ChannelGroupCacheCommand.prototype.addEntityId = function(value, opt_index) {
+proto.cmapi.ChannelGroupCacheOperation.prototype.addEntityId = function(value, opt_index) {
   jspb.Message.addToRepeatedField(this, 3, value, opt_index);
 };
 
 
-proto.cmapi.ChannelGroupCacheCommand.prototype.clearEntityIdList = function() {
+proto.cmapi.ChannelGroupCacheOperation.prototype.clearEntityIdList = function() {
   this.setEntityIdList([]);
 };
 
@@ -7806,12 +8211,12 @@ proto.cmapi.ChannelGroupCacheCommand.prototype.clearEntityIdList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelGroupHistoryCommand = function(opt_data) {
+proto.cmapi.ChannelGroupHistoryOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelGroupHistoryCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelGroupHistoryOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelGroupHistoryCommand.displayName = 'proto.cmapi.ChannelGroupHistoryCommand';
+  proto.cmapi.ChannelGroupHistoryOperation.displayName = 'proto.cmapi.ChannelGroupHistoryOperation';
 }
 
 
@@ -7826,8 +8231,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelGroupHistoryCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelGroupHistoryOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelGroupHistoryOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -7836,10 +8241,10 @@ proto.cmapi.ChannelGroupHistoryCommand.prototype.toObject = function(opt_include
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelGroupHistoryCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelGroupHistoryOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelGroupHistoryCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelGroupHistoryOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -7859,23 +8264,23 @@ proto.cmapi.ChannelGroupHistoryCommand.toObject = function(includeInstance, msg)
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelGroupHistoryCommand}
+ * @return {!proto.cmapi.ChannelGroupHistoryOperation}
  */
-proto.cmapi.ChannelGroupHistoryCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelGroupHistoryOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelGroupHistoryCommand;
-  return proto.cmapi.ChannelGroupHistoryCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelGroupHistoryOperation;
+  return proto.cmapi.ChannelGroupHistoryOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelGroupHistoryCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelGroupHistoryOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelGroupHistoryCommand}
+ * @return {!proto.cmapi.ChannelGroupHistoryOperation}
  */
-proto.cmapi.ChannelGroupHistoryCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelGroupHistoryOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7913,63 +8318,53 @@ proto.cmapi.ChannelGroupHistoryCommand.deserializeBinaryFromReader = function(ms
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelGroupHistoryCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelGroupHistoryCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelGroupHistoryOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelGroupHistoryOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelGroupHistoryOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getStartTime();
+  f = message.getStartTime();
   if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = this.getEndTime();
+  f = message.getEndTime();
   if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = this.getHistory();
+  f = message.getHistory();
   if (f != null) {
     writer.writeMessage(
       5,
@@ -7984,13 +8379,13 @@ proto.cmapi.ChannelGroupHistoryCommand.prototype.serializeBinaryToWriter = funct
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -7999,13 +8394,13 @@ proto.cmapi.ChannelGroupHistoryCommand.prototype.setStatus = function(value) {
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -8014,13 +8409,13 @@ proto.cmapi.ChannelGroupHistoryCommand.prototype.setChannelGroupName = function(
  * optional int64 start_time = 3;
  * @return {number}
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.getStartTime = function() {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.getStartTime = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /** @param {number} value */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.setStartTime = function(value) {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.setStartTime = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
@@ -8029,13 +8424,13 @@ proto.cmapi.ChannelGroupHistoryCommand.prototype.setStartTime = function(value) 
  * optional int64 end_time = 4;
  * @return {number}
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.getEndTime = function() {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.getEndTime = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /** @param {number} value */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.setEndTime = function(value) {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.setEndTime = function(value) {
   jspb.Message.setField(this, 4, value);
 };
 
@@ -8044,19 +8439,19 @@ proto.cmapi.ChannelGroupHistoryCommand.prototype.setEndTime = function(value) {
  * optional HistoryInfo history = 5;
  * @return {?proto.cmapi.HistoryInfo}
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.getHistory = function() {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.getHistory = function() {
   return /** @type{?proto.cmapi.HistoryInfo} */ (
     jspb.Message.getWrapperField(this, proto.cmapi.HistoryInfo, 5));
 };
 
 
 /** @param {?proto.cmapi.HistoryInfo|undefined} value */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.setHistory = function(value) {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.setHistory = function(value) {
   jspb.Message.setWrapperField(this, 5, value);
 };
 
 
-proto.cmapi.ChannelGroupHistoryCommand.prototype.clearHistory = function() {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.clearHistory = function() {
   this.setHistory(undefined);
 };
 
@@ -8065,7 +8460,7 @@ proto.cmapi.ChannelGroupHistoryCommand.prototype.clearHistory = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.ChannelGroupHistoryCommand.prototype.hasHistory = function() {
+proto.cmapi.ChannelGroupHistoryOperation.prototype.hasHistory = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
@@ -8081,12 +8476,12 @@ proto.cmapi.ChannelGroupHistoryCommand.prototype.hasHistory = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.CreateChannelGroupCommand = function(opt_data) {
+proto.cmapi.CreateChannelGroupOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.CreateChannelGroupCommand, jspb.Message);
+goog.inherits(proto.cmapi.CreateChannelGroupOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.CreateChannelGroupCommand.displayName = 'proto.cmapi.CreateChannelGroupCommand';
+  proto.cmapi.CreateChannelGroupOperation.displayName = 'proto.cmapi.CreateChannelGroupOperation';
 }
 
 
@@ -8101,8 +8496,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.CreateChannelGroupCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.CreateChannelGroupCommand.toObject(opt_includeInstance, this);
+proto.cmapi.CreateChannelGroupOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.CreateChannelGroupOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -8111,10 +8506,10 @@ proto.cmapi.CreateChannelGroupCommand.prototype.toObject = function(opt_includeI
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.CreateChannelGroupCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.CreateChannelGroupOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.CreateChannelGroupCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.CreateChannelGroupOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -8131,23 +8526,23 @@ proto.cmapi.CreateChannelGroupCommand.toObject = function(includeInstance, msg) 
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.CreateChannelGroupCommand}
+ * @return {!proto.cmapi.CreateChannelGroupOperation}
  */
-proto.cmapi.CreateChannelGroupCommand.deserializeBinary = function(bytes) {
+proto.cmapi.CreateChannelGroupOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.CreateChannelGroupCommand;
-  return proto.cmapi.CreateChannelGroupCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.CreateChannelGroupOperation;
+  return proto.cmapi.CreateChannelGroupOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.CreateChannelGroupCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.CreateChannelGroupOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.CreateChannelGroupCommand}
+ * @return {!proto.cmapi.CreateChannelGroupOperation}
  */
-proto.cmapi.CreateChannelGroupCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.CreateChannelGroupOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8172,42 +8567,32 @@ proto.cmapi.CreateChannelGroupCommand.deserializeBinaryFromReader = function(msg
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.CreateChannelGroupCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.CreateChannelGroupCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.CreateChannelGroupCommand.prototype.serializeBinary = function() {
+proto.cmapi.CreateChannelGroupOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.CreateChannelGroupOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.CreateChannelGroupOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.CreateChannelGroupCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.CreateChannelGroupOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -8221,13 +8606,13 @@ proto.cmapi.CreateChannelGroupCommand.prototype.serializeBinaryToWriter = functi
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.CreateChannelGroupCommand.prototype.getStatus = function() {
+proto.cmapi.CreateChannelGroupOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.CreateChannelGroupCommand.prototype.setStatus = function(value) {
+proto.cmapi.CreateChannelGroupOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -8236,13 +8621,13 @@ proto.cmapi.CreateChannelGroupCommand.prototype.setStatus = function(value) {
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.CreateChannelGroupCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.CreateChannelGroupOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.CreateChannelGroupCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.CreateChannelGroupOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -8258,12 +8643,12 @@ proto.cmapi.CreateChannelGroupCommand.prototype.setChannelGroupName = function(v
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.DeleteChannelGroupCommand = function(opt_data) {
+proto.cmapi.DeleteChannelGroupOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.DeleteChannelGroupCommand, jspb.Message);
+goog.inherits(proto.cmapi.DeleteChannelGroupOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.DeleteChannelGroupCommand.displayName = 'proto.cmapi.DeleteChannelGroupCommand';
+  proto.cmapi.DeleteChannelGroupOperation.displayName = 'proto.cmapi.DeleteChannelGroupOperation';
 }
 
 
@@ -8278,8 +8663,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.DeleteChannelGroupCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.DeleteChannelGroupCommand.toObject(opt_includeInstance, this);
+proto.cmapi.DeleteChannelGroupOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.DeleteChannelGroupOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -8288,10 +8673,10 @@ proto.cmapi.DeleteChannelGroupCommand.prototype.toObject = function(opt_includeI
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.DeleteChannelGroupCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.DeleteChannelGroupOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.DeleteChannelGroupCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.DeleteChannelGroupOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelGroupName: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -8308,23 +8693,23 @@ proto.cmapi.DeleteChannelGroupCommand.toObject = function(includeInstance, msg) 
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.DeleteChannelGroupCommand}
+ * @return {!proto.cmapi.DeleteChannelGroupOperation}
  */
-proto.cmapi.DeleteChannelGroupCommand.deserializeBinary = function(bytes) {
+proto.cmapi.DeleteChannelGroupOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.DeleteChannelGroupCommand;
-  return proto.cmapi.DeleteChannelGroupCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.DeleteChannelGroupOperation;
+  return proto.cmapi.DeleteChannelGroupOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.DeleteChannelGroupCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.DeleteChannelGroupOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.DeleteChannelGroupCommand}
+ * @return {!proto.cmapi.DeleteChannelGroupOperation}
  */
-proto.cmapi.DeleteChannelGroupCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.DeleteChannelGroupOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8349,42 +8734,32 @@ proto.cmapi.DeleteChannelGroupCommand.deserializeBinaryFromReader = function(msg
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.DeleteChannelGroupCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.DeleteChannelGroupCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.DeleteChannelGroupCommand.prototype.serializeBinary = function() {
+proto.cmapi.DeleteChannelGroupOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.DeleteChannelGroupOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.DeleteChannelGroupOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.DeleteChannelGroupCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.DeleteChannelGroupOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelGroupName();
+  f = message.getChannelGroupName();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -8398,13 +8773,13 @@ proto.cmapi.DeleteChannelGroupCommand.prototype.serializeBinaryToWriter = functi
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.DeleteChannelGroupCommand.prototype.getStatus = function() {
+proto.cmapi.DeleteChannelGroupOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.DeleteChannelGroupCommand.prototype.setStatus = function(value) {
+proto.cmapi.DeleteChannelGroupOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -8413,13 +8788,13 @@ proto.cmapi.DeleteChannelGroupCommand.prototype.setStatus = function(value) {
  * optional string channel_group_name = 2;
  * @return {string}
  */
-proto.cmapi.DeleteChannelGroupCommand.prototype.getChannelGroupName = function() {
+proto.cmapi.DeleteChannelGroupOperation.prototype.getChannelGroupName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.DeleteChannelGroupCommand.prototype.setChannelGroupName = function(value) {
+proto.cmapi.DeleteChannelGroupOperation.prototype.setChannelGroupName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -8435,19 +8810,19 @@ proto.cmapi.DeleteChannelGroupCommand.prototype.setChannelGroupName = function(v
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.FindChannelGroupsCommand = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.cmapi.FindChannelGroupsCommand.repeatedFields_, null);
+proto.cmapi.FindChannelGroupsOperation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.cmapi.FindChannelGroupsOperation.repeatedFields_, null);
 };
-goog.inherits(proto.cmapi.FindChannelGroupsCommand, jspb.Message);
+goog.inherits(proto.cmapi.FindChannelGroupsOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.FindChannelGroupsCommand.displayName = 'proto.cmapi.FindChannelGroupsCommand';
+  proto.cmapi.FindChannelGroupsOperation.displayName = 'proto.cmapi.FindChannelGroupsOperation';
 }
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.cmapi.FindChannelGroupsCommand.repeatedFields_ = [3];
+proto.cmapi.FindChannelGroupsOperation.repeatedFields_ = [3];
 
 
 
@@ -8462,8 +8837,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.FindChannelGroupsCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.FindChannelGroupsCommand.toObject(opt_includeInstance, this);
+proto.cmapi.FindChannelGroupsOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.FindChannelGroupsOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -8472,10 +8847,10 @@ proto.cmapi.FindChannelGroupsCommand.prototype.toObject = function(opt_includeIn
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.FindChannelGroupsCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.FindChannelGroupsOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.FindChannelGroupsCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.FindChannelGroupsOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     filter: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -8494,23 +8869,23 @@ proto.cmapi.FindChannelGroupsCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.FindChannelGroupsCommand}
+ * @return {!proto.cmapi.FindChannelGroupsOperation}
  */
-proto.cmapi.FindChannelGroupsCommand.deserializeBinary = function(bytes) {
+proto.cmapi.FindChannelGroupsOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.FindChannelGroupsCommand;
-  return proto.cmapi.FindChannelGroupsCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.FindChannelGroupsOperation;
+  return proto.cmapi.FindChannelGroupsOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.FindChannelGroupsCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.FindChannelGroupsOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.FindChannelGroupsCommand}
+ * @return {!proto.cmapi.FindChannelGroupsOperation}
  */
-proto.cmapi.FindChannelGroupsCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.FindChannelGroupsOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8540,49 +8915,39 @@ proto.cmapi.FindChannelGroupsCommand.deserializeBinaryFromReader = function(msg,
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.FindChannelGroupsCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.FindChannelGroupsCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.FindChannelGroupsCommand.prototype.serializeBinary = function() {
+proto.cmapi.FindChannelGroupsOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.FindChannelGroupsOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.FindChannelGroupsOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.FindChannelGroupsCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.FindChannelGroupsOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getFilter();
+  f = message.getFilter();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getChannelGroupList();
+  f = message.getChannelGroupList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       3,
@@ -8597,13 +8962,13 @@ proto.cmapi.FindChannelGroupsCommand.prototype.serializeBinaryToWriter = functio
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.FindChannelGroupsCommand.prototype.getStatus = function() {
+proto.cmapi.FindChannelGroupsOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.FindChannelGroupsCommand.prototype.setStatus = function(value) {
+proto.cmapi.FindChannelGroupsOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -8612,13 +8977,13 @@ proto.cmapi.FindChannelGroupsCommand.prototype.setStatus = function(value) {
  * optional string filter = 2;
  * @return {string}
  */
-proto.cmapi.FindChannelGroupsCommand.prototype.getFilter = function() {
+proto.cmapi.FindChannelGroupsOperation.prototype.getFilter = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.FindChannelGroupsCommand.prototype.setFilter = function(value) {
+proto.cmapi.FindChannelGroupsOperation.prototype.setFilter = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -8629,14 +8994,14 @@ proto.cmapi.FindChannelGroupsCommand.prototype.setFilter = function(value) {
  * replace the array itself, then you must call the setter to update it.
  * @return {!Array.<!proto.cmapi.ChannelGroupInfo>}
  */
-proto.cmapi.FindChannelGroupsCommand.prototype.getChannelGroupList = function() {
+proto.cmapi.FindChannelGroupsOperation.prototype.getChannelGroupList = function() {
   return /** @type{!Array.<!proto.cmapi.ChannelGroupInfo>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.cmapi.ChannelGroupInfo, 3));
 };
 
 
 /** @param {!Array.<!proto.cmapi.ChannelGroupInfo>} value */
-proto.cmapi.FindChannelGroupsCommand.prototype.setChannelGroupList = function(value) {
+proto.cmapi.FindChannelGroupsOperation.prototype.setChannelGroupList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
@@ -8646,12 +9011,12 @@ proto.cmapi.FindChannelGroupsCommand.prototype.setChannelGroupList = function(va
  * @param {number=} opt_index
  * @return {!proto.cmapi.ChannelGroupInfo}
  */
-proto.cmapi.FindChannelGroupsCommand.prototype.addChannelGroup = function(opt_value, opt_index) {
+proto.cmapi.FindChannelGroupsOperation.prototype.addChannelGroup = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.cmapi.ChannelGroupInfo, opt_index);
 };
 
 
-proto.cmapi.FindChannelGroupsCommand.prototype.clearChannelGroupList = function() {
+proto.cmapi.FindChannelGroupsOperation.prototype.clearChannelGroupList = function() {
   this.setChannelGroupList([]);
 };
 
@@ -8667,12 +9032,12 @@ proto.cmapi.FindChannelGroupsCommand.prototype.clearChannelGroupList = function(
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.CreateChannelCommand = function(opt_data) {
+proto.cmapi.CreateChannelOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.CreateChannelCommand, jspb.Message);
+goog.inherits(proto.cmapi.CreateChannelOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.CreateChannelCommand.displayName = 'proto.cmapi.CreateChannelCommand';
+  proto.cmapi.CreateChannelOperation.displayName = 'proto.cmapi.CreateChannelOperation';
 }
 
 
@@ -8687,8 +9052,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.CreateChannelCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.CreateChannelCommand.toObject(opt_includeInstance, this);
+proto.cmapi.CreateChannelOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.CreateChannelOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -8697,10 +9062,10 @@ proto.cmapi.CreateChannelCommand.prototype.toObject = function(opt_includeInstan
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.CreateChannelCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.CreateChannelOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.CreateChannelCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.CreateChannelOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelName: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -8719,23 +9084,23 @@ proto.cmapi.CreateChannelCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.CreateChannelCommand}
+ * @return {!proto.cmapi.CreateChannelOperation}
  */
-proto.cmapi.CreateChannelCommand.deserializeBinary = function(bytes) {
+proto.cmapi.CreateChannelOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.CreateChannelCommand;
-  return proto.cmapi.CreateChannelCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.CreateChannelOperation;
+  return proto.cmapi.CreateChannelOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.CreateChannelCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.CreateChannelOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.CreateChannelCommand}
+ * @return {!proto.cmapi.CreateChannelOperation}
  */
-proto.cmapi.CreateChannelCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.CreateChannelOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8768,56 +9133,46 @@ proto.cmapi.CreateChannelCommand.deserializeBinaryFromReader = function(msg, rea
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.CreateChannelCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.CreateChannelCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.CreateChannelCommand.prototype.serializeBinary = function() {
+proto.cmapi.CreateChannelOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.CreateChannelOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.CreateChannelOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.CreateChannelCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.CreateChannelOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getType();
+  f = message.getType();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = this.getVisibility();
+  f = message.getVisibility();
   if (f.length > 0) {
     writer.writeString(
       4,
@@ -8831,13 +9186,13 @@ proto.cmapi.CreateChannelCommand.prototype.serializeBinaryToWriter = function (w
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.CreateChannelCommand.prototype.getStatus = function() {
+proto.cmapi.CreateChannelOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.CreateChannelCommand.prototype.setStatus = function(value) {
+proto.cmapi.CreateChannelOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -8846,13 +9201,13 @@ proto.cmapi.CreateChannelCommand.prototype.setStatus = function(value) {
  * optional string channel_name = 2;
  * @return {string}
  */
-proto.cmapi.CreateChannelCommand.prototype.getChannelName = function() {
+proto.cmapi.CreateChannelOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.CreateChannelCommand.prototype.setChannelName = function(value) {
+proto.cmapi.CreateChannelOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -8861,13 +9216,13 @@ proto.cmapi.CreateChannelCommand.prototype.setChannelName = function(value) {
  * optional string type = 3;
  * @return {string}
  */
-proto.cmapi.CreateChannelCommand.prototype.getType = function() {
+proto.cmapi.CreateChannelOperation.prototype.getType = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.CreateChannelCommand.prototype.setType = function(value) {
+proto.cmapi.CreateChannelOperation.prototype.setType = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
@@ -8876,13 +9231,13 @@ proto.cmapi.CreateChannelCommand.prototype.setType = function(value) {
  * optional string visibility = 4;
  * @return {string}
  */
-proto.cmapi.CreateChannelCommand.prototype.getVisibility = function() {
+proto.cmapi.CreateChannelOperation.prototype.getVisibility = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.CreateChannelCommand.prototype.setVisibility = function(value) {
+proto.cmapi.CreateChannelOperation.prototype.setVisibility = function(value) {
   jspb.Message.setField(this, 4, value);
 };
 
@@ -8898,12 +9253,12 @@ proto.cmapi.CreateChannelCommand.prototype.setVisibility = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.DeleteChannelCommand = function(opt_data) {
+proto.cmapi.DeleteChannelOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.DeleteChannelCommand, jspb.Message);
+goog.inherits(proto.cmapi.DeleteChannelOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.DeleteChannelCommand.displayName = 'proto.cmapi.DeleteChannelCommand';
+  proto.cmapi.DeleteChannelOperation.displayName = 'proto.cmapi.DeleteChannelOperation';
 }
 
 
@@ -8918,8 +9273,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.DeleteChannelCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.DeleteChannelCommand.toObject(opt_includeInstance, this);
+proto.cmapi.DeleteChannelOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.DeleteChannelOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -8928,10 +9283,10 @@ proto.cmapi.DeleteChannelCommand.prototype.toObject = function(opt_includeInstan
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.DeleteChannelCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.DeleteChannelOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.DeleteChannelCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.DeleteChannelOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelName: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -8948,23 +9303,23 @@ proto.cmapi.DeleteChannelCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.DeleteChannelCommand}
+ * @return {!proto.cmapi.DeleteChannelOperation}
  */
-proto.cmapi.DeleteChannelCommand.deserializeBinary = function(bytes) {
+proto.cmapi.DeleteChannelOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.DeleteChannelCommand;
-  return proto.cmapi.DeleteChannelCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.DeleteChannelOperation;
+  return proto.cmapi.DeleteChannelOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.DeleteChannelCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.DeleteChannelOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.DeleteChannelCommand}
+ * @return {!proto.cmapi.DeleteChannelOperation}
  */
-proto.cmapi.DeleteChannelCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.DeleteChannelOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8989,42 +9344,32 @@ proto.cmapi.DeleteChannelCommand.deserializeBinaryFromReader = function(msg, rea
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.DeleteChannelCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.DeleteChannelCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.DeleteChannelCommand.prototype.serializeBinary = function() {
+proto.cmapi.DeleteChannelOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.DeleteChannelOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.DeleteChannelOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.DeleteChannelCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.DeleteChannelOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -9038,13 +9383,13 @@ proto.cmapi.DeleteChannelCommand.prototype.serializeBinaryToWriter = function (w
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.DeleteChannelCommand.prototype.getStatus = function() {
+proto.cmapi.DeleteChannelOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.DeleteChannelCommand.prototype.setStatus = function(value) {
+proto.cmapi.DeleteChannelOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -9053,13 +9398,13 @@ proto.cmapi.DeleteChannelCommand.prototype.setStatus = function(value) {
  * optional string channel_name = 2;
  * @return {string}
  */
-proto.cmapi.DeleteChannelCommand.prototype.getChannelName = function() {
+proto.cmapi.DeleteChannelOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.DeleteChannelCommand.prototype.setChannelName = function(value) {
+proto.cmapi.DeleteChannelOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -9075,19 +9420,19 @@ proto.cmapi.DeleteChannelCommand.prototype.setChannelName = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.FindChannelsCommand = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.cmapi.FindChannelsCommand.repeatedFields_, null);
+proto.cmapi.FindChannelsOperation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.cmapi.FindChannelsOperation.repeatedFields_, null);
 };
-goog.inherits(proto.cmapi.FindChannelsCommand, jspb.Message);
+goog.inherits(proto.cmapi.FindChannelsOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.FindChannelsCommand.displayName = 'proto.cmapi.FindChannelsCommand';
+  proto.cmapi.FindChannelsOperation.displayName = 'proto.cmapi.FindChannelsOperation';
 }
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.cmapi.FindChannelsCommand.repeatedFields_ = [3];
+proto.cmapi.FindChannelsOperation.repeatedFields_ = [3];
 
 
 
@@ -9102,8 +9447,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.FindChannelsCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.FindChannelsCommand.toObject(opt_includeInstance, this);
+proto.cmapi.FindChannelsOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.FindChannelsOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -9112,10 +9457,10 @@ proto.cmapi.FindChannelsCommand.prototype.toObject = function(opt_includeInstanc
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.FindChannelsCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.FindChannelsOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.FindChannelsCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.FindChannelsOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     filter: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -9134,23 +9479,23 @@ proto.cmapi.FindChannelsCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.FindChannelsCommand}
+ * @return {!proto.cmapi.FindChannelsOperation}
  */
-proto.cmapi.FindChannelsCommand.deserializeBinary = function(bytes) {
+proto.cmapi.FindChannelsOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.FindChannelsCommand;
-  return proto.cmapi.FindChannelsCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.FindChannelsOperation;
+  return proto.cmapi.FindChannelsOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.FindChannelsCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.FindChannelsOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.FindChannelsCommand}
+ * @return {!proto.cmapi.FindChannelsOperation}
  */
-proto.cmapi.FindChannelsCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.FindChannelsOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9180,49 +9525,39 @@ proto.cmapi.FindChannelsCommand.deserializeBinaryFromReader = function(msg, read
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.FindChannelsCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.FindChannelsCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.FindChannelsCommand.prototype.serializeBinary = function() {
+proto.cmapi.FindChannelsOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.FindChannelsOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.FindChannelsOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.FindChannelsCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.FindChannelsOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getFilter();
+  f = message.getFilter();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getChannelList();
+  f = message.getChannelList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       3,
@@ -9237,13 +9572,13 @@ proto.cmapi.FindChannelsCommand.prototype.serializeBinaryToWriter = function (wr
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.FindChannelsCommand.prototype.getStatus = function() {
+proto.cmapi.FindChannelsOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.FindChannelsCommand.prototype.setStatus = function(value) {
+proto.cmapi.FindChannelsOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -9252,13 +9587,13 @@ proto.cmapi.FindChannelsCommand.prototype.setStatus = function(value) {
  * optional string filter = 2;
  * @return {string}
  */
-proto.cmapi.FindChannelsCommand.prototype.getFilter = function() {
+proto.cmapi.FindChannelsOperation.prototype.getFilter = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.FindChannelsCommand.prototype.setFilter = function(value) {
+proto.cmapi.FindChannelsOperation.prototype.setFilter = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -9269,14 +9604,14 @@ proto.cmapi.FindChannelsCommand.prototype.setFilter = function(value) {
  * replace the array itself, then you must call the setter to update it.
  * @return {!Array.<!proto.cmapi.ChannelInfo>}
  */
-proto.cmapi.FindChannelsCommand.prototype.getChannelList = function() {
+proto.cmapi.FindChannelsOperation.prototype.getChannelList = function() {
   return /** @type{!Array.<!proto.cmapi.ChannelInfo>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.cmapi.ChannelInfo, 3));
 };
 
 
 /** @param {!Array.<!proto.cmapi.ChannelInfo>} value */
-proto.cmapi.FindChannelsCommand.prototype.setChannelList = function(value) {
+proto.cmapi.FindChannelsOperation.prototype.setChannelList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
@@ -9286,12 +9621,12 @@ proto.cmapi.FindChannelsCommand.prototype.setChannelList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.cmapi.ChannelInfo}
  */
-proto.cmapi.FindChannelsCommand.prototype.addChannel = function(opt_value, opt_index) {
+proto.cmapi.FindChannelsOperation.prototype.addChannel = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.cmapi.ChannelInfo, opt_index);
 };
 
 
-proto.cmapi.FindChannelsCommand.prototype.clearChannelList = function() {
+proto.cmapi.FindChannelsOperation.prototype.clearChannelList = function() {
   this.setChannelList([]);
 };
 
@@ -9307,12 +9642,12 @@ proto.cmapi.FindChannelsCommand.prototype.clearChannelList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelOpenCommand = function(opt_data) {
+proto.cmapi.ChannelOpenOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelOpenCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelOpenOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelOpenCommand.displayName = 'proto.cmapi.ChannelOpenCommand';
+  proto.cmapi.ChannelOpenOperation.displayName = 'proto.cmapi.ChannelOpenOperation';
 }
 
 
@@ -9327,8 +9662,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelOpenCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelOpenCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelOpenOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelOpenOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -9337,10 +9672,10 @@ proto.cmapi.ChannelOpenCommand.prototype.toObject = function(opt_includeInstance
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelOpenCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelOpenOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelOpenCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelOpenOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelName: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -9359,23 +9694,23 @@ proto.cmapi.ChannelOpenCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelOpenCommand}
+ * @return {!proto.cmapi.ChannelOpenOperation}
  */
-proto.cmapi.ChannelOpenCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelOpenOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelOpenCommand;
-  return proto.cmapi.ChannelOpenCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelOpenOperation;
+  return proto.cmapi.ChannelOpenOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelOpenCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelOpenOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelOpenCommand}
+ * @return {!proto.cmapi.ChannelOpenOperation}
  */
-proto.cmapi.ChannelOpenCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelOpenOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9408,56 +9743,46 @@ proto.cmapi.ChannelOpenCommand.deserializeBinaryFromReader = function(msg, reade
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelOpenCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelOpenCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelOpenCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelOpenOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelOpenOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelOpenOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelOpenCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelOpenOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getFlow();
+  f = message.getFlow();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = this.getFilter();
+  f = message.getFilter();
   if (f.length > 0) {
     writer.writeString(
       4,
@@ -9471,13 +9796,13 @@ proto.cmapi.ChannelOpenCommand.prototype.serializeBinaryToWriter = function (wri
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelOpenCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelOpenOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelOpenCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelOpenOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -9486,13 +9811,13 @@ proto.cmapi.ChannelOpenCommand.prototype.setStatus = function(value) {
  * optional string channel_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelOpenCommand.prototype.getChannelName = function() {
+proto.cmapi.ChannelOpenOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelOpenCommand.prototype.setChannelName = function(value) {
+proto.cmapi.ChannelOpenOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -9501,13 +9826,13 @@ proto.cmapi.ChannelOpenCommand.prototype.setChannelName = function(value) {
  * optional string flow = 3;
  * @return {string}
  */
-proto.cmapi.ChannelOpenCommand.prototype.getFlow = function() {
+proto.cmapi.ChannelOpenOperation.prototype.getFlow = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelOpenCommand.prototype.setFlow = function(value) {
+proto.cmapi.ChannelOpenOperation.prototype.setFlow = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
@@ -9516,13 +9841,13 @@ proto.cmapi.ChannelOpenCommand.prototype.setFlow = function(value) {
  * optional string filter = 4;
  * @return {string}
  */
-proto.cmapi.ChannelOpenCommand.prototype.getFilter = function() {
+proto.cmapi.ChannelOpenOperation.prototype.getFilter = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelOpenCommand.prototype.setFilter = function(value) {
+proto.cmapi.ChannelOpenOperation.prototype.setFilter = function(value) {
   jspb.Message.setField(this, 4, value);
 };
 
@@ -9538,12 +9863,12 @@ proto.cmapi.ChannelOpenCommand.prototype.setFilter = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelCloseCommand = function(opt_data) {
+proto.cmapi.ChannelCloseOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelCloseCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelCloseOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelCloseCommand.displayName = 'proto.cmapi.ChannelCloseCommand';
+  proto.cmapi.ChannelCloseOperation.displayName = 'proto.cmapi.ChannelCloseOperation';
 }
 
 
@@ -9558,8 +9883,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelCloseCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelCloseCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelCloseOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelCloseOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -9568,10 +9893,10 @@ proto.cmapi.ChannelCloseCommand.prototype.toObject = function(opt_includeInstanc
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelCloseCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelCloseOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelCloseCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelCloseOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelName: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -9588,23 +9913,23 @@ proto.cmapi.ChannelCloseCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelCloseCommand}
+ * @return {!proto.cmapi.ChannelCloseOperation}
  */
-proto.cmapi.ChannelCloseCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelCloseOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelCloseCommand;
-  return proto.cmapi.ChannelCloseCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelCloseOperation;
+  return proto.cmapi.ChannelCloseOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelCloseCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelCloseOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelCloseCommand}
+ * @return {!proto.cmapi.ChannelCloseOperation}
  */
-proto.cmapi.ChannelCloseCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelCloseOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9629,42 +9954,32 @@ proto.cmapi.ChannelCloseCommand.deserializeBinaryFromReader = function(msg, read
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelCloseCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelCloseCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelCloseCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelCloseOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelCloseOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelCloseOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelCloseCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelCloseOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -9678,13 +9993,13 @@ proto.cmapi.ChannelCloseCommand.prototype.serializeBinaryToWriter = function (wr
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelCloseCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelCloseOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelCloseCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelCloseOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -9693,13 +10008,13 @@ proto.cmapi.ChannelCloseCommand.prototype.setStatus = function(value) {
  * optional string channel_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelCloseCommand.prototype.getChannelName = function() {
+proto.cmapi.ChannelCloseOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelCloseCommand.prototype.setChannelName = function(value) {
+proto.cmapi.ChannelCloseOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -9715,12 +10030,12 @@ proto.cmapi.ChannelCloseCommand.prototype.setChannelName = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelPublishCommand = function(opt_data) {
+proto.cmapi.ChannelPublishOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelPublishCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelPublishOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelPublishCommand.displayName = 'proto.cmapi.ChannelPublishCommand';
+  proto.cmapi.ChannelPublishOperation.displayName = 'proto.cmapi.ChannelPublishOperation';
 }
 
 
@@ -9735,8 +10050,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelPublishCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelPublishCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelPublishOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelPublishOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -9745,10 +10060,10 @@ proto.cmapi.ChannelPublishCommand.prototype.toObject = function(opt_includeInsta
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelPublishCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelPublishOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelPublishCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelPublishOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelName: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -9765,23 +10080,23 @@ proto.cmapi.ChannelPublishCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelPublishCommand}
+ * @return {!proto.cmapi.ChannelPublishOperation}
  */
-proto.cmapi.ChannelPublishCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelPublishOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelPublishCommand;
-  return proto.cmapi.ChannelPublishCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelPublishOperation;
+  return proto.cmapi.ChannelPublishOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelPublishCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelPublishOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelPublishCommand}
+ * @return {!proto.cmapi.ChannelPublishOperation}
  */
-proto.cmapi.ChannelPublishCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelPublishOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9806,42 +10121,32 @@ proto.cmapi.ChannelPublishCommand.deserializeBinaryFromReader = function(msg, re
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelPublishCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelPublishCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelPublishCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelPublishOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelPublishOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelPublishOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelPublishCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelPublishOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -9855,13 +10160,13 @@ proto.cmapi.ChannelPublishCommand.prototype.serializeBinaryToWriter = function (
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelPublishCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelPublishOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelPublishCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelPublishOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -9870,13 +10175,13 @@ proto.cmapi.ChannelPublishCommand.prototype.setStatus = function(value) {
  * optional string channel_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelPublishCommand.prototype.getChannelName = function() {
+proto.cmapi.ChannelPublishOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelPublishCommand.prototype.setChannelName = function(value) {
+proto.cmapi.ChannelPublishOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -9892,19 +10197,240 @@ proto.cmapi.ChannelPublishCommand.prototype.setChannelName = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelCacheCommand = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.cmapi.ChannelCacheCommand.repeatedFields_, null);
+proto.cmapi.ChannelDeleteOperation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelCacheCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelDeleteOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelCacheCommand.displayName = 'proto.cmapi.ChannelCacheCommand';
+  proto.cmapi.ChannelDeleteOperation.displayName = 'proto.cmapi.ChannelDeleteOperation';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.cmapi.ChannelDeleteOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelDeleteOperation.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.cmapi.ChannelDeleteOperation} msg The msg instance to transform.
+ * @return {!Object}
+ */
+proto.cmapi.ChannelDeleteOperation.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    status: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    channelName: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    payloadId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    sourceId: jspb.Message.getFieldWithDefault(msg, 4, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.cmapi.ChannelDeleteOperation}
+ */
+proto.cmapi.ChannelDeleteOperation.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.cmapi.ChannelDeleteOperation;
+  return proto.cmapi.ChannelDeleteOperation.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.cmapi.ChannelDeleteOperation} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.cmapi.ChannelDeleteOperation}
+ */
+proto.cmapi.ChannelDeleteOperation.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.cmapi.Status} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setChannelName(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPayloadId(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSourceId(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.cmapi.ChannelDeleteOperation.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.cmapi.ChannelDeleteOperation.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelDeleteOperation} message
+ * @param {!jspb.BinaryWriter} writer
+ */
+proto.cmapi.ChannelDeleteOperation.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getChannelName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getPayloadId();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getSourceId();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional Status status = 1;
+ * @return {!proto.cmapi.Status}
+ */
+proto.cmapi.ChannelDeleteOperation.prototype.getStatus = function() {
+  return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.cmapi.Status} value */
+proto.cmapi.ChannelDeleteOperation.prototype.setStatus = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * optional string channel_name = 2;
+ * @return {string}
+ */
+proto.cmapi.ChannelDeleteOperation.prototype.getChannelName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.cmapi.ChannelDeleteOperation.prototype.setChannelName = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * optional string payload_id = 3;
+ * @return {string}
+ */
+proto.cmapi.ChannelDeleteOperation.prototype.getPayloadId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.cmapi.ChannelDeleteOperation.prototype.setPayloadId = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * optional string source_id = 4;
+ * @return {string}
+ */
+proto.cmapi.ChannelDeleteOperation.prototype.getSourceId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.cmapi.ChannelDeleteOperation.prototype.setSourceId = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.cmapi.ChannelCacheOperation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.cmapi.ChannelCacheOperation.repeatedFields_, null);
+};
+goog.inherits(proto.cmapi.ChannelCacheOperation, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.cmapi.ChannelCacheOperation.displayName = 'proto.cmapi.ChannelCacheOperation';
 }
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.cmapi.ChannelCacheCommand.repeatedFields_ = [3];
+proto.cmapi.ChannelCacheOperation.repeatedFields_ = [3];
 
 
 
@@ -9919,8 +10445,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelCacheCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelCacheCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelCacheOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelCacheOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -9929,10 +10455,10 @@ proto.cmapi.ChannelCacheCommand.prototype.toObject = function(opt_includeInstanc
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelCacheCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelCacheOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelCacheCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelCacheOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelName: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -9950,23 +10476,23 @@ proto.cmapi.ChannelCacheCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelCacheCommand}
+ * @return {!proto.cmapi.ChannelCacheOperation}
  */
-proto.cmapi.ChannelCacheCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelCacheOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelCacheCommand;
-  return proto.cmapi.ChannelCacheCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelCacheOperation;
+  return proto.cmapi.ChannelCacheOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelCacheCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelCacheOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelCacheCommand}
+ * @return {!proto.cmapi.ChannelCacheOperation}
  */
-proto.cmapi.ChannelCacheCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelCacheOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9995,49 +10521,39 @@ proto.cmapi.ChannelCacheCommand.deserializeBinaryFromReader = function(msg, read
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelCacheCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelCacheCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelCacheCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelCacheOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelCacheOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelCacheOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelCacheCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelCacheOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getEntityIdList();
+  f = message.getEntityIdList();
   if (f.length > 0) {
     writer.writePackedInt32(
       3,
@@ -10051,13 +10567,13 @@ proto.cmapi.ChannelCacheCommand.prototype.serializeBinaryToWriter = function (wr
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelCacheCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelCacheOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelCacheCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelCacheOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -10066,13 +10582,13 @@ proto.cmapi.ChannelCacheCommand.prototype.setStatus = function(value) {
  * optional string channel_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelCacheCommand.prototype.getChannelName = function() {
+proto.cmapi.ChannelCacheOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelCacheCommand.prototype.setChannelName = function(value) {
+proto.cmapi.ChannelCacheOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -10083,13 +10599,13 @@ proto.cmapi.ChannelCacheCommand.prototype.setChannelName = function(value) {
  * replace the array itself, then you must call the setter to update it.
  * @return {!Array.<number>}
  */
-proto.cmapi.ChannelCacheCommand.prototype.getEntityIdList = function() {
+proto.cmapi.ChannelCacheOperation.prototype.getEntityIdList = function() {
   return /** @type {!Array.<number>} */ (jspb.Message.getField(this, 3));
 };
 
 
 /** @param {!Array.<number>} value */
-proto.cmapi.ChannelCacheCommand.prototype.setEntityIdList = function(value) {
+proto.cmapi.ChannelCacheOperation.prototype.setEntityIdList = function(value) {
   jspb.Message.setField(this, 3, value || []);
 };
 
@@ -10098,12 +10614,12 @@ proto.cmapi.ChannelCacheCommand.prototype.setEntityIdList = function(value) {
  * @param {!number} value
  * @param {number=} opt_index
  */
-proto.cmapi.ChannelCacheCommand.prototype.addEntityId = function(value, opt_index) {
+proto.cmapi.ChannelCacheOperation.prototype.addEntityId = function(value, opt_index) {
   jspb.Message.addToRepeatedField(this, 3, value, opt_index);
 };
 
 
-proto.cmapi.ChannelCacheCommand.prototype.clearEntityIdList = function() {
+proto.cmapi.ChannelCacheOperation.prototype.clearEntityIdList = function() {
   this.setEntityIdList([]);
 };
 
@@ -10119,12 +10635,12 @@ proto.cmapi.ChannelCacheCommand.prototype.clearEntityIdList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.cmapi.ChannelHistoryCommand = function(opt_data) {
+proto.cmapi.ChannelHistoryOperation = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.cmapi.ChannelHistoryCommand, jspb.Message);
+goog.inherits(proto.cmapi.ChannelHistoryOperation, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.cmapi.ChannelHistoryCommand.displayName = 'proto.cmapi.ChannelHistoryCommand';
+  proto.cmapi.ChannelHistoryOperation.displayName = 'proto.cmapi.ChannelHistoryOperation';
 }
 
 
@@ -10139,8 +10655,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.cmapi.ChannelHistoryCommand.prototype.toObject = function(opt_includeInstance) {
-  return proto.cmapi.ChannelHistoryCommand.toObject(opt_includeInstance, this);
+proto.cmapi.ChannelHistoryOperation.prototype.toObject = function(opt_includeInstance) {
+  return proto.cmapi.ChannelHistoryOperation.toObject(opt_includeInstance, this);
 };
 
 
@@ -10149,10 +10665,10 @@ proto.cmapi.ChannelHistoryCommand.prototype.toObject = function(opt_includeInsta
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.cmapi.ChannelHistoryCommand} msg The msg instance to transform.
+ * @param {!proto.cmapi.ChannelHistoryOperation} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.cmapi.ChannelHistoryCommand.toObject = function(includeInstance, msg) {
+proto.cmapi.ChannelHistoryOperation.toObject = function(includeInstance, msg) {
   var f, obj = {
     status: jspb.Message.getFieldWithDefault(msg, 1, 0),
     channelName: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -10172,23 +10688,23 @@ proto.cmapi.ChannelHistoryCommand.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.cmapi.ChannelHistoryCommand}
+ * @return {!proto.cmapi.ChannelHistoryOperation}
  */
-proto.cmapi.ChannelHistoryCommand.deserializeBinary = function(bytes) {
+proto.cmapi.ChannelHistoryOperation.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.cmapi.ChannelHistoryCommand;
-  return proto.cmapi.ChannelHistoryCommand.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.cmapi.ChannelHistoryOperation;
+  return proto.cmapi.ChannelHistoryOperation.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.cmapi.ChannelHistoryCommand} msg The message object to deserialize into.
+ * @param {!proto.cmapi.ChannelHistoryOperation} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.cmapi.ChannelHistoryCommand}
+ * @return {!proto.cmapi.ChannelHistoryOperation}
  */
-proto.cmapi.ChannelHistoryCommand.deserializeBinaryFromReader = function(msg, reader) {
+proto.cmapi.ChannelHistoryOperation.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -10226,63 +10742,53 @@ proto.cmapi.ChannelHistoryCommand.deserializeBinaryFromReader = function(msg, re
 
 
 /**
- * Class method variant: serializes the given message to binary data
- * (in protobuf wire format), writing to the given BinaryWriter.
- * @param {!proto.cmapi.ChannelHistoryCommand} message
- * @param {!jspb.BinaryWriter} writer
- */
-proto.cmapi.ChannelHistoryCommand.serializeBinaryToWriter = function(message, writer) {
-  message.serializeBinaryToWriter(writer);
-};
-
-
-/**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.cmapi.ChannelHistoryCommand.prototype.serializeBinary = function() {
+proto.cmapi.ChannelHistoryOperation.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  this.serializeBinaryToWriter(writer);
+  proto.cmapi.ChannelHistoryOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
 
 /**
- * Serializes the message to binary data (in protobuf wire format),
- * writing to the given BinaryWriter.
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.cmapi.ChannelHistoryOperation} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.cmapi.ChannelHistoryCommand.prototype.serializeBinaryToWriter = function (writer) {
+proto.cmapi.ChannelHistoryOperation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = this.getStatus();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       1,
       f
     );
   }
-  f = this.getChannelName();
+  f = message.getChannelName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = this.getStartTime();
+  f = message.getStartTime();
   if (f !== 0) {
     writer.writeInt64(
       3,
       f
     );
   }
-  f = this.getEndTime();
+  f = message.getEndTime();
   if (f !== 0) {
     writer.writeInt64(
       4,
       f
     );
   }
-  f = this.getHistory();
+  f = message.getHistory();
   if (f != null) {
     writer.writeMessage(
       5,
@@ -10297,13 +10803,13 @@ proto.cmapi.ChannelHistoryCommand.prototype.serializeBinaryToWriter = function (
  * optional Status status = 1;
  * @return {!proto.cmapi.Status}
  */
-proto.cmapi.ChannelHistoryCommand.prototype.getStatus = function() {
+proto.cmapi.ChannelHistoryOperation.prototype.getStatus = function() {
   return /** @type {!proto.cmapi.Status} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.cmapi.Status} value */
-proto.cmapi.ChannelHistoryCommand.prototype.setStatus = function(value) {
+proto.cmapi.ChannelHistoryOperation.prototype.setStatus = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
@@ -10312,13 +10818,13 @@ proto.cmapi.ChannelHistoryCommand.prototype.setStatus = function(value) {
  * optional string channel_name = 2;
  * @return {string}
  */
-proto.cmapi.ChannelHistoryCommand.prototype.getChannelName = function() {
+proto.cmapi.ChannelHistoryOperation.prototype.getChannelName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.cmapi.ChannelHistoryCommand.prototype.setChannelName = function(value) {
+proto.cmapi.ChannelHistoryOperation.prototype.setChannelName = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
@@ -10327,13 +10833,13 @@ proto.cmapi.ChannelHistoryCommand.prototype.setChannelName = function(value) {
  * optional int64 start_time = 3;
  * @return {number}
  */
-proto.cmapi.ChannelHistoryCommand.prototype.getStartTime = function() {
+proto.cmapi.ChannelHistoryOperation.prototype.getStartTime = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /** @param {number} value */
-proto.cmapi.ChannelHistoryCommand.prototype.setStartTime = function(value) {
+proto.cmapi.ChannelHistoryOperation.prototype.setStartTime = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
@@ -10342,13 +10848,13 @@ proto.cmapi.ChannelHistoryCommand.prototype.setStartTime = function(value) {
  * optional int64 end_time = 4;
  * @return {number}
  */
-proto.cmapi.ChannelHistoryCommand.prototype.getEndTime = function() {
+proto.cmapi.ChannelHistoryOperation.prototype.getEndTime = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /** @param {number} value */
-proto.cmapi.ChannelHistoryCommand.prototype.setEndTime = function(value) {
+proto.cmapi.ChannelHistoryOperation.prototype.setEndTime = function(value) {
   jspb.Message.setField(this, 4, value);
 };
 
@@ -10357,19 +10863,19 @@ proto.cmapi.ChannelHistoryCommand.prototype.setEndTime = function(value) {
  * optional HistoryInfo history = 5;
  * @return {?proto.cmapi.HistoryInfo}
  */
-proto.cmapi.ChannelHistoryCommand.prototype.getHistory = function() {
+proto.cmapi.ChannelHistoryOperation.prototype.getHistory = function() {
   return /** @type{?proto.cmapi.HistoryInfo} */ (
     jspb.Message.getWrapperField(this, proto.cmapi.HistoryInfo, 5));
 };
 
 
 /** @param {?proto.cmapi.HistoryInfo|undefined} value */
-proto.cmapi.ChannelHistoryCommand.prototype.setHistory = function(value) {
+proto.cmapi.ChannelHistoryOperation.prototype.setHistory = function(value) {
   jspb.Message.setWrapperField(this, 5, value);
 };
 
 
-proto.cmapi.ChannelHistoryCommand.prototype.clearHistory = function() {
+proto.cmapi.ChannelHistoryOperation.prototype.clearHistory = function() {
   this.setHistory(undefined);
 };
 
@@ -10378,7 +10884,7 @@ proto.cmapi.ChannelHistoryCommand.prototype.clearHistory = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.cmapi.ChannelHistoryCommand.prototype.hasHistory = function() {
+proto.cmapi.ChannelHistoryOperation.prototype.hasHistory = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 

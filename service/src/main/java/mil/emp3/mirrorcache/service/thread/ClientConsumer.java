@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 public class ClientConsumer implements Runnable {
     static final Logger LOG = LoggerFactory.getLogger(ClientConsumer.class);

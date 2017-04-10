@@ -4,30 +4,32 @@ self.importScripts('cmapi_proto.js');
 
 goog.require('proto.cmapi.AltitudeMode');
 goog.require('proto.cmapi.CacheInfo');
-goog.require('proto.cmapi.ChannelCacheCommand');
-goog.require('proto.cmapi.ChannelCloseCommand');
-goog.require('proto.cmapi.ChannelGroupAddChannelCommand');
-goog.require('proto.cmapi.ChannelGroupCacheCommand');
-goog.require('proto.cmapi.ChannelGroupHistoryCommand');
+goog.require('proto.cmapi.ChannelCacheOperation');
+goog.require('proto.cmapi.ChannelCloseOperation');
+goog.require('proto.cmapi.ChannelDeleteOperation');
+goog.require('proto.cmapi.ChannelGroupAddChannelOperation');
+goog.require('proto.cmapi.ChannelGroupCacheOperation');
+goog.require('proto.cmapi.ChannelGroupCloseOperation');
+goog.require('proto.cmapi.ChannelGroupDeleteOperation');
+goog.require('proto.cmapi.ChannelGroupHistoryOperation');
 goog.require('proto.cmapi.ChannelGroupInfo');
-goog.require('proto.cmapi.ChannelGroupJoinCommand');
-goog.require('proto.cmapi.ChannelGroupLeaveCommand');
-goog.require('proto.cmapi.ChannelGroupPublishCommand');
-goog.require('proto.cmapi.ChannelGroupRemoveChannelCommand');
-goog.require('proto.cmapi.ChannelHistoryCommand');
+goog.require('proto.cmapi.ChannelGroupOpenOperation');
+goog.require('proto.cmapi.ChannelGroupPublishOperation');
+goog.require('proto.cmapi.ChannelGroupRemoveChannelOperation');
+goog.require('proto.cmapi.ChannelHistoryOperation');
 goog.require('proto.cmapi.ChannelInfo');
-goog.require('proto.cmapi.ChannelOpenCommand');
-goog.require('proto.cmapi.ChannelPublishCommand');
+goog.require('proto.cmapi.ChannelOpenOperation');
+goog.require('proto.cmapi.ChannelPublishOperation');
 goog.require('proto.cmapi.Circle');
 goog.require('proto.cmapi.Container');
-goog.require('proto.cmapi.CreateChannelCommand');
-goog.require('proto.cmapi.CreateChannelGroupCommand');
-goog.require('proto.cmapi.DeleteChannelCommand');
-goog.require('proto.cmapi.DeleteChannelGroupCommand');
+goog.require('proto.cmapi.CreateChannelGroupOperation');
+goog.require('proto.cmapi.CreateChannelOperation');
+goog.require('proto.cmapi.DeleteChannelGroupOperation');
+goog.require('proto.cmapi.DeleteChannelOperation');
 goog.require('proto.cmapi.EntityInfo');
 goog.require('proto.cmapi.FillPattern');
-goog.require('proto.cmapi.FindChannelGroupsCommand');
-goog.require('proto.cmapi.FindChannelsCommand');
+goog.require('proto.cmapi.FindChannelGroupsOperation');
+goog.require('proto.cmapi.FindChannelsOperation');
 goog.require('proto.cmapi.GeoColor');
 goog.require('proto.cmapi.GeoFillStyle');
 goog.require('proto.cmapi.GeoLabelStyle');
@@ -35,14 +37,16 @@ goog.require('proto.cmapi.GeoPosition');
 goog.require('proto.cmapi.GeoRenderable');
 goog.require('proto.cmapi.GeoStrokeStyle');
 goog.require('proto.cmapi.GeoTimeSpan');
+goog.require('proto.cmapi.GetClientInfoCommmand');
 goog.require('proto.cmapi.HistoryInfo');
 goog.require('proto.cmapi.Justification');
 goog.require('proto.cmapi.LogEntry');
 goog.require('proto.cmapi.MemberInfo');
 goog.require('proto.cmapi.MilStdSymbol');
 goog.require('proto.cmapi.Modifier');
-goog.require('proto.cmapi.OneOfCommand');
 goog.require('proto.cmapi.OneOfFeature');
+goog.require('proto.cmapi.OneOfOperation');
+goog.require('proto.cmapi.ProtoClientInfo');
 goog.require('proto.cmapi.ProtoMessage');
 goog.require('proto.cmapi.ProtoPayload');
 goog.require('proto.cmapi.QueueInfo');
@@ -259,7 +263,7 @@ function connect(url) {
                 }
 
             } else {
-                console.log("command: " + message.getCommand().getCommandCase());
+                console.log("operation: " + message.getCommand().getCommandCase());
             }
         }
     }

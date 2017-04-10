@@ -7,8 +7,9 @@ sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
-    compileApi project (":mirrorcache-model")
     compileApi project (":mirrorcache-api")
+    compileApi project (":mirrorcache-model")
+    compileApi project (":mirrorcache-impl-core")
     //compileApi project (":mirrorcache-impl-transport-ws-undertow")
     compileApi project (":mirrorcache-impl-transport-ws-nv")
 

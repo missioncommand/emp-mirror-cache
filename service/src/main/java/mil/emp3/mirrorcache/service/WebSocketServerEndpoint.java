@@ -13,11 +13,11 @@ import javax.websocket.server.ServerEndpoint;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.slf4j.Logger;
 
+import mil.emp3.mirrorcache.impl.Utils;
 import mil.emp3.mirrorcache.service.event.ConnectEvent;
 import mil.emp3.mirrorcache.service.event.DisconnectEvent;
 import mil.emp3.mirrorcache.service.event.MessageEvent;
 import mil.emp3.mirrorcache.support.ItemTracker;
-import mil.emp3.mirrorcache.support.Utils;
 
 @ServerEndpoint(
     value = "/mirrorcache",

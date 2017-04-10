@@ -6,7 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.cmapi.primitives.proto.CmapiProto.GetClientInfoCommmand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoClientInfo;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.support.ProtoMessageEntry;
+import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class GetClientInfoProcessor implements CommandProcessor {
+public class GetClientInfoProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -27,16 +27,17 @@ public class GetClientInfoProcessor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final GetClientInfoCommmand command = req.getCommand().getGetClientInfo();
+        final GetClientInfoCommmand operation = req.getOperation().getGetClientInfo();
         
         final ProtoClientInfo clientInfo = ProtoClientInfo.newBuilder()
                                                           .setClientId(sessionId)
                                                           .build();
         
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                                             .setCommand(OneOfCommand.newBuilder().setGetClientInfo(GetClientInfoCommmand.newBuilder(command)
-                                                                                                                         .setClientInfo(clientInfo)
-                                                                                                                         .setStatus(Status.SUCCESS)))
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setGetClientInfo(GetClientInfoCommmand.newBuilder(operation)
+                                                                                                                .setClientInfo(clientInfo)
+                                                                                                                .setStatus(Status.SUCCESS)))
                                              .build();
         
         try {

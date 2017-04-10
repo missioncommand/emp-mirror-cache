@@ -36,6 +36,6 @@ public class MirrorCacheClientProviderFactory {
             throw new MirrorCacheException(Reason.SPI_LOAD_FAILURE, e).withDetail("endpoint: " + args.endpoint());
         }
         
-        throw new IllegalStateException("Unable to locate suitable client.");
+        throw new IllegalStateException("Unable to locate suitable client implementation.");
     }
 }
