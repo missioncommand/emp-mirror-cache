@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.DeleteChannelGroupCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.DeleteChannelGroupOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +32,12 @@ public class DeleteChannelGroupRequestProcessor extends BaseRequestProcessor<Mes
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final DeleteChannelGroupCommand command = resMessage.getOperation().as(OneOfCommand.class).getDeleteChannelGroup();
-            if (command.getStatus() == Status.SUCCESS) {
+            final DeleteChannelGroupOperation operation = resMessage.getOperation().as(OneOfOperation.class).getDeleteChannelGroup();
+            if (operation.getStatus() == Status.SUCCESS) {
                 return null;
                 
             } else {
-                throw new MirrorCacheException(Reason.DELETE_CHANNELGROUP_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
+                throw new MirrorCacheException(Reason.DELETE_CHANNELGROUP_FAILURE).withDetail("channelGroupName: " + operation.getChannelGroupName());
             }
             
         } catch (InterruptedException e) {

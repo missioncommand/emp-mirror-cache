@@ -7,8 +7,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupInfo;
-import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ import mil.emp3.mirrorcache.service.SessionManager;
 import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class FindChannelGroupsProcessor implements CommandProcessor {
+public class FindChannelGroupsProcessor implements OperationProcessor {
 
     @Inject
     Logger LOG;
@@ -34,17 +34,17 @@ public class FindChannelGroupsProcessor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final FindChannelGroupsCommand command = req.getCommand().getFindChannelGroups();
+        final FindChannelGroupsOperation operation = req.getOperation().getFindChannelGroups();
         
-        final List<ChannelGroupInfo> channelGroupInfos = channelGroupManager.findChannelGroups(sessionId, command.getFilter());
+        final List<ChannelGroupInfo> channelGroupInfos = channelGroupManager.findChannelGroups(sessionId, operation.getFilter());
         
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setPriority(Priority.MEDIUM.getValue())
-                .setCommand(OneOfCommand.newBuilder()
-                                        .setFindChannelGroups(FindChannelGroupsCommand.newBuilder(command)
-                                                                                      .addAllChannelGroup(channelGroupInfos)
-                                                                                      .setStatus(Status.SUCCESS)))
-                .build();
+                                             .setPriority(Priority.MEDIUM.getValue())
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setFindChannelGroups(FindChannelGroupsOperation.newBuilder(operation)
+                                                                                                                         .addAllChannelGroup(channelGroupInfos)
+                                                                                                                         .setStatus(Status.SUCCESS)))
+                                             .build();
 
         try {
             if (!sessionManager.getOutboundQueue(sessionId).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

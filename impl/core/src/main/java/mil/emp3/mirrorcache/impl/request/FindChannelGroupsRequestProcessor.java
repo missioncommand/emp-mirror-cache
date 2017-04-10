@@ -7,9 +7,9 @@ import java.util.Set;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelGroupInfo;
 import org.cmapi.primitives.proto.CmapiProto.ChannelInfo;
-import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsCommand;
+import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsOperation;
 import org.cmapi.primitives.proto.CmapiProto.MemberInfo;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,20 +46,20 @@ public class FindChannelGroupsRequestProcessor extends BaseRequestProcessor<Mess
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final FindChannelGroupsCommand command = resMessage.getOperation().as(OneOfCommand.class).getFindChannelGroups();
-            if (command.getStatus() == Status.SUCCESS) {
+            final FindChannelGroupsOperation operation = resMessage.getOperation().as(OneOfOperation.class).getFindChannelGroups();
+            if (operation.getStatus() == Status.SUCCESS) {
                 final List<ChannelGroup> results = new ArrayList<>();
 
-                for (ChannelGroupInfo channelGroup : command.getChannelGroupList()) {
+                for (ChannelGroupInfo channelGroup : operation.getChannelGroupList()) {
                     
                     // channels
                     final Set<ClientChannel> channels = new HashSet<>();
                     for (ChannelInfo channelInfo : channelGroup.getChannelList()) {
                         channels.add(new ClientChannel(channelInfo.getName(),
-                                          Visibility.valueOf(channelInfo.getVisibility()),
-                                          Type.valueOf(channelInfo.getType()),
-                                          channelInfo.getIsOpen(),
-                                          dispatcher));
+                                                       Visibility.valueOf(channelInfo.getVisibility()),
+                                                       Type.valueOf(channelInfo.getType()),
+                                                       channelInfo.getIsOpen(),
+                                                       dispatcher));
                     }
                     
                     // members
@@ -78,7 +78,7 @@ public class FindChannelGroupsRequestProcessor extends BaseRequestProcessor<Mess
                 return results;
                 
             } else {
-                throw new MirrorCacheException(Reason.FIND_CHANNELGROUPS_FAILURE).withDetail("filter: " + command.getFilter());
+                throw new MirrorCacheException(Reason.FIND_CHANNELGROUPS_FAILURE).withDetail("filter: " + operation.getFilter());
             }
             
         } catch (InterruptedException e) {

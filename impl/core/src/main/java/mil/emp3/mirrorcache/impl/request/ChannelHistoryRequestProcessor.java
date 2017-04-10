@@ -3,10 +3,10 @@ package mil.emp3.mirrorcache.impl.request;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelHistoryCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelHistoryOperation;
 import org.cmapi.primitives.proto.CmapiProto.HistoryInfo;
 import org.cmapi.primitives.proto.CmapiProto.LogEntry;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,25 +41,25 @@ public class ChannelHistoryRequestProcessor extends BaseRequestProcessor<Message
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelHistoryCommand command = resMessage.getOperation().as(OneOfCommand.class).getChannelHistory();
-            if (command.getStatus() == Status.SUCCESS) {
+            final ChannelHistoryOperation operation = resMessage.getOperation().as(OneOfOperation.class).getChannelHistory();
+            if (operation.getStatus() == Status.SUCCESS) {
 
-                final List<Entry<OneOfCommand>> entries = new ArrayList<>();
+                final List<Entry<OneOfOperation>> entries = new ArrayList<>();
                 
-                final HistoryInfo historyInfo = command.getHistory();
+                final HistoryInfo historyInfo = operation.getHistory();
                 
                 for (LogEntry logEntry : historyInfo.getLogList()) {
-                    entries.add(new ClientEntry(logEntry.getId(), logEntry.getTime(), logEntry.getCommand()));
+                    entries.add(new ClientEntry(logEntry.getId(), logEntry.getTime(), logEntry.getOperation()));
                 }
                 
-                final ChannelHistory history = new DefaultHistory(command.getChannelName(),
+                final ChannelHistory history = new DefaultHistory(operation.getChannelName(),
                                                                   historyInfo.getStartTime(),
                                                                   historyInfo.getEndTime(),
                                                                   entries);
                 return history;
                 
             } else {
-                throw new MirrorCacheException(Reason.CHANNEL_HISTORY_FAILURE).withDetail("channelName: " + command.getChannelName());
+                throw new MirrorCacheException(Reason.CHANNEL_HISTORY_FAILURE).withDetail("channelName: " + operation.getChannelName());
             }
             
         } catch (InterruptedException e) {

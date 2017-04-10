@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelCloseCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelCloseOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import mil.emp3.mirrorcache.service.SessionManager;
 import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelCloseProcessor implements CommandProcessor {
+public class ChannelCloseProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -32,11 +32,11 @@ public class ChannelCloseProcessor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final ChannelCloseCommand command = req.getCommand().getChannelClose();
+        final ChannelCloseOperation operation = req.getOperation().getChannelClose();
 
         Status status = Status.SUCCESS;
         try {
-            channelManager.channelClose(sessionId, command.getChannelName());
+            channelManager.channelClose(sessionId, operation.getChannelName());
             
         } catch (MirrorCacheException e) {
             LOG.error("ERROR: " + e.getMessage(), e);
@@ -44,11 +44,11 @@ public class ChannelCloseProcessor implements CommandProcessor {
         }
 
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setPriority(Priority.MEDIUM.getValue())
-                .setCommand(OneOfCommand.newBuilder()
-                                        .setChannelClose(ChannelCloseCommand.newBuilder(command)
-                                                                            .setStatus(status)))
-                .build();
+                                             .setPriority(Priority.MEDIUM.getValue())
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                        .setChannelClose(ChannelCloseOperation.newBuilder(operation)
+                                                                                                              .setStatus(status)))
+                                             .build();
         
         try {
             if (!sessionManager.getOutboundQueue(sessionId).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

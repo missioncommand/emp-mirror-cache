@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelPublishCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand.CommandCase;
+import org.cmapi.primitives.proto.CmapiProto.ChannelPublishOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation.OperationCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,8 +71,8 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
     final private Chain outProcessingPipeline;
     final private Chain inProcessingPipeline;
     
-    final private Map<CommandCase, ConcurrentMap<String, LatchedContent<Message>>> responseQueueMap;
-    final private Map<CommandCase, List<ResponseProcessor>> responseProcessorMap; //NOTE Multiple ResponseHandlers may register for the same Command
+    final private Map<OperationCase, ConcurrentMap<String, LatchedContent<Message>>> responseQueueMap;
+    final private Map<OperationCase, List<ResponseProcessor>> responseProcessorMap; //NOTE Multiple ResponseHandlers may register for the same Operation
     final private Map<Class<? extends RequestProcessor<?, ?>>, RequestProcessor<?, ?>> requestProcessorMap;
     
     final private LocalResponseProcessor localResponseProcessor;
@@ -88,36 +88,36 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
         this.inProcessingPipeline  = new Chain();
         this.eventHandlerMap       = new HashMap<>();
         
-        this.responseQueueMap = new EnumMap<>(CommandCase.class);
-        this.responseQueueMap.put(CommandCase.GET_CLIENT_INFO, new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap = new EnumMap<>(OperationCase.class);
+        this.responseQueueMap.put(OperationCase.GET_CLIENT_INFO, new ConcurrentHashMap<String, LatchedContent<Message>>());
         
-        this.responseQueueMap.put(CommandCase.CREATE_CHANNEL , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.DELETE_CHANNEL , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.FIND_CHANNELS  , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_OPEN   , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_CLOSE  , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_DELETE , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_CACHE  , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_HISTORY, new ConcurrentHashMap<String, LatchedContent<Message>>());
-//        this.responseQueueMap.put(CommandCase.CHANNEL_PUBLISH, new ConcurrentHashMap<String, LatchedContainer<Message>>());
+        this.responseQueueMap.put(OperationCase.CREATE_CHANNEL , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.DELETE_CHANNEL , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.FIND_CHANNELS  , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_OPEN   , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_CLOSE  , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_DELETE , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_CACHE  , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_HISTORY, new ConcurrentHashMap<String, LatchedContent<Message>>());
+//        this.responseQueueMap.put(OperationCase.CHANNEL_PUBLISH, new ConcurrentHashMap<String, LatchedContainer<Message>>());
         
-        this.responseQueueMap.put(CommandCase.CREATE_CHANNEL_GROUP        , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.DELETE_CHANNEL_GROUP        , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.FIND_CHANNEL_GROUPS         , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_OPEN          , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_CLOSE         , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_ADD_CHANNEL   , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_REMOVE_CHANNEL, new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_DELETE        , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_CACHE         , new ConcurrentHashMap<String, LatchedContent<Message>>());
-        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_HISTORY       , new ConcurrentHashMap<String, LatchedContent<Message>>());
-//        this.responseQueueMap.put(CommandCase.CHANNEL_GROUP_PUBLISH       , new ConcurrentHashMap<String, LatchedContainer<Message>>());
+        this.responseQueueMap.put(OperationCase.CREATE_CHANNEL_GROUP        , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.DELETE_CHANNEL_GROUP        , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.FIND_CHANNEL_GROUPS         , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_GROUP_OPEN          , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_GROUP_CLOSE         , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_GROUP_ADD_CHANNEL   , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_GROUP_REMOVE_CHANNEL, new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_GROUP_DELETE        , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_GROUP_CACHE         , new ConcurrentHashMap<String, LatchedContent<Message>>());
+        this.responseQueueMap.put(OperationCase.CHANNEL_GROUP_HISTORY       , new ConcurrentHashMap<String, LatchedContent<Message>>());
+//        this.responseQueueMap.put(OperationCase.CHANNEL_GROUP_PUBLISH       , new ConcurrentHashMap<String, LatchedContainer<Message>>());
         
-        this.responseProcessorMap = new EnumMap<>(CommandCase.class);
-        responseProcessorMap.put(CommandCase.CHANNEL_PUBLISH      , new ArrayList<ResponseProcessor>() {{ add(new ChannelPublishResponseProcessor(DefaultMessageDispatcher.this)); }});
-        responseProcessorMap.put(CommandCase.CHANNEL_DELETE       , new ArrayList<ResponseProcessor>() {{ add(new ChannelDeleteResponseProcessor(DefaultMessageDispatcher.this)); }});
-        responseProcessorMap.put(CommandCase.CHANNEL_GROUP_PUBLISH, new ArrayList<ResponseProcessor>() {{ add(new ChannelGroupPublishResponseProcessor(DefaultMessageDispatcher.this)); }});
-        responseProcessorMap.put(CommandCase.CHANNEL_GROUP_DELETE , new ArrayList<ResponseProcessor>() {{ add(new ChannelGroupDeleteResponseProcessor(DefaultMessageDispatcher.this)); }});
+        this.responseProcessorMap = new EnumMap<>(OperationCase.class);
+        responseProcessorMap.put(OperationCase.CHANNEL_PUBLISH      , new ArrayList<ResponseProcessor>() {{ add(new ChannelPublishResponseProcessor(DefaultMessageDispatcher.this)); }});
+        responseProcessorMap.put(OperationCase.CHANNEL_DELETE       , new ArrayList<ResponseProcessor>() {{ add(new ChannelDeleteResponseProcessor(DefaultMessageDispatcher.this)); }});
+        responseProcessorMap.put(OperationCase.CHANNEL_GROUP_PUBLISH, new ArrayList<ResponseProcessor>() {{ add(new ChannelGroupPublishResponseProcessor(DefaultMessageDispatcher.this)); }});
+        responseProcessorMap.put(OperationCase.CHANNEL_GROUP_DELETE , new ArrayList<ResponseProcessor>() {{ add(new ChannelGroupDeleteResponseProcessor(DefaultMessageDispatcher.this)); }});
         
         this.requestProcessorMap = new HashMap<>();
         requestProcessorMap.put(GetClientInfoRequestProcessor.class            , new GetClientInfoRequestProcessor(this));
@@ -261,16 +261,16 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
         LOG.debug("awaitResponse() : operation=" + reqMessage.getOperation().name());
 //TODO consider using CompletionService instead..
         
-        final CommandCase commandCase = reqMessage.getOperation().as(OneOfCommand.class).getCommandCase();
-        final String reqId            = reqMessage.getId();
+        final OperationCase operationCase = reqMessage.getOperation().as(OneOfOperation.class).getOperationCase();
+        final String reqId                = reqMessage.getId();
 
-        LatchedContent<Message> resBucket = responseQueueMap.get(commandCase).putIfAbsent(reqId, new LatchedContent<Message>(1));
+        LatchedContent<Message> resBucket = responseQueueMap.get(operationCase).putIfAbsent(reqId, new LatchedContent<Message>(1));
         if (resBucket == null) {
-            resBucket = responseQueueMap.get(commandCase).get(reqId);
+            resBucket = responseQueueMap.get(operationCase).get(reqId);
         }
 
         if (!resBucket.await(reqId, 5, TimeUnit.SECONDS)) {
-            throw new MirrorCacheException(Reason.QUEUE_POLL_TIMEOUT).withDetail("QUEUE: " + commandCase);
+            throw new MirrorCacheException(Reason.QUEUE_POLL_TIMEOUT).withDetail("QUEUE: " + operationCase);
         }
         
         final Message resMessage = resBucket.getContent();
@@ -283,7 +283,7 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
                                                                       .withDetail("Actual reqId: " + resMessage.getId());
         }
         
-        if (!responseQueueMap.get(commandCase).remove(reqId, resBucket)) {
+        if (!responseQueueMap.get(operationCase).remove(reqId, resBucket)) {
             throw new IllegalStateException("remove returned false");
         }
         
@@ -338,9 +338,9 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
 
     
-    static private boolean isResponseExpected(CommandCase command) {
-        return    command != CommandCase.CHANNEL_PUBLISH
-               && command != CommandCase.CHANNEL_GROUP_PUBLISH;
+    static private boolean isResponseExpected(OperationCase operation) {
+        return    operation != OperationCase.CHANNEL_PUBLISH
+               && operation != OperationCase.CHANNEL_GROUP_PUBLISH;
     }
     
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
@@ -353,14 +353,14 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
         
         @Override
         public void onMessage(Message message) throws MirrorCacheException {
-            final Operation operation       = message.getOperation();
-            final OneOfCommand oneOfCommand = operation.as(OneOfCommand.class);
-            final CommandCase commandCase   = oneOfCommand.getCommandCase();
+            final Operation operation           = message.getOperation();
+            final OneOfOperation oneOfOperation = operation.as(OneOfOperation.class);
+            final OperationCase operationCase   = oneOfOperation.getOperationCase();
             
             /*
              * Opportunity to react to responses.
              */
-            List<ResponseProcessor> responseProcessors = responseProcessorMap.get(commandCase);
+            List<ResponseProcessor> responseProcessors = responseProcessorMap.get(operationCase);
             if (responseProcessors != null) {
                 for (ResponseProcessor responseProcessor : responseProcessors) {
                     responseProcessor.processMessage(message);
@@ -370,12 +370,12 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
             /*
              * If applicable, provide response data back to originating request processor. 
              */
-            if (isResponseExpected(commandCase)) {
+            if (isResponseExpected(operationCase)) {
                 final String resId = message.getId();
                 
-                LatchedContent<Message> queue = responseQueueMap.get(commandCase).putIfAbsent(resId, new LatchedContent<Message>(1));
+                LatchedContent<Message> queue = responseQueueMap.get(operationCase).putIfAbsent(resId, new LatchedContent<Message>(1));
                 if (queue == null) {
-                    queue = responseQueueMap.get(commandCase).get(resId);
+                    queue = responseQueueMap.get(operationCase).get(resId);
                 }
                 queue.setContent(message);
             }
@@ -386,14 +386,14 @@ public class DefaultMessageDispatcher implements MessageDispatcher {
              */
             final List<ChannelHandler> channelHandlers = new ArrayList<>();
             
-            if (CommandCase.CHANNEL_PUBLISH == commandCase) {
-                final ChannelPublishCommand command = oneOfCommand.getChannelPublish();
-                channelHandlers.addAll(ChannelHandlerProviderFactory.getChannelHandlers(command.getChannelName()));
+            if (OperationCase.CHANNEL_PUBLISH == operationCase) {
+                final ChannelPublishOperation oneOf = oneOfOperation.getChannelPublish();
+                channelHandlers.addAll(ChannelHandlerProviderFactory.getChannelHandlers(oneOf.getChannelName()));
                 
-            } else if (CommandCase.CHANNEL_GROUP_PUBLISH == commandCase) {
+            } else if (OperationCase.CHANNEL_GROUP_PUBLISH == operationCase) {
 //TODO
-//                final ChannelGroupPublishCommand command = oneOfCommand.getChannelGroupPublish();
-//                channelHandlers.addAll(ChannelHandlerProviderFactory.getChannelHandlers(command.getChannelGroupName()));
+//                final ChannelGroupPublishOperation oneOf = oneOfOperation.getChannelGroupPublish();
+//                channelHandlers.addAll(ChannelHandlerProviderFactory.getChannelHandlers(oneOf.getChannelGroupName()));
             }
             
             for (ChannelHandler handler : channelHandlers) {

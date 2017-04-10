@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupDeleteCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupDeleteOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ import mil.emp3.mirrorcache.service.SessionManager;
 import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelGroupDeleteProcessor implements CommandProcessor {
+public class ChannelGroupDeleteProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -39,7 +39,7 @@ public class ChannelGroupDeleteProcessor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final ChannelGroupDeleteCommand command = req.getCommand().getChannelGroupDelete();
+        final ChannelGroupDeleteOperation operation = req.getOperation().getChannelGroupDelete();
     
         /*
          * Update entity cache.
@@ -50,26 +50,26 @@ public class ChannelGroupDeleteProcessor implements CommandProcessor {
         /*
          * Update channelGroup cache.
          */
-//        cacheManager.addToChannelGroupCache(sessionId, command.getChannelGroupName(), entity);
+//        cacheManager.addToChannelGroupCache(sessionId, operation.getChannelGroupName(), entity);
         
         /*
          * Update channel history.
          */
-//            historyManager.logChannelGroupEntry(sessionId, command.getChannelGroupName(), req.getCommand());
+//            historyManager.logChannelGroupEntry(sessionId, operation.getChannelGroupName(), req.getOperation());
         
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setPriority(Priority.LOW.getValue())
-                .setCommand(OneOfCommand.newBuilder()
-                                        .setChannelGroupDelete(ChannelGroupDeleteCommand.newBuilder(command)
-                                                                                        .setStatus(Status.SUCCESS)))
-                .build();
+                                             .setPriority(Priority.LOW.getValue())
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setChannelGroupDelete(ChannelGroupDeleteOperation.newBuilder(operation)
+                                                                                                                           .setStatus(Status.SUCCESS)))
+                                             .build();
         
         /*
          * Distribute deletion to the other participants of channelGroup.
          */
         try {
             LOG.debug("distribute: " + Utils.asString(res));
-            for (Member otherMember : channelGroupManager.getMembers(sessionId, command.getChannelGroupName())) {
+            for (Member otherMember : channelGroupManager.getMembers(sessionId, operation.getChannelGroupName())) {
                 LOG.debug("\t-> " + otherMember);
                 
                 if (!sessionManager.getOutboundQueue(otherMember.getSessionId()).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

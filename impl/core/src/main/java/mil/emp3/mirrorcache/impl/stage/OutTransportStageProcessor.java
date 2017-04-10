@@ -1,6 +1,6 @@
 package mil.emp3.mirrorcache.impl.stage;
 
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.ProtoPayload;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class OutTransportStageProcessor extends StageProcessor<Message> {
         final ProtoMessage.Builder builder = ProtoMessage.newBuilder()
                                                          .setId(message.getId())
                                                          .setPriority(message.getPriority().getValue())
-                                                         .setCommand(message.getOperation().as(OneOfCommand.class))
+                                                         .setOperation(message.getOperation().as(OneOfOperation.class))
                                                          .putAllProperty(message.getProperties());
 
         if (message.hasPayload()) {

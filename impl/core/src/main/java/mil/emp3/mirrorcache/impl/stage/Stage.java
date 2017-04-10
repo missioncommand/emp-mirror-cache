@@ -11,8 +11,7 @@ public enum Stage {
 //    SEND,
     
 //    IN_PROPERTIES, - extract headers/properties from the transport object
-//    IN_COMMAND,    - anything special to do with the server-command received?
-//    IN_HANDLERS,
+//    IN_HANDLERS, - individual handlers for specific operations
 //    IN_EVENTS,
     ;
     

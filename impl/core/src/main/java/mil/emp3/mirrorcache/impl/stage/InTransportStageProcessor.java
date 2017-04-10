@@ -33,7 +33,7 @@ public class InTransportStageProcessor extends StageProcessor<Message> {
             
             message.setId(pm.getId())
                    .setPriority(Priority.fromValue(pm.getPriority()))
-                   .setOperation(ProtoOperation.newBuilder().setOneOfCommand(pm.getCommand()).build())
+                   .setOperation(ProtoOperation.newBuilder().setOneOfOperation(pm.getOperation()).build())
                    .setProperties(pm.getPropertyMap())
                    .setPayload(null);
             

@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupRemoveChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupRemoveChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import mil.emp3.mirrorcache.service.SessionManager;
 import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelGroupRemoveChannelProcessor implements CommandProcessor {
+public class ChannelGroupRemoveChannelProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -32,11 +32,11 @@ public class ChannelGroupRemoveChannelProcessor implements CommandProcessor {
     
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final ChannelGroupRemoveChannelCommand command = req.getCommand().getChannelGroupRemoveChannel();
+        final ChannelGroupRemoveChannelOperation operation = req.getOperation().getChannelGroupRemoveChannel();
 
         Status status = Status.SUCCESS;
         try {
-            channelGroupManager.channelGroupRemoveChannel(sessionId, command.getChannelGroupName(), command.getChannelName());
+            channelGroupManager.channelGroupRemoveChannel(sessionId, operation.getChannelGroupName(), operation.getChannelName());
             
         } catch (MirrorCacheException e) {
             LOG.error("ERROR", e);
@@ -44,11 +44,11 @@ public class ChannelGroupRemoveChannelProcessor implements CommandProcessor {
         }
         
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setPriority(Priority.MEDIUM.getValue())
-                .setCommand(OneOfCommand.newBuilder()
-                                        .setChannelGroupRemoveChannel(ChannelGroupRemoveChannelCommand.newBuilder(command)
-                                                                                                      .setStatus(status)))
-                .build();
+                                             .setPriority(Priority.MEDIUM.getValue())
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setChannelGroupRemoveChannel(ChannelGroupRemoveChannelOperation.newBuilder(operation)
+                                                                                                                                         .setStatus(status)))
+                                             .build();
         
         try {
             if (!sessionManager.getOutboundQueue(sessionId).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

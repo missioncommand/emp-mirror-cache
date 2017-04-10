@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +32,9 @@ public class ChannelGroupOpenRequestProcessor extends BaseRequestProcessor<Messa
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupOpenCommand command = resMessage.getOperation().as(OneOfCommand.class).getChannelGroupOpen();
-            if (!(command.getStatus() == Status.SUCCESS)) {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_OPEN_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
+            final ChannelGroupOpenOperation operation = resMessage.getOperation().as(OneOfOperation.class).getChannelGroupOpen();
+            if (!(operation.getStatus() == Status.SUCCESS)) {
+                throw new MirrorCacheException(Reason.CHANNELGROUP_OPEN_FAILURE).withDetail("channelGroupName: " + operation.getChannelGroupName());
             }
             
         } catch (InterruptedException e) {

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelInfo;
-import org.cmapi.primitives.proto.CmapiProto.FindChannelsCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.FindChannelsOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +40,12 @@ public class FindChannelsRequestProcessor extends BaseRequestProcessor<Message, 
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final FindChannelsCommand command = resMessage.getOperation().as(OneOfCommand.class).getFindChannels();
-            if (command.getStatus() == Status.SUCCESS) {
+            final FindChannelsOperation operation = resMessage.getOperation().as(OneOfOperation.class).getFindChannels();
+            if (operation.getStatus() == Status.SUCCESS) {
                 
                 final List<Channel> results = new ArrayList<>();
 
-                for (ChannelInfo channel : command.getChannelList()) {
+                for (ChannelInfo channel : operation.getChannelList()) {
                     results.add(new ClientChannel(channel.getName(),
                                                   Visibility.valueOf(channel.getVisibility()),
                                                   Type.valueOf(channel.getType()),
@@ -55,7 +55,7 @@ public class FindChannelsRequestProcessor extends BaseRequestProcessor<Message, 
                 return results;
                 
             } else {
-                throw new MirrorCacheException(Reason.FIND_CHANNELS_FAILURE).withDetail("filter: " + command.getFilter());
+                throw new MirrorCacheException(Reason.FIND_CHANNELS_FAILURE).withDetail("filter: " + operation.getFilter());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

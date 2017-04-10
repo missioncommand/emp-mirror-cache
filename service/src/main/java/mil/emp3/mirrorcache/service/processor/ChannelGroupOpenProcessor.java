@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import mil.emp3.mirrorcache.service.SessionManager;
 import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelGroupOpenProcessor implements CommandProcessor {
+public class ChannelGroupOpenProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -32,11 +32,11 @@ public class ChannelGroupOpenProcessor implements CommandProcessor {
 
     @Override
     public void process(String sessionId, ProtoMessage req) {
-        final ChannelGroupOpenCommand command = req.getCommand().getChannelGroupOpen();
+        final ChannelGroupOpenOperation operation = req.getOperation().getChannelGroupOpen();
 
         Status status = Status.SUCCESS;
         try {
-            channelGroupManager.channelGroupOpen(sessionId, command.getChannelGroupName());
+            channelGroupManager.channelGroupOpen(sessionId, operation.getChannelGroupName());
             
         } catch (MirrorCacheException e) {
             LOG.error("ERROR", e);
@@ -44,11 +44,11 @@ public class ChannelGroupOpenProcessor implements CommandProcessor {
         }
 
         final ProtoMessage res = ProtoMessage.newBuilder(req)
-                .setPriority(Priority.MEDIUM.getValue())
-                .setCommand(OneOfCommand.newBuilder()
-                                        .setChannelGroupOpen(ChannelGroupOpenCommand.newBuilder(command)
-                                                                                    .setStatus(status)))
-                .build();
+                                             .setPriority(Priority.MEDIUM.getValue())
+                                             .setOperation(OneOfOperation.newBuilder()
+                                                                         .setChannelGroupOpen(ChannelGroupOpenOperation.newBuilder(operation)
+                                                                                                                       .setStatus(status)))
+                                             .build();
         
         try {
             if (!sessionManager.getOutboundQueue(sessionId).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

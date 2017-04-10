@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupRemoveChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupRemoveChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +32,10 @@ public class ChannelGroupRemoveChannelRequestProcessor extends BaseRequestProces
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupRemoveChannelCommand command = resMessage.getOperation().as(OneOfCommand.class).getChannelGroupRemoveChannel();
-            if (!(command.getStatus() == Status.SUCCESS)) {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_REMOVE_CHANNEL_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName())
-                                                                                          .withDetail("channelName: " + command.getChannelName());
+            final ChannelGroupRemoveChannelOperation operation = resMessage.getOperation().as(OneOfOperation.class).getChannelGroupRemoveChannel();
+            if (!(operation.getStatus() == Status.SUCCESS)) {
+                throw new MirrorCacheException(Reason.CHANNELGROUP_REMOVE_CHANNEL_FAILURE).withDetail("channelGroupName: " + operation.getChannelGroupName())
+                                                                                          .withDetail("channelName: " + operation.getChannelName());
             }
             
         } catch (InterruptedException e) {

@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 
 import mil.emp3.mirrorcache.channel.ChannelGroupHistory;
 import mil.emp3.mirrorcache.channel.ChannelHistory;
 
-public class DefaultHistory implements ChannelHistory<OneOfCommand>, ChannelGroupHistory<OneOfCommand> {
+public class DefaultHistory implements ChannelHistory<OneOfOperation>, ChannelGroupHistory<OneOfOperation> {
 
     final private String channelName;
     final private long startTime;
     final private long endTime;
-    final private List<Entry<OneOfCommand>> entries;
+    final private List<Entry<OneOfOperation>> entries;
     
-    public DefaultHistory(String channelName, long startTime, long endTime, List<Entry<OneOfCommand>> entries) {
+    public DefaultHistory(String channelName, long startTime, long endTime, List<Entry<OneOfOperation>> entries) {
         this.channelName = channelName;
         this.startTime   = startTime;
         this.endTime     = endTime;
@@ -39,22 +39,22 @@ public class DefaultHistory implements ChannelHistory<OneOfCommand>, ChannelGrou
     }
 
     @Override
-    public List<Entry<OneOfCommand>> getEntries() {
+    public List<Entry<OneOfOperation>> getEntries() {
         return Collections.unmodifiableList(entries);
     }
     
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     
-    static public class ClientEntry implements Entry<OneOfCommand> {
+    static public class ClientEntry implements Entry<OneOfOperation> {
         final private int id;
         final private long time;
-        final private OneOfCommand command;
+        final private OneOfOperation operation;
         
-        public ClientEntry(int id, long time, OneOfCommand command) {
-            this.id      = id;
-            this.time    = time;
-            this.command = command;
+        public ClientEntry(int id, long time, OneOfOperation operation) {
+            this.id        = id;
+            this.time      = time;
+            this.operation = operation;
         }
         
         @Override
@@ -68,8 +68,8 @@ public class DefaultHistory implements ChannelHistory<OneOfCommand>, ChannelGrou
         }
 
         @Override
-        public OneOfCommand getValue() {
-            return command;
+        public OneOfOperation getValue() {
+            return operation;
         }
     }
 }

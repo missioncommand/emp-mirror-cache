@@ -179,7 +179,7 @@ public class SessionManager {
                 builder.addEntry(new StringBuilder()
                                         .append("seqNum-").append(protoMessageEntry.getSeqNum())
                                         .append(", priority-").append(protoMessageEntry.getEntry().getPriority())
-                                        .append(", command-").append(protoMessageEntry.getEntry().getCommand().getCommandCase())
+                                        .append(", operation-").append(protoMessageEntry.getEntry().getOperation().getOperationCase())
                                     .toString());
             }
             

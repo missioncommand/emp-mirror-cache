@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.CreateChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.CreateChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,18 +34,18 @@ public class CreateChannelRequestProcessor extends BaseRequestProcessor<Message,
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final CreateChannelCommand command = resMessage.getOperation().as(OneOfCommand.class).getCreateChannel();
-            if (command.getStatus() == Status.SUCCESS) {
+            final CreateChannelOperation operation = resMessage.getOperation().as(OneOfOperation.class).getCreateChannel();
+            if (operation.getStatus() == Status.SUCCESS) {
             
-                final Channel channel = new ClientChannel(command.getChannelName(),
-                                                          Channel.Visibility.valueOf(command.getVisibility()),
-                                                          Channel.Type.valueOf(command.getType()),
+                final Channel channel = new ClientChannel(operation.getChannelName(),
+                                                          Channel.Visibility.valueOf(operation.getVisibility()),
+                                                          Channel.Type.valueOf(operation.getType()),
                                                           false,
                                                           dispatcher);
                 return channel;
                 
             } else {
-                throw new MirrorCacheException(Reason.CREATE_CHANNEL_FAILURE).withDetail("channelName: " + command.getChannelName());
+                throw new MirrorCacheException(Reason.CREATE_CHANNEL_FAILURE).withDetail("channelName: " + operation.getChannelName());
             }
             
         } catch (InterruptedException e) {

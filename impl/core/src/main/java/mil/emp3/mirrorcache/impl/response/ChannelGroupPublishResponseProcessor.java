@@ -1,6 +1,6 @@
 package mil.emp3.mirrorcache.impl.response;
 
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.MessageDispatcher;
@@ -16,7 +16,7 @@ public class ChannelGroupPublishResponseProcessor extends BaseResponseProcessor 
     protected void onMessage(Message message) {
         message.setEventType(ChannelGroupPublishedEvent.TYPE);
 
-        final String channelGroupName = message.getOperation().as(OneOfCommand.class).getChannelGroupPublish().getChannelGroupName();
+        final String channelGroupName = message.getOperation().as(OneOfOperation.class).getChannelGroupPublish().getChannelGroupName();
 
         getMessageDispatcher().dispatchEvent(new ChannelGroupPublishedEvent(channelGroupName, message));
     }

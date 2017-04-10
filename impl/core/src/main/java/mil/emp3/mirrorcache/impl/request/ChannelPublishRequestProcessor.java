@@ -25,8 +25,8 @@ public class ChannelPublishRequestProcessor extends BaseRequestProcessor<Message
 //        try {
 //            final Message resMessage = dispatcher.awaitResponse(reqMessage);
 //            
-//                final ChannelPublishCommand command = resMessage.getCommand().getChannelPublish();
-//                if (!(command.getStatus() == Status.SUCCESS)) {
+//                final ChannelPublishOperation operation = resMessage.getOperation().getChannelPublish();
+//                if (!(operation.getStatus() == Status.SUCCESS)) {
 //                    throw new MirrorCacheException(Reason.CHANNEL_PUBLISH_FAILURE);
 //                }
 //            

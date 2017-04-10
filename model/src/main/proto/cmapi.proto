@@ -234,9 +234,9 @@ message EntityInfo {
 }
 
 message LogEntry {
-    int32 id             = 1;
-    int64 time           = 2;
-    OneOfCommand command = 3;
+    int32 id                 = 1;
+    int64 time               = 2;
+    OneOfOperation operation = 3;
 }
 
 message HistoryInfo {
@@ -245,29 +245,29 @@ message HistoryInfo {
     repeated LogEntry log = 3;
 }
 
-message OneOfCommand {
-    oneof command {
-        CreateChannelCommand create_channel                           = 100;
-        DeleteChannelCommand delete_channel                           = 101;
-        FindChannelsCommand find_channels                             = 102;
-        ChannelOpenCommand channel_open                               = 103;
-        ChannelCloseCommand channel_close                             = 104;
-        ChannelPublishCommand channel_publish                         = 105;
-        ChannelDeleteCommand channel_delete                           = 106;
-        ChannelCacheCommand channel_cache                             = 107;
-        ChannelHistoryCommand channel_history                         = 108;
+message OneOfOperation {
+    oneof operation {
+        CreateChannelOperation create_channel                           = 100;
+        DeleteChannelOperation delete_channel                           = 101;
+        FindChannelsOperation find_channels                             = 102;
+        ChannelOpenOperation channel_open                               = 103;
+        ChannelCloseOperation channel_close                             = 104;
+        ChannelPublishOperation channel_publish                         = 105;
+        ChannelDeleteOperation channel_delete                           = 106;
+        ChannelCacheOperation channel_cache                             = 107;
+        ChannelHistoryOperation channel_history                         = 108;
         
-        CreateChannelGroupCommand create_channel_group                = 109;
-        DeleteChannelGroupCommand delete_channel_group                = 110;
-        FindChannelGroupsCommand find_channel_groups                  = 111;
-        ChannelGroupOpenCommand channel_group_open                    = 112;
-        ChannelGroupCloseCommand channel_group_close                  = 113;
-        ChannelGroupAddChannelCommand channel_group_add_channel       = 114;
-        ChannelGroupRemoveChannelCommand channel_group_remove_channel = 115;
-        ChannelGroupPublishCommand channel_group_publish              = 116;
-        ChannelGroupDeleteCommand channel_group_delete                = 117;
-        ChannelGroupCacheCommand channel_group_cache                  = 118;
-        ChannelGroupHistoryCommand channel_group_history              = 119;
+        CreateChannelGroupOperation create_channel_group                = 109;
+        DeleteChannelGroupOperation delete_channel_group                = 110;
+        FindChannelGroupsOperation find_channel_groups                  = 111;
+        ChannelGroupOpenOperation channel_group_open                    = 112;
+        ChannelGroupCloseOperation channel_group_close                  = 113;
+        ChannelGroupAddChannelOperation channel_group_add_channel       = 114;
+        ChannelGroupRemoveChannelOperation channel_group_remove_channel = 115;
+        ChannelGroupPublishOperation channel_group_publish              = 116;
+        ChannelGroupDeleteOperation channel_group_delete                = 117;
+        ChannelGroupCacheOperation channel_group_cache                  = 118;
+        ChannelGroupHistoryOperation channel_group_history              = 119;
         
         GetClientInfoCommmand get_client_info                         = 120;
     }
@@ -283,7 +283,7 @@ message ProtoMessage {
     string id                    = 1;
     map<string, string> property = 2;
     int32 priority               = 3;
-    OneOfCommand command         = 4;
+    OneOfOperation operation     = 4;
     ProtoPayload payload         = 5;
 }
 
@@ -319,40 +319,40 @@ message GetClientInfoCommmand {
 //.
 //.. CHANNEL_GROUP
 //...
-message ChannelGroupOpenCommand {
+message ChannelGroupOpenOperation {
     Status status             = 1;
     string channel_group_name = 2;
 }
-message ChannelGroupCloseCommand {
+message ChannelGroupCloseOperation {
     Status status             = 1;
     string channel_group_name = 2;
 }
-message ChannelGroupAddChannelCommand {
-    Status status             = 1;
-    string channel_group_name = 2;
-    string channel_name       = 3;
-}
-message ChannelGroupRemoveChannelCommand {
+message ChannelGroupAddChannelOperation {
     Status status             = 1;
     string channel_group_name = 2;
     string channel_name       = 3;
 }
-message ChannelGroupPublishCommand {
+message ChannelGroupRemoveChannelOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+    string channel_name       = 3;
+}
+message ChannelGroupPublishOperation {
     Status status             = 1;
     string channel_group_name = 2;
 }
-message ChannelGroupDeleteCommand {
+message ChannelGroupDeleteOperation {
     Status status             = 1;
     string channel_group_name = 2;
     string payload_id         = 3;
     string source_id          = 4;
 }
-message ChannelGroupCacheCommand {
+message ChannelGroupCacheOperation {
     Status status              = 1;
     string channel_group_name  = 2;
     repeated int32 entity_id   = 3;
 }
-message ChannelGroupHistoryCommand {
+message ChannelGroupHistoryOperation {
     Status status             = 1;
     string channel_group_name = 2;
     int64 start_time          = 3;
@@ -360,15 +360,15 @@ message ChannelGroupHistoryCommand {
     HistoryInfo history       = 5;
 }
 
-message CreateChannelGroupCommand {
+message CreateChannelGroupOperation {
     Status status             = 1;
     string channel_group_name = 2;
 }
-message DeleteChannelGroupCommand {
+message DeleteChannelGroupOperation {
     Status status             = 1;
     string channel_group_name = 2;
 }
-message FindChannelGroupsCommand {
+message FindChannelGroupsOperation {
     Status status                           = 1;
     string filter                           = 2;
     repeated ChannelGroupInfo channel_group = 3;
@@ -377,48 +377,48 @@ message FindChannelGroupsCommand {
 //.
 //.. CHANNEL
 //...
-message CreateChannelCommand {
+message CreateChannelOperation {
     Status status       = 1;
     string channel_name = 2;
     string type         = 3;
     string visibility   = 4;
 }
-message DeleteChannelCommand {
+message DeleteChannelOperation {
     Status status       = 1;
     string channel_name = 2;
 }
-message FindChannelsCommand {
+message FindChannelsOperation {
     Status status                = 1;
     string filter                = 2;
     repeated ChannelInfo channel = 3;
 }
 
-message ChannelOpenCommand {
+message ChannelOpenOperation {
     Status status       = 1;
     string channel_name = 2;
     string flow         = 3;
     string filter       = 4;
 }
-message ChannelCloseCommand {
+message ChannelCloseOperation {
     Status status       = 1;
     string channel_name = 2;
 }
-message ChannelPublishCommand {
+message ChannelPublishOperation {
     Status status       = 1;
     string channel_name = 2;
 }
-message ChannelDeleteCommand {
+message ChannelDeleteOperation {
     Status status       = 1;
     string channel_name = 2;
     string payload_id   = 3;
     string source_id    = 4;
 }
-message ChannelCacheCommand {
+message ChannelCacheOperation {
     Status status            = 1;
     string channel_name      = 2;
     repeated int32 entity_id = 3;
 }
-message ChannelHistoryCommand {
+message ChannelHistoryOperation {
     Status status       = 1;
     string channel_name = 2;
     int64 start_time    = 3; // defaults to current time

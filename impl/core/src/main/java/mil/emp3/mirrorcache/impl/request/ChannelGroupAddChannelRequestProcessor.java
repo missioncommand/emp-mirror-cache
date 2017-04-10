@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupAddChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupAddChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +32,10 @@ public class ChannelGroupAddChannelRequestProcessor extends BaseRequestProcessor
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupAddChannelCommand command = resMessage.getOperation().as(OneOfCommand.class).getChannelGroupAddChannel();
-            if (!(command.getStatus() == Status.SUCCESS)) {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_ADD_CHANNEL_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName())
-                                                                                       .withDetail("channelName: " + command.getChannelName());
+            final ChannelGroupAddChannelOperation operation = resMessage.getOperation().as(OneOfOperation.class).getChannelGroupAddChannel();
+            if (!(operation.getStatus() == Status.SUCCESS)) {
+                throw new MirrorCacheException(Reason.CHANNELGROUP_ADD_CHANNEL_FAILURE).withDetail("channelGroupName: " + operation.getChannelGroupName())
+                                                                                       .withDetail("channelName: " + operation.getChannelName());
             }
             
         } catch (InterruptedException e) {

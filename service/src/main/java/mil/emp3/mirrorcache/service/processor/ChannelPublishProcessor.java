@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelPublishCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelPublishOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
 import org.cmapi.primitives.proto.CmapiProto.ProtoPayload;
 import org.cmapi.primitives.proto.CmapiProto.Status;
@@ -25,7 +25,7 @@ import mil.emp3.mirrorcache.service.cache.EntityCache;
 import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
-public class ChannelPublishProcessor implements CommandProcessor {
+public class ChannelPublishProcessor implements OperationProcessor {
 
     @Inject
     private Logger LOG;
@@ -47,7 +47,7 @@ public class ChannelPublishProcessor implements CommandProcessor {
     public void process(String sessionId, ProtoMessage req) {
         
         if (req.hasPayload()) {
-            final ChannelPublishCommand command = req.getCommand().getChannelPublish();
+            final ChannelPublishOperation operation = req.getOperation().getChannelPublish();
         
             /*
              * Update entity cache.
@@ -58,30 +58,30 @@ public class ChannelPublishProcessor implements CommandProcessor {
             /*
              * Update channel cache.
              */
-            cacheManager.addToChannelCache(sessionId, command.getChannelName(), entity);
+            cacheManager.addToChannelCache(sessionId, operation.getChannelName(), entity);
             
             /*
              * Update channel history.
              */
-//            historyManager.logChannelEntry(sessionId, command.getChannelName(), req.getCommand());
+//            historyManager.logChannelEntry(sessionId, operation.getChannelName(), req.getOperation());
             
             final ProtoMessage res = ProtoMessage.newBuilder(req)
-                    .setPriority(Priority.LOW.getValue())
-                    .setCommand(OneOfCommand.newBuilder()
-                                            .setChannelPublish(ChannelPublishCommand.newBuilder(command)
-                                                                                    .setStatus(Status.SUCCESS)))
-                    .setPayload(ProtoPayload.newBuilder()
-                                            .setId(req.getPayload().getId())
-                                            .setType(req.getPayload().getType())
-                                            .setData(req.getPayload().getData()))
-                    .build();
+                                                 .setPriority(Priority.LOW.getValue())
+                                                 .setOperation(OneOfOperation.newBuilder()
+                                                                             .setChannelPublish(ChannelPublishOperation.newBuilder(operation)
+                                                                                                                       .setStatus(Status.SUCCESS)))
+                                                 .setPayload(ProtoPayload.newBuilder()
+                                                                         .setId(req.getPayload().getId())
+                                                                         .setType(req.getPayload().getType())
+                                                                         .setData(req.getPayload().getData()))
+                                                 .build();
             
             try {
                 /*
                  * Distribute to the other participants of channel.
                  */
                 LOG.debug("distribute: " + Utils.asString(res));
-                for (Member otherMember : channelManager.getMembers(sessionId, command.getChannelName())) {
+                for (Member otherMember : channelManager.getMembers(sessionId, operation.getChannelName())) {
                     LOG.debug("\t-> " + otherMember);
                     
                     if (!sessionManager.getOutboundQueue(otherMember.getSessionId()).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {

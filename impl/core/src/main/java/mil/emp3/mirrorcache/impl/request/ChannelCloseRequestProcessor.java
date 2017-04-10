@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelCloseCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelCloseOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +32,8 @@ public class ChannelCloseRequestProcessor extends BaseRequestProcessor<Message, 
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelCloseCommand command = resMessage.getOperation().as(OneOfCommand.class).getChannelClose();
-            if (!(command.getStatus() == Status.SUCCESS)) {
+            final ChannelCloseOperation operation = resMessage.getOperation().as(OneOfOperation.class).getChannelClose();
+            if (!(operation.getStatus() == Status.SUCCESS)) {
                 throw new MirrorCacheException(Reason.CHANNEL_CLOSE_FAILURE);
             }
             

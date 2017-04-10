@@ -2,8 +2,8 @@ package mil.emp3.mirrorcache.impl.request;
 
 import java.util.HashSet;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCacheCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCacheOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +36,14 @@ public class ChannelGroupCacheRequestProcessor extends BaseRequestProcessor<Mess
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelGroupCacheCommand command = resMessage.getOperation().as(OneOfCommand.class).getChannelGroupCache();
-            if (command.getStatus() == Status.SUCCESS) {
+            final ChannelGroupCacheOperation operation = resMessage.getOperation().as(OneOfOperation.class).getChannelGroupCache();
+            if (operation.getStatus() == Status.SUCCESS) {
                 
-                final ChannelGroupCache cache = new ClientChannelGroupCache(command.getChannelGroupName(), new HashSet<>(command.getEntityIdList()));
+                final ChannelGroupCache cache = new ClientChannelGroupCache(operation.getChannelGroupName(), new HashSet<>(operation.getEntityIdList()));
                 return cache;
                 
             } else {
-                throw new MirrorCacheException(Reason.CHANNELGROUP_CACHE_FAILURE).withDetail("channelGroupName: " + command.getChannelGroupName());
+                throw new MirrorCacheException(Reason.CHANNELGROUP_CACHE_FAILURE).withDetail("channelGroupName: " + operation.getChannelGroupName());
             }
             
         } catch (InterruptedException e) {

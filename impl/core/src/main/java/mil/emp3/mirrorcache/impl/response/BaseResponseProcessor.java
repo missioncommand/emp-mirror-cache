@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +98,7 @@ public abstract class BaseResponseProcessor implements ResponseProcessor, Runnab
         
         try {
             if (!inbox.offer(message, 1, TimeUnit.SECONDS)) {
-                LOG.info(Reason.QUEUE_OFFER_TIMEOUT.getMsg() + ", command: " + message.getOperation().as(OneOfCommand.class).getCommandCase());
+                LOG.info(Reason.QUEUE_OFFER_TIMEOUT.getMsg() + ", operation: " + message.getOperation().as(OneOfOperation.class).getOperationCase());
             }
             
         } catch (InterruptedException e) {

@@ -2,8 +2,8 @@ package mil.emp3.mirrorcache.impl.request;
 
 import java.util.HashSet;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelCacheCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelCacheOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +36,14 @@ public class ChannelCacheRequestProcessor extends BaseRequestProcessor<Message, 
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final ChannelCacheCommand command = resMessage.getOperation().as(OneOfCommand.class).getChannelCache();
-            if (command.getStatus() == Status.SUCCESS) {
+            final ChannelCacheOperation operation = resMessage.getOperation().as(OneOfOperation.class).getChannelCache();
+            if (operation.getStatus() == Status.SUCCESS) {
                 
-                final ChannelCache cache = new ClientChannelCache(command.getChannelName(), new HashSet<>(command.getEntityIdList()));
+                final ChannelCache cache = new ClientChannelCache(operation.getChannelName(), new HashSet<>(operation.getEntityIdList()));
                 return cache;
                 
             } else {
-                throw new MirrorCacheException(Reason.CHANNEL_CACHE_FAILURE).withDetail("channelName: " + command.getChannelName());
+                throw new MirrorCacheException(Reason.CHANNEL_CACHE_FAILURE).withDetail("channelName: " + operation.getChannelName());
             }
             
         } catch (InterruptedException e) {

@@ -1,7 +1,7 @@
 package mil.emp3.mirrorcache.impl.request;
 
-import org.cmapi.primitives.proto.CmapiProto.DeleteChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.DeleteChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +32,12 @@ public class DeleteChannelRequestProcessor extends BaseRequestProcessor<Message,
         try {
             final Message resMessage = dispatcher.awaitResponse(reqMessage);
             
-            final DeleteChannelCommand command = resMessage.getOperation().as(OneOfCommand.class).getDeleteChannel();
-            if (command.getStatus() == Status.SUCCESS) {
+            final DeleteChannelOperation operation = resMessage.getOperation().as(OneOfOperation.class).getDeleteChannel();
+            if (operation.getStatus() == Status.SUCCESS) {
                 return null;
                 
             } else {
-                throw new MirrorCacheException(Reason.DELETE_CHANNEL_FAILURE).withDetail("channelName: " + command.getChannelName());
+                throw new MirrorCacheException(Reason.DELETE_CHANNEL_FAILURE).withDetail("channelName: " + operation.getChannelName());
             }
             
         } catch (InterruptedException e) {

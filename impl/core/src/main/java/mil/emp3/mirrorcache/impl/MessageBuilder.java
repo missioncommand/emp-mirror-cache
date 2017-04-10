@@ -1,27 +1,27 @@
 package mil.emp3.mirrorcache.impl;
 
-import org.cmapi.primitives.proto.CmapiProto.ChannelCacheCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelCloseCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelDeleteCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupAddChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCacheCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCloseCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupDeleteCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupHistoryCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupPublishCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelGroupRemoveChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelHistoryCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelOpenCommand;
-import org.cmapi.primitives.proto.CmapiProto.ChannelPublishCommand;
-import org.cmapi.primitives.proto.CmapiProto.CreateChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.CreateChannelGroupCommand;
-import org.cmapi.primitives.proto.CmapiProto.DeleteChannelCommand;
-import org.cmapi.primitives.proto.CmapiProto.DeleteChannelGroupCommand;
-import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsCommand;
-import org.cmapi.primitives.proto.CmapiProto.FindChannelsCommand;
+import org.cmapi.primitives.proto.CmapiProto.ChannelCacheOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelCloseOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelDeleteOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupAddChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCacheOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupCloseOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupDeleteOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupHistoryOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupOpenOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupPublishOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelGroupRemoveChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelHistoryOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelOpenOperation;
+import org.cmapi.primitives.proto.CmapiProto.ChannelPublishOperation;
+import org.cmapi.primitives.proto.CmapiProto.CreateChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.CreateChannelGroupOperation;
+import org.cmapi.primitives.proto.CmapiProto.DeleteChannelOperation;
+import org.cmapi.primitives.proto.CmapiProto.DeleteChannelGroupOperation;
+import org.cmapi.primitives.proto.CmapiProto.FindChannelGroupsOperation;
+import org.cmapi.primitives.proto.CmapiProto.FindChannelsOperation;
 import org.cmapi.primitives.proto.CmapiProto.GetClientInfoCommmand;
-import org.cmapi.primitives.proto.CmapiProto.OneOfCommand;
+import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 
 import mil.emp3.mirrorcache.Message;
 import mil.emp3.mirrorcache.Payload;
@@ -32,87 +32,87 @@ public class MessageBuilder {
     private MessageBuilder() { }
     
     static public Message buildFindChannelGroupsMessage(String filter) {
-        final FindChannelGroupsCommand op;
+        final FindChannelGroupsOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = FindChannelGroupsCommand.newBuilder()
-                                                                                              .setFilter(filter)
-                                                                                              .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setFindChannelGroups(op)
-                                                                           .build())
+                                              .setProtoOperation(op = FindChannelGroupsOperation.newBuilder()
+                                                                                                .setFilter(filter)
+                                                                                                .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setFindChannelGroups(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildDeleteChannelGroupMessage(String name) {
-        final DeleteChannelGroupCommand op;
+        final DeleteChannelGroupOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = DeleteChannelGroupCommand.newBuilder()
-                                                                                               .setChannelGroupName(name)
-                                                                                               .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setDeleteChannelGroup(op)
-                                                                           .build())
+                                              .setProtoOperation(op = DeleteChannelGroupOperation.newBuilder()
+                                                                                                 .setChannelGroupName(name)
+                                                                                                 .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setDeleteChannelGroup(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildCreateChannelGroupMessage(String name) {
-        final CreateChannelGroupCommand op;
+        final CreateChannelGroupOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = CreateChannelGroupCommand.newBuilder()
-                                                                                               .setChannelGroupName(name)
-                                                                                               .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setCreateChannelGroup(op)
-                                                                           .build())
+                                              .setProtoOperation(op = CreateChannelGroupOperation.newBuilder()
+                                                                                                 .setChannelGroupName(name)
+                                                                                                 .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setCreateChannelGroup(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildFindChannelsMessage(String filter) {
-        final FindChannelsCommand op;
+        final FindChannelsOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = FindChannelsCommand.newBuilder()
-                                                                                         .setFilter(filter)
-                                                                                         .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setFindChannels(op)
-                                                                           .build())
+                                              .setProtoOperation(op = FindChannelsOperation.newBuilder()
+                                                                                           .setFilter(filter)
+                                                                                           .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setFindChannels(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildDeleteChannelMessage(String name) {
-        final DeleteChannelCommand op;
+        final DeleteChannelOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = DeleteChannelCommand.newBuilder()
-                                                                                          .setChannelName(name)
-                                                                                          .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setDeleteChannel(op)
-                                                                           .build())
+                                              .setProtoOperation(op = DeleteChannelOperation.newBuilder()
+                                                                                            .setChannelName(name)
+                                                                                            .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setDeleteChannel(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildCreateChannelMessage(String name, Channel.Visibility visibility, Channel.Type type) {
-        final CreateChannelCommand op;
+        final CreateChannelOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = CreateChannelCommand.newBuilder()
-                                                                                          .setChannelName(name)
-                                                                                          .setType(type.name())
-                                                                                          .setVisibility(visibility.name())
-                                                                                          .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setCreateChannel(op)
-                                                                           .build())
+                                              .setProtoOperation(op = CreateChannelOperation.newBuilder()
+                                                                                            .setChannelName(name)
+                                                                                            .setType(type.name())
+                                                                                            .setVisibility(visibility.name())
+                                                                                            .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setCreateChannel(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
@@ -123,9 +123,9 @@ public class MessageBuilder {
         reqMessage.setOperation(ProtoOperation.newBuilder()
                                               .setProtoOperation(op = GetClientInfoCommmand.newBuilder()
                                                                                            .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setGetClientInfo(op)
-                                                                           .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setGetClientInfo(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
@@ -134,89 +134,89 @@ public class MessageBuilder {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     
     static public Message buildChannelCloseMessage(String name) {
-        final ChannelCloseCommand op;
+        final ChannelCloseOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelCloseCommand.newBuilder()
-                                                                                         .setChannelName(name)
-                                                                                         .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelClose(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelCloseOperation.newBuilder()
+                                                                                           .setChannelName(name)
+                                                                                           .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelClose(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelOpenMessage(String name, Flow flow, String filter) {
-        final ChannelOpenCommand op;
+        final ChannelOpenOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelOpenCommand.newBuilder()
-                                                                                        .setChannelName(name)
-                                                                                        .setFlow(flow.name())
-                                                                                        .setFilter(filter)
-                                                                                        .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelOpen(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelOpenOperation.newBuilder()
+                                                                                          .setChannelName(name)
+                                                                                          .setFlow(flow.name())
+                                                                                          .setFilter(filter)
+                                                                                          .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelOpen(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelDeleteMessage(String name, String payloadId) {
-        final ChannelDeleteCommand op;
+        final ChannelDeleteOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelDeleteCommand.newBuilder()
-                                                                                          .setChannelName(name)
-                                                                                          .setPayloadId(payloadId)
-                                                                                          .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelDelete(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelDeleteOperation.newBuilder()
+                                                                                            .setChannelName(name)
+                                                                                            .setPayloadId(payloadId)
+                                                                                            .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelDelete(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelPublishMessage(String name, Payload<?> payload) {
-        final ChannelPublishCommand op;
+        final ChannelPublishOperation op;
         final Message reqMessage = new Message();
         reqMessage.setPayload(payload);
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelPublishCommand.newBuilder()
-                                                                                           .setChannelName(name)
-                                                                                           .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelPublish(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelPublishOperation.newBuilder()
+                                                                                             .setChannelName(name)
+                                                                                             .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelPublish(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
 
     static public Message buildChannelHistoryMessage(String name) {
-        final ChannelHistoryCommand op;
+        final ChannelHistoryOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelHistoryCommand.newBuilder()
-                                                                                           .setChannelName(name)
-                                                                                           .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelHistory(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelHistoryOperation.newBuilder()
+                                                                                             .setChannelName(name)
+                                                                                             .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelHistory(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelCacheMessage(String name) {
-        final ChannelCacheCommand op;
+        final ChannelCacheOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelCacheCommand.newBuilder()
-                                                                                         .setChannelName(name)
-                                                                                         .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelCache(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelCacheOperation.newBuilder()
+                                                                                           .setChannelName(name)
+                                                                                           .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelCache(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
@@ -225,117 +225,117 @@ public class MessageBuilder {
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- //
     
     static public Message buildChannelGroupHistoryMessage(String name) {
-        final ChannelGroupHistoryCommand op;
+        final ChannelGroupHistoryOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelGroupHistoryCommand.newBuilder()
-                                                                                                .setChannelGroupName(name)
-                                                                                                .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelGroupHistory(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelGroupHistoryOperation.newBuilder()
+                                                                                                  .setChannelGroupName(name)
+                                                                                                  .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelGroupHistory(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelGroupCacheMessage(String name) {
-        final ChannelGroupCacheCommand op;
+        final ChannelGroupCacheOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelGroupCacheCommand.newBuilder()
-                                                                                              .setChannelGroupName(name)
-                                                                                              .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelGroupCache(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelGroupCacheOperation.newBuilder()
+                                                                                                .setChannelGroupName(name)
+                                                                                                .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelGroupCache(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelGroupDeleteMessage(String name, String payloadId) {
-        final ChannelGroupDeleteCommand op;
+        final ChannelGroupDeleteOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelGroupDeleteCommand.newBuilder()
-                                                                                               .setChannelGroupName(name)
-                                                                                               .setPayloadId(payloadId)
-                                                                                               .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelGroupDelete(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelGroupDeleteOperation.newBuilder()
+                                                                                                 .setChannelGroupName(name)
+                                                                                                 .setPayloadId(payloadId)
+                                                                                                 .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelGroupDelete(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelGroupPublishMessage(String name, Payload<?> payload) {
-        final ChannelGroupPublishCommand op;
+        final ChannelGroupPublishOperation op;
         final Message reqMessage = new Message();
         reqMessage.setPayload(payload);
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelGroupPublishCommand.newBuilder()
-                                                                                                .setChannelGroupName(name)
-                                                                                                .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelGroupPublish(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelGroupPublishOperation.newBuilder()
+                                                                                                  .setChannelGroupName(name)
+                                                                                                  .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelGroupPublish(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelGroupCloseMessage(String name) {
-        final ChannelGroupCloseCommand op;
+        final ChannelGroupCloseOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelGroupCloseCommand.newBuilder()
-                                                                                              .setChannelGroupName(name)
-                                                                                              .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelGroupClose(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelGroupCloseOperation.newBuilder()
+                                                                                                .setChannelGroupName(name)
+                                                                                                .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelGroupClose(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelGroupOpenMessage(String name) {
-        final ChannelGroupOpenCommand op;
+        final ChannelGroupOpenOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelGroupOpenCommand.newBuilder()
-                                                                                             .setChannelGroupName(name)
-                                                                                             .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelGroupOpen(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelGroupOpenOperation.newBuilder()
+                                                                                               .setChannelGroupName(name)
+                                                                                               .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelGroupOpen(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelGroupRemoveChannelMessage(String name, String channelName) {
-        final ChannelGroupRemoveChannelCommand op;
+        final ChannelGroupRemoveChannelOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelGroupRemoveChannelCommand.newBuilder()
-                                                                                                      .setChannelGroupName(name)
-                                                                                                      .setChannelName(channelName)
-                                                                                                      .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelGroupRemoveChannel(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelGroupRemoveChannelOperation.newBuilder()
+                                                                                                        .setChannelGroupName(name)
+                                                                                                        .setChannelName(channelName)
+                                                                                                        .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelGroupRemoveChannel(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }
     
     static public Message buildChannelGroupAddChannelMessage(String name, String channelName) {
-        final ChannelGroupAddChannelCommand op;
+        final ChannelGroupAddChannelOperation op;
         final Message reqMessage = new Message();
         reqMessage.setOperation(ProtoOperation.newBuilder()
-                                              .setProtoOperation(op = ChannelGroupAddChannelCommand.newBuilder()
-                                                                                                   .setChannelGroupName(name)
-                                                                                                   .setChannelName(channelName)
-                                                                                                   .build())
-                                              .setOneOfCommand(OneOfCommand.newBuilder()
-                                                                           .setChannelGroupAddChannel(op)
-                                                                           .build())
+                                              .setProtoOperation(op = ChannelGroupAddChannelOperation.newBuilder()
+                                                                                                     .setChannelGroupName(name)
+                                                                                                     .setChannelName(channelName)
+                                                                                                     .build())
+                                              .setOneOfOperation(OneOfOperation.newBuilder()
+                                                                               .setChannelGroupAddChannel(op)
+                                                                               .build())
                                               .build());
         return reqMessage;
     }

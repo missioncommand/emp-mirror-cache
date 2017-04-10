@@ -75,7 +75,7 @@ message ProtoMessage {
     string id                    = 1;
     map<string, string> property = 2;
     int32 priority               = 3;
-    OneOfCommand command         = 4;
+    OneOfOperation operation     = 4;
     ProtoPayload payload         = 5;
 }
 ```
@@ -110,9 +110,9 @@ BOTH | A both flow denotes a client interested in producing and consuming.
 
 A ChannelGroup represents a collection of channels. Clients who open a channelGroup will receive published data from each channel participating in the channelGroup. The owner of a channelGroup can publish data to the channelGroup, this has the effect of broadcasting data to each participating channel in the channelGroup. A channelGroup will persist until the owning session is closed.
 
-### Server Commands
+### Server Operations
 
-Command | Properties
+Operation | Properties
 --------|-----------
 GET_CLIENT_INFO | <ul><li>status</li><li>clientInfo</li></ul>
 CREATE_CHANNEL | <ul><li>status</li><li>channelName</li><li>type</li><li>visibility</li></ul>
