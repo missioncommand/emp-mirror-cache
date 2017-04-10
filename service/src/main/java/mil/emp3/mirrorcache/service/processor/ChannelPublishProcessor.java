@@ -1,5 +1,6 @@
 package mil.emp3.mirrorcache.service.processor;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -15,7 +16,6 @@ import org.slf4j.Logger;
 import mil.emp3.mirrorcache.Member;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
-import mil.emp3.mirrorcache.impl.Utils;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.service.CacheManager;
 import mil.emp3.mirrorcache.service.ChannelManager;
@@ -77,13 +77,13 @@ public class ChannelPublishProcessor implements OperationProcessor {
                                                  .build();
             
             try {
+                final Set<Member> otherMembers = channelManager.getMembers(sessionId, operation.getChannelName());
+                LOG.debug("distributing to: " + otherMembers);
+                
                 /*
                  * Distribute to the other participants of channel.
                  */
-                LOG.debug("distribute: " + Utils.asString(res));
-                for (Member otherMember : channelManager.getMembers(sessionId, operation.getChannelName())) {
-                    LOG.debug("\t-> " + otherMember);
-                    
+                for (Member otherMember : otherMembers) {
                     if (!sessionManager.getOutboundQueue(otherMember.getSessionId()).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {
                         throw new RuntimeException(Reason.QUEUE_OFFER_TIMEOUT.getMsg() + ", sessionId: " + otherMember.getSessionId());
                     }

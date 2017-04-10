@@ -1,28 +1,24 @@
 package mil.emp3.mirrorcache.service.processor;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.cmapi.primitives.proto.CmapiProto.ChannelDeleteOperation;
-import org.cmapi.primitives.proto.CmapiProto.ChannelPublishOperation;
 import org.cmapi.primitives.proto.CmapiProto.OneOfOperation;
 import org.cmapi.primitives.proto.CmapiProto.ProtoMessage;
-import org.cmapi.primitives.proto.CmapiProto.ProtoPayload;
 import org.cmapi.primitives.proto.CmapiProto.Status;
 import org.slf4j.Logger;
 
 import mil.emp3.mirrorcache.Member;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
-import mil.emp3.mirrorcache.impl.Utils;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.service.CacheManager;
 import mil.emp3.mirrorcache.service.ChannelManager;
 import mil.emp3.mirrorcache.service.SessionManager;
-import mil.emp3.mirrorcache.service.cache.CachedEntity;
-import mil.emp3.mirrorcache.service.cache.EntityCache;
 import mil.emp3.mirrorcache.service.support.ProtoMessageEntry;
 
 @ApplicationScoped
@@ -73,10 +69,10 @@ public class ChannelDeleteProcessor implements OperationProcessor {
          * Distribute deletion to the other participants of channel.
          */
         try {
-            LOG.debug("distribute: " + Utils.asString(res));
-            for (Member otherMember : channelManager.getMembers(sessionId, operation.getChannelName())) {
-                LOG.debug("\t-> " + otherMember);
-                
+            final Set<Member> otherMembers = channelManager.getMembers(sessionId, operation.getChannelName());
+            LOG.debug("distributing to: " + otherMembers);
+            
+            for (Member otherMember : otherMembers) {
                 if (!sessionManager.getOutboundQueue(otherMember.getSessionId()).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {
                     throw new RuntimeException(Reason.QUEUE_OFFER_TIMEOUT.getMsg() + ", sessionId: " + otherMember.getSessionId());
                 }

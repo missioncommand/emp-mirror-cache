@@ -95,16 +95,25 @@ public class DefaultMirrorCacheClient implements MirrorCacheClient {
     @Override
     public void shutdown() throws MirrorCacheException {
         initCheck();
-        /*
-         * We are no longer interested in receiving ClientConnectEvent events.
-         */
-        if (clientEventRegistration != null) {
-            clientEventRegistration.removeHandler();
-            clientEventRegistration = null;
-        }
         
-        disconnect();
-        getMessageDispatcher().shutdown();
+        if (isInitialized) {
+            synchronized(this) {
+                if (isInitialized) {
+                    /*
+                     * We are no longer interested in receiving ClientConnectEvent events.
+                     */
+                    if (clientEventRegistration != null) {
+                        clientEventRegistration.removeHandler();
+                        clientEventRegistration = null;
+                    }
+                    
+                    disconnect();
+                    getMessageDispatcher().shutdown();
+                    
+                    isInitialized = false;
+                }
+            }
+        }
     }
     
     @Override

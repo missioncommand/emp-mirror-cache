@@ -1,5 +1,6 @@
 package mil.emp3.mirrorcache.service.processor;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -14,7 +15,6 @@ import org.slf4j.Logger;
 import mil.emp3.mirrorcache.Member;
 import mil.emp3.mirrorcache.MirrorCacheException;
 import mil.emp3.mirrorcache.MirrorCacheException.Reason;
-import mil.emp3.mirrorcache.impl.Utils;
 import mil.emp3.mirrorcache.Priority;
 import mil.emp3.mirrorcache.service.CacheManager;
 import mil.emp3.mirrorcache.service.ChannelGroupManager;
@@ -68,10 +68,10 @@ public class ChannelGroupDeleteProcessor implements OperationProcessor {
          * Distribute deletion to the other participants of channelGroup.
          */
         try {
-            LOG.debug("distribute: " + Utils.asString(res));
-            for (Member otherMember : channelGroupManager.getMembers(sessionId, operation.getChannelGroupName())) {
-                LOG.debug("\t-> " + otherMember);
-                
+            final Set<Member> otherMembers = channelGroupManager.getMembers(sessionId, operation.getChannelGroupName());
+            LOG.debug("distributing to: " + otherMembers);
+            
+            for (Member otherMember : otherMembers) {
                 if (!sessionManager.getOutboundQueue(otherMember.getSessionId()).offer(new ProtoMessageEntry(res), 1, TimeUnit.SECONDS)) {
                     throw new RuntimeException(Reason.QUEUE_OFFER_TIMEOUT.getMsg() + ", sessionId: " + otherMember.getSessionId());
                 }
