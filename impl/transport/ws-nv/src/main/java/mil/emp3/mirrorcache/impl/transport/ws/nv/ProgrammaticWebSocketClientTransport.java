@@ -64,10 +64,10 @@ public class ProgrammaticWebSocketClientTransport implements Transport {
 
         } catch (OpeningHandshakeException e) { // WebSocket violation !
             dumpNvLog(e);
-            throw new MirrorCacheException(Reason.CONNECT_FAILURE, e);
+            throw new MirrorCacheException(Reason.CONNECT_FAILURE, e).withDetail(e.getMessage());
 
         } catch (Exception e) {
-            throw new MirrorCacheException(Reason.CONNECT_FAILURE, e);
+            throw new MirrorCacheException(Reason.CONNECT_FAILURE , e).withDetail(e.getMessage());
         }
     }
 
@@ -179,7 +179,7 @@ public class ProgrammaticWebSocketClientTransport implements Transport {
                     
                     dispatcher.dispatchEvent(new ClientConnectEvent(message));
                 }
-            }, "ProgrammaticWebSocketClientTransport:onConnected - Thread").start();;
+            }, "ProgrammaticWebSocketClientTransport:onConnected - Thread").start();
         }
         
         @Override

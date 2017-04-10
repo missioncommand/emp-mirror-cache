@@ -18,15 +18,19 @@ public class ServerApp {
         System.out.println("here we go\n\n");
         
         final Swarm swarm = new Swarm();
-        swarm.fraction(new LoggingFraction().consoleHandler("CONSOLE", new ConsoleHandlerConsumer() {
-            @Override public void accept(ConsoleHandler c) {
-                c.formatter("%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
-            }
-        }).logger("mil.emp3.mirrorcache", new LoggerConsumer() {
-            @Override public void accept(Logger l) {
-                l.level(Level.DEBUG).handler("CONSOLE");
-            }
-        }).rootLogger(Level.INFO, "CONSOLE"));
+        swarm.fraction(new LoggingFraction().defaultFormatter()
+                                            .consoleHandler("CONSOLE", new ConsoleHandlerConsumer() {
+                                                @Override public void accept(ConsoleHandler c) {
+                                                    c.formatter("%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
+                                                }
+                                            })
+                                            .logger("mil.emp3.mirrorcache", new LoggerConsumer() {
+                                                @Override public void accept(Logger l) {
+                                                    l.level(Level.DEBUG);
+                                                }
+                                            })
+                                            .rootLogger(Level.INFO, "CONSOLE"));
+ 
         
         final JAXRSArchive deployment = ShrinkWrap.create(JAXRSArchive.class);
         deployment.staticContent();
