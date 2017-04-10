@@ -63,7 +63,7 @@ public class AnnotatedWebSocketClientTransport implements Transport {
             session = container.connectToServer(this, uri); // blocks
             
         } catch (IOException | DeploymentException e) {
-            throw new MirrorCacheException(Reason.CONNECT_FAILURE, e);
+            throw new MirrorCacheException(Reason.CONNECT_FAILURE, e).withDetail(e.getMessage());
         }
     }
     
