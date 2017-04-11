@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>mil.army.missioncommand</groupId>
+    <artifactId>mirrorcache-wildfly-swarm</artifactId>
+    <version>0.1.0</version>
+    <packaging>war</packaging>
+
+    <scm>
+        <connection>scm:git:https://github.com/missioncommand/emp3-mirror-cache.git</connection>
+        <developerConnection>scm:git:https://github.com/missioncommand/emp3-mirror-cache.git</developerConnection>
+        <url>https://github.com/missioncommand/emp3-mirror-cache</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-missioncommand-maven</id>
+            <name>missioncommand-maven</name>
+            <url>https://api.bintray.com/maven/missioncommand/maven/emp3-mirror-cache/;publish=1</url>
+        </repository>
+        <snapshotRepository>
+            <id>ojo-missioncommand-maven</id>
+            <name>missioncommand-maven</name>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>di2e.releases</id>
+            <name>DI2E Release Repository</name>
+            <url>https://nexus.di2e.net/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <properties>
+        <maven.enforcer.mavenVer>3.2.5</maven.enforcer.mavenVer>
+        <maven.enforcer.javaVer>[1.8,)</maven.enforcer.javaVer>
+        
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+        <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
+        <maven-war-plugin.version>2.6</maven-war-plugin.version>
+        <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
+        
+        <wildfly-swarm.version>2017.2.0</wildfly-swarm.version>
+        <protobuf-java-util.version>3.2.0</protobuf-java-util.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.wildfly.swarm</groupId>
+                <artifactId>bom-all</artifactId>
+                <version>${wildfly-swarm.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>mil.army.missioncommand</groupId>
+            <artifactId>mirrorcache-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>${protobuf-java-util.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>undertow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>cdi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>ejb</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.wildfly.swarm</groupId>
+                <artifactId>wildfly-swarm-plugin</artifactId>
+                <version>${wildfly-swarm.version}</version>
+                <configuration>
+                    <!--<bundleDependencies>true</bundleDependencies> -->
+                    <propertiesFile>${project.basedir}/src/main/webapp/META-INF/swarm.properties</propertiesFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>package</id>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>start</id>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven-failsafe-plugin.version}</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <test.web.dir>${project.basedir}/src/main/webapp</test.web.dir>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>${maven.enforcer.mavenVer}</version>
+                                    <message>This project requires at least Maven version ${maven.enforcer.mavenVer}</message>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>${maven.enforcer.javaVer}</version>
+                                    <message>This project requires at least Java version ${maven.enforcer.javaVer}</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

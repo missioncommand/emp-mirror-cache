@@ -1,0 +1,428 @@
+syntax = "proto3";
+
+package cmapi;
+
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/timestamp.proto";
+
+extend google.protobuf.EnumValueOptions {
+  string modifier_value = 50000;
+}
+
+option java_package = "org.cmapi.primitives.proto";
+option java_outer_classname = "CmapiProto";
+
+/*
+ * DEMO CMAPI PRIMITIVES
+ */
+enum SymbolStandard {
+    MIL_STD_2525C = 0;
+    MIL_STD_2525B = 1;
+}
+
+enum AltitudeMode {
+    CLAMP_TO_GROUND = 0;
+    RELATIVE_TO_GROUND = 1;
+    ABSOLUTE = 2;
+}
+
+message GeoPosition {
+    double latitude = 1;
+    double longitude = 2;
+    double altitude = 3;
+}
+
+enum Modifier {
+    SYMBOL_ICON = 0 [(modifier_value) = "A"];
+    ECHELON = 1 [(modifier_value) = "B"];
+    QUANTITY = 2 [(modifier_value) = "C"];
+    TASK_FORCE_INDICATOR = 3 [(modifier_value) = "D"];
+    FRAME_SHAPE_MODIFIER = 4 [(modifier_value) = "E"];
+    REDUCED_OR_REINFORCED = 5 [(modifier_value) = "F"];
+    STAFF_COMMENTS = 6 [(modifier_value) = "G"];
+    ADDITIONAL_INFO_1 = 7 [(modifier_value) = "H"];
+    ADDITIONAL_INFO_2 = 8 [(modifier_value) = "H1"];
+    ADDITIONAL_INFO_3 = 9 [(modifier_value) = "H2"];
+    EVALUATION_RATING = 10 [(modifier_value) = "J"];
+    COMBAT_EFFECTIVENESS = 11 [(modifier_value) = "K"];
+    SIGNATURE_EQUIPMENT = 12 [(modifier_value) = "L"];
+    HIGHER_FORMATION = 13 [(modifier_value) = "M"];
+    HOSTILE = 14 [(modifier_value) = "N"];
+    IFF_SIF = 15 [(modifier_value) = "P"];
+    DIRECTION_OF_MOVEMENT = 16 [(modifier_value) = "Q"];
+    MOBILITY_INDICATOR = 17 [(modifier_value) = "R"];
+    SIGINT_MOBILITY_INDICATOR = 18 [(modifier_value) = "R2"];
+    OFFSET_INDICATOR = 19 [(modifier_value) = "S"];
+    UNIQUE_DESIGNATOR_1 = 20 [(modifier_value) = "T"];
+    UNIQUE_DESIGNATOR_2 = 21 [(modifier_value) = "T1"];
+    EQUIPMENT_TYPE = 22 [(modifier_value) = "V"];
+    DATE_TIME_GROUP = 23 [(modifier_value) = "W"];
+    DATE_TIME_GROUP_2 = 24 [(modifier_value) = "W1"];
+    ALTITUDE_DEPTH = 25 [(modifier_value) = "X"];
+    LOCATION = 26 [(modifier_value) = "Y"];
+    SPEED = 27 [(modifier_value) = "Z"];
+    SPECIAL_C2_HEADQUARTERS = 28 [(modifier_value) = "AA"];
+    FEINT_DUMMY_INDICATOR = 29 [(modifier_value) = "AB"];
+    INSTALLATION = 30 [(modifier_value) = "AC"];
+    PLATFORM_TYPE = 31 [(modifier_value) = "AD"];
+    EQUIPMENT_TEARDOWN_TIME = 32 [(modifier_value) = "AE"];
+    COMMON_IDENTIFIER = 33 [(modifier_value) = "AF"];
+    AUXILIARY_EQUIPMENT_INDICATOR = 34 [(modifier_value) = "AG"];
+    AREA_OF_UNCERTAINTY = 35 [(modifier_value) = "AH"];
+    DEAD_RECKONING = 36 [(modifier_value) = "AI"];
+    SPEED_LEADER = 37 [(modifier_value) = "AJ"];
+    PAIRING_LINE = 38 [(modifier_value) = "AK"];
+    OPERATIONAL_CONDITION = 39 [(modifier_value) = "AL"];
+    DISTANCE = 40 [(modifier_value) = "AM"];
+    AZIMUTH = 41 [(modifier_value) = "AN"];
+    ENGAGEMENT_BAR = 42 [(modifier_value) = "AO"];
+    COUNTRY_CODE = 43 [(modifier_value) = "CC"];
+    SONAR_CLASSIFICATION_CONFIDENCE = 44 [(modifier_value) = "SCC"];
+}
+
+message GeoColor {
+    int32 red = 1;
+    int32 green = 2;
+    int32 blue = 3;
+    double alpha = 4;
+    
+    map<string, string> _custom_user_data_1 = 5;
+    map<string, bytes> _custom_user_data_2 = 6;
+}
+
+enum FillPattern {
+    solid = 0;
+    hatched = 1;
+    crossHatched = 2;
+}
+
+enum Justification {
+    LEFT = 0;
+    CENTER = 1;
+    RIGHT = 2;
+}
+
+enum Typeface {
+    REGULAR = 0;
+    BOLD = 1;
+    ITALIC = 2;
+    BOLDITALIC = 3;
+}
+
+message GeoFillStyle {
+    GeoColor fill_color = 1;
+    FillPattern fill_pattern = 2;
+    string description = 3;
+}
+
+message GeoStrokeStyle {
+    GeoColor stroke_color = 1;
+    int32 stippling_pattern = 2;
+    int32 stippling_factor = 3;
+    double stroke_width = 4;
+}
+
+message GeoLabelStyle {
+    GeoColor color = 1;
+    GeoColor outline_color = 2;
+    Justification justification = 3;
+    string font_family = 4;
+    Typeface typeface = 5;
+    double size = 6;
+}
+
+message GeoTimeSpan {
+    google.protobuf.Timestamp begin = 1;
+    google.protobuf.Timestamp end = 2;
+}
+
+message GeoRenderable {
+    AltitudeMode altitude_mode = 1;
+    repeated GeoPosition position = 2;
+    google.protobuf.Timestamp time_stamp = 3;
+    repeated GeoTimeSpan time_span = 4;
+    GeoLabelStyle label_style = 5;
+    GeoStrokeStyle stroke_style = 6;
+    GeoFillStyle fill_style = 7;
+    bool extrude = 8;
+    bool tessellate = 9;
+    double buffer = 10;
+    double azimuth = 11;
+}
+
+message MilStdSymbol {
+    string geo_id = 1;
+    string name = 2;
+    string symbol_code = 3;
+    SymbolStandard symbol_standard = 4;
+    AltitudeMode altitude_mode = 5;
+    repeated GeoPosition position = 6;
+    map<string, string> modifier = 7;
+    GeoFillStyle fill_style = 8;
+    GeoStrokeStyle stroke_style = 9;
+    GeoLabelStyle label_style = 10;
+    bool is_selected = 11;
+    string mirror_key = 12;
+}
+
+message Circle {
+    double radius = 1;
+}
+
+message OneOfFeature {
+    oneof feature {
+        MilStdSymbol symbol = 1;
+        Circle circle = 2;
+    }
+}
+
+message Container {
+    string geo_id = 1;
+    string name = 2;
+    repeated OneOfFeature feature = 3;
+}
+
+/////////////////////////////////////////
+
+enum Status {
+    SUCCESS = 0;
+    FAILURE = 1; 
+}
+
+message ProtoClientInfo {
+    string client_id = 1;
+}
+
+message QueueInfo {
+    string queue_name     = 1;
+    repeated string entry = 2;
+}
+
+message CacheInfo {
+    string name             = 1;
+    repeated int32 entityId = 2;
+}
+
+message MemberInfo {
+    string session_id   = 1;
+    //TODO string agent = 2;
+}
+
+message ChannelInfo {
+    string name                = 1;
+    string visibility          = 2;
+    string type                = 3;
+    bool is_open               = 4;
+    repeated MemberInfo member = 5;
+}
+
+message ChannelGroupInfo {
+    string name                  = 1;
+    bool is_open                 = 2;
+    repeated ChannelInfo channel = 3;
+    repeated MemberInfo member   = 4;
+}
+
+message EntityInfo {
+    int32 id            = 1;
+    int32 version       = 2;
+    string payload_id   = 3;
+    string payload_type = 4;
+    bytes payload_data  = 5;
+    int64 created_time  = 6;
+    int64 updated_time  = 7;
+}
+
+message LogEntry {
+    int32 id                 = 1;
+    int64 time               = 2;
+    OneOfOperation operation = 3;
+}
+
+message HistoryInfo {
+    int64 start_time      = 1;
+    int64 end_time        = 2;
+    repeated LogEntry log = 3;
+}
+
+message OneOfOperation {
+    oneof operation {
+        CreateChannelOperation create_channel                           = 100;
+        DeleteChannelOperation delete_channel                           = 101;
+        FindChannelsOperation find_channels                             = 102;
+        ChannelOpenOperation channel_open                               = 103;
+        ChannelCloseOperation channel_close                             = 104;
+        ChannelPublishOperation channel_publish                         = 105;
+        ChannelDeleteOperation channel_delete                           = 106;
+        ChannelCacheOperation channel_cache                             = 107;
+        ChannelHistoryOperation channel_history                         = 108;
+        
+        CreateChannelGroupOperation create_channel_group                = 109;
+        DeleteChannelGroupOperation delete_channel_group                = 110;
+        FindChannelGroupsOperation find_channel_groups                  = 111;
+        ChannelGroupOpenOperation channel_group_open                    = 112;
+        ChannelGroupCloseOperation channel_group_close                  = 113;
+        ChannelGroupAddChannelOperation channel_group_add_channel       = 114;
+        ChannelGroupRemoveChannelOperation channel_group_remove_channel = 115;
+        ChannelGroupPublishOperation channel_group_publish              = 116;
+        ChannelGroupDeleteOperation channel_group_delete                = 117;
+        ChannelGroupCacheOperation channel_group_cache                  = 118;
+        ChannelGroupHistoryOperation channel_group_history              = 119;
+        
+        GetClientInfoCommmand get_client_info                         = 120;
+    }
+}
+
+message ProtoPayload {
+    string id   = 1;
+    string type = 2;
+    bytes data  = 3;
+}
+
+message ProtoMessage {
+    string id                    = 1;
+    map<string, string> property = 2;
+    int32 priority               = 3;
+    OneOfOperation operation     = 4;
+    ProtoPayload payload         = 5;
+}
+
+//.
+//.. EVENTS
+//...
+/*message ChannelPublishedEvent {
+    string channel_name  = 1;
+    ProtoPayload payload = 2;
+}
+message ChannelDeletedEvent {
+    string channel_name  = 1;
+    string payload_id    = 2;
+    ProtoPayload payload = 3;
+}
+
+message ChannelGroupPublishedEvent {
+    string channel_group_name = 1;
+    ProtoPayload payload      = 2;
+}
+message ChannelGroupDeletedEvent {
+    string channel_group_name = 1;
+    string payload_id         = 2;
+    ProtoPayload payload      = 3;
+}*/
+
+message GetClientInfoCommmand {
+    Status status               = 1;
+    ProtoClientInfo client_info = 2;
+}
+
+
+//.
+//.. CHANNEL_GROUP
+//...
+message ChannelGroupOpenOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+}
+message ChannelGroupCloseOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+}
+message ChannelGroupAddChannelOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+    string channel_name       = 3;
+}
+message ChannelGroupRemoveChannelOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+    string channel_name       = 3;
+}
+message ChannelGroupPublishOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+}
+message ChannelGroupDeleteOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+    string payload_id         = 3;
+    string source_id          = 4;
+}
+message ChannelGroupCacheOperation {
+    Status status              = 1;
+    string channel_group_name  = 2;
+    repeated int32 entity_id   = 3;
+}
+message ChannelGroupHistoryOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+    int64 start_time          = 3;
+    int64 end_time            = 4;
+    HistoryInfo history       = 5;
+}
+
+message CreateChannelGroupOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+}
+message DeleteChannelGroupOperation {
+    Status status             = 1;
+    string channel_group_name = 2;
+}
+message FindChannelGroupsOperation {
+    Status status                           = 1;
+    string filter                           = 2;
+    repeated ChannelGroupInfo channel_group = 3;
+}
+
+//.
+//.. CHANNEL
+//...
+message CreateChannelOperation {
+    Status status       = 1;
+    string channel_name = 2;
+    string type         = 3;
+    string visibility   = 4;
+}
+message DeleteChannelOperation {
+    Status status       = 1;
+    string channel_name = 2;
+}
+message FindChannelsOperation {
+    Status status                = 1;
+    string filter                = 2;
+    repeated ChannelInfo channel = 3;
+}
+
+message ChannelOpenOperation {
+    Status status       = 1;
+    string channel_name = 2;
+    string flow         = 3;
+    string filter       = 4;
+}
+message ChannelCloseOperation {
+    Status status       = 1;
+    string channel_name = 2;
+}
+message ChannelPublishOperation {
+    Status status       = 1;
+    string channel_name = 2;
+}
+message ChannelDeleteOperation {
+    Status status       = 1;
+    string channel_name = 2;
+    string payload_id   = 3;
+    string source_id    = 4;
+}
+message ChannelCacheOperation {
+    Status status            = 1;
+    string channel_name      = 2;
+    repeated int32 entity_id = 3;
+}
+message ChannelHistoryOperation {
+    Status status       = 1;
+    string channel_name = 2;
+    int64 start_time    = 3; // defaults to current time
+    int64 end_time      = 4;
+    HistoryInfo history = 5;
+}
+

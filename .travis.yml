@@ -1,0 +1,46 @@
+sudo: false
+language: java
+
+jdk:
+  - oraclejdk8
+
+env:
+  global:
+    - secure: V0Thbu67PT1jbxnRX9h7QJ2IGNahLTDBko0nN35LuXIjPDmpVfFLyWOE6z7sayP9U8ZiQVH2VVfF2K840JYXQtheTBxx4IHAdxYGldF0xI50Wt+5DC7I4sHg/dNM5oDCcrSsn2LRs++0GsQi4NIIue7xjYUtffpMyXoyD7AghWjVKJ+MZsdY1BBRPcLrBbcTowKVP8S/XSYsMxJ+6y6obp1XX3jYN65QmEVdBKZr2LUDgfO8g6d0L+J0R+KqrHe6VAxgGA+NkDyT3mAUAB8L8nMC5EeRFk47s0SyzHg3DGDzllErCBX8IVhJrDamtPH8VDG3JnwGWesiZoRsicAxorTg0H82a69dydJzGE+qEGfLSBP3IB19oZTsiOj0pBrIO+2rjTrKB7SgGDEi1nwLPmreoM+2MyzZsV0f/A7fVcOcrm66BqZ3omzuih2tW9vEZs5eYWi2+otb3skRwSSPrHvVZq9Bdtd0fpxbrh99oesnWFIe0F5mpafaTTUPb+wgbC7KAUDcAGR9L0W4PYHveehaAE4o6aVOqpSZQlyCK+GxP9ZsN2U1dyK4b3Srr337hDaFP//xGaOJuyott8w+CBCTctYT6SaxkkTQlQjJtHy+8cOOGifVDrcZOXYDvIoh8/6lasVNSql3eX1h+BSomJ5Ke4B9H5GqsI//h1Std+o=
+    - secure: n4G17HSn1eoZsZhCacMm1Nu4DtD2GkMtGB3L9x0ILUz4kXG22BQv681bIYaiAWKIHBsosTaLxA7lhnZrnNZBJoO+KwjZ8e/E+V1vadTxubP+5JUaz+F765+703Mv2wevmdsrAo/3FbmolOf7pkCi3/adIXZRlfMWc6q29YNnxXJ/eRanHs7KiV+fIellu+/emALUeE0rK39R+Zr+mMmLjHlHHEicR9Z7kLQkIQgrKtgiUZ1U27qgLNWeiE0/ahc72Zmwvl9cOTWilunXr3fZ9MJx/ao9D0uolrm+N9Dq67Ch9QJX1VaTDz8EriKVStn5WVx+u924MyObEqom+9UA4/zwlsy8XnoRMXxgqtT1qm1tfL017txFEAPiKSVLApejgISgVwJuglQu92c6EeQpt4l71OAHJTgRxnafxLtphnmvhQ0JmSgJLOG2CLLdza+ZmPbZ4m+re/fTtw8vucCRsUWMCzE80HZpnkVkRblf9GDxjMJVDgVHegewz6mbHVJpm8XI7MNDlwX/VNWii12cmzihbh7SZEorKefzs5vT1Qd5Iiqc8DCcPzkoVt6gPKrkA+rfRZ05xvLy9lRoU2OrbWFtCMD3M/Uvd/A+Wwl1/Q/z8WKWqytI++le0vw3WG4SZYs9glnjaOU9OrbZ+NOnQzJX8RndsxU3zF5QXYDtnu4=
+    - secure: C7/Bczq/m0Vdr/M5AVZt10iGai6v3Xt5eu3N3ghepSTWCLJa41YKRTSGq1Nt7EiCBGe/aT+v+6/MZDv+7859/a2eYM8+gSgIqzS+6T5BUqX1bXiEy20UByJXUOtKjrMUYiXZvQ9hgvo7Eu9logm+BsE2Gnj9+Gz1/9TUveUUohBmk4varqSMyGPdafL6B2rMr9ZryCvpuaj4J98CNcH7NxplvIsjY5ChsEiVhPXQGWI5Z+ByNfsuC2POJ4UwrktLfI03I77uGpD+CJjdpGOxTCr97sYvZ3gmj48OBk5QHCQFi5YJWJAjDZxzNv4nI0zeIjQbSCTLgjMdwDD0VgtvSiQP4FD35yqi0Gzg5URCGnbljTM4/ubWnIkXH3sIQBdXrT+xzeuPqcP4FeRDJHv4Px9LyJofyb2x/ApX4FEjtm6dKsheIUE5ovk6GHgSXYiL5YbbLNZ35reb95mScEoz5OaqhOG0bHc3yd8GceuvFSlHL2CGwfymBLWDih2goOKMOJVW0jgUi1kDbvjEY/6X+HGGobXtnIEnPzqVXQyNJ78P1xblol+1YbOcO9Yvv5pNIMgHt+kC2dKw74MhH7PXZrlJuy2riSFZLm1RLDmbQI+A7IhrW82p0B22kZLoqNQU01c12frjSFPf3UlRzh0W+Cyqq8ceg8QTxBiFsprVvs4=
+    - secure: EcuP1zyKG5yny95ihFsIqTt2Iy91XScs3bkZsFM1RzeJcFFuuvBpWO+LUAfjettw6r7CL71T6g9N3V0JSd7iwogPjxEE5yVi3jdNH2+Ey8J60+bmkSjxpKod6AqFJ0qkE6AxkSC82/DVO19w65RR1Ae/yVIWHkOPQAlupU9jiG0azLdUhradTIm5gZEyhZFaZikTo5kppLvEapRebGDyK6OhsYXWRIq4oSzakWVBjfRc2TIDpf7201yUnBKciE/2RM4SoNxcsDu6g4NYXc20Z1ZXV5MoaPKWJI6WHjkhYKFteq8ImvPTh4YUpgOsSMblyxfHmyQjdeSMTvAKC+MTEIr3yqxUzmnKdD32dtWuHZEMgaq3hsg08kPMYfwuQHd7qS6Q+FTZQcuvLXj2OpnDFL1EsZ3vjYZ5hBBJnWZPBhULnmyJLo74mYNwHv2UEgUy2L/QBmYnZHvNzrDhecW9tuewr9DEH9ECeftom++HvkRPlV7vBai/Q3tcAJoJjgbIuuFaYQdHzBw0p4fSr3aD1kzL6QwyR4fHJtgafRkHcnzzJeT0SlmnSS9yxdxut5bjffMMb6Tq/SEFMtoMPp0BqugvyKmCZe937KrILIQIMKnU+h8Fj1hmxnE9iprSbdmps9IgmAg7p8z2ApITUCfDYmFBWJYGlNKclyNSnhIKrsw=
+    - secure: SWMHOYvxGnjIju6zLqPugNCLLU2eKkyfMUkM5AcQok+3WVEzpBJkGypcRLh5RC3C3SE0CVIYgNxVmcx4HWyLAQ9ERhG7b1DAviqLo9Hmoh/7tXq4CrkV+J+sSNcW16Lw+XDQY0IK/mEIPdTcwsM5N6kaE3R31OCOC6q3r4DRIBImZkBRIofYP/IrFTGFnKss9floNRV5/N4GaTjGHsezmRiqGqtNP6IDewhybGXZYlMlll4qVT50m66w7CpsoXWWFTUqeWgp4G6/18ZIk+ZXfkDOD2q6CN/2ekacGRcBXdG43uD3+VM3QsbRS+a2CWdXK8sXF8dvsLFeP3oHjqDw/DZbaco4v/YhC50omEm1Rs/nNIFu26lwoI0a7nM5SbXwdp/KgQtvIo2wlcKvpoAakAuFsGA5mqf8AX2XAfb+5YOr08pvP723a/ybEjtr9odcGI1CsgaxDrBK9aadZ2WzL0TFuUORh7DPmN8huEnPctc5pXHHLb1IcZcNcLb+hhCt4zlkJjvN9cmhAr6uuS0saVkOYLeUq2PUuFQCbt8wB3XdACuLRCfBxWVfhG/cDBoTmJS05qAXuWI0KV1PYHauu2JTiGbzAP+42Hvn4Upf6KknVMpEUALXx4jbfdKvSM3aPytqgpMK1vxEiT28qdyuYMpl1koDSB4g9q4xkg0RNNs=
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+before_install:
+  - export GRADLE_OPTS="-Dorg.gradle.daemon=false -Xmx3072m $GRADLE_OPTS"
+  - export DEFAULT_JVM_OPTS=
+
+install: true
+
+script:
+ - ./gradlew build publishToMavenLocal --refresh-dependencies --stacktrace && mvn -f wildfly-swarm/pom.xml clean install --settings gradle/settings.xml -e
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+deploy: # travis by default will not invoke this step for PRs
+  - provider: script
+    skip_cleanup: true
+    script: gradle/snapshot.sh
+    on:
+      branch:
+        - development
+
+  - provider: script
+    skip_cleanup: true
+    script: gradle/release.sh
+    on:
+      tags: true
+      condition: "$TRAVIS_TAG =~ ^v[0-9]+.[0-9]+.[0-9]+$"

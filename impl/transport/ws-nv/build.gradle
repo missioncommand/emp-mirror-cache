@@ -1,0 +1,13 @@
+apply plugin: 'java'
+apply plugin: 'nebula.maven-nebula-publish'
+apply plugin: 'nebula.compile-api'
+
+sourceCompatibility = rootProject.sourceCompatibility
+targetCompatibility = rootProject.targetCompatibility
+
+dependencies {
+    compileApi project (":mirrorcache-api")
+    
+    compileApi         ("com.neovisionaries:nv-websocket-client")
+    compileApi         ("org.slf4j:slf4j-api")
+}

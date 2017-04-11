@@ -1,0 +1,145 @@
+<html>
+    <head>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    </head>
+    <body>
+        <div class="page">
+            <div class="center">
+            
+                Address: <input type="text" id="textAddress" size="75" value="ws://127.0.0.1:8080/mirrorcache?agent=web">
+                <input id="buttonDisconnect" type="button" value="Disconnect" style="float: right;" onClick="worker.postMessage({'cmd': 'disconnect'});" />
+                <input id="buttonConnect" type="button" value="Connect" style="float: right;" onClick="worker.postMessage({'cmd': 'connect', 'url': document.getElementById('textAddress').value});" />
+                <hr/>
+            
+                <p/>
+                <input id="buttonTestSimple" type="button" value="Test Simple Serialization [protobuf]" onclick="doTestSimple(document.getElementById('textIterSimple').value);" />
+                <input type="text" id="textIterSimple" value="1000000">
+                <div id="testResultsSimple"> </div>
+                <hr/>
+
+                <input id="buttonTestTransport" type="button" value="Test Transport Serialization [protobuf]" onclick="doTestTransport(document.getElementById('textIterTransport').value);" />
+                <input type="text" id="textIterTransport" value="1000000">
+                <div id="testResultsTransport"> </div>
+                <hr/>
+
+                <p/>
+                <b>Receive Log: </b>(<label id="receiveCount">0</label> total)
+                <label style="float: right;"><input id="logSymbol" type="checkbox">Log Symbol</label>
+                <label style="float: right;"><input id="logStep" type="checkbox" checked>Log Stepping</label>
+                <div>
+                    <textarea id="receiveLog" style="width:100%;height:45%"></textarea>
+                    <input id="buttonClearLogs" type="button" value="Clear Logs" style="float: right;" onclick="document.getElementById('receiveLog').value=''; receiveCount=0; document.getElementById('receiveCount').innerHTML='0'; testResultsSimple.innerHTML=''; testResultsTransport.innerHTML='';">
+                    <label style="float: right;"><input id="flagEcho" type="checkbox" onclick="setEchoFlag(document.getElementById('flagEcho').checked);" disabled>Echo</label>
+                </div>
+
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            var textarea = document.getElementById("receiveLog");
+
+            var lastReceive = 0;
+            var timerId;
+            
+            var receiveCount = 0;
+            
+            var worker = new Worker('client.js');
+            worker.onmessage = function(e) {
+                
+                // Assume if 3 seconds have lapsed since our previous message
+                // we are working with a new batch.
+                if (performance.now() - lastReceive > 3000) {
+                    logReceive("Receiving...", false);
+                    
+                    var startTime = performance.now();
+                    var startCount = receiveCount;
+                    
+                    var timerId = setInterval(function() {
+                        if (performance.now() - lastReceive > 2000) { // are we still receiving msgs?
+                            logReceive("\tReceived " + (receiveCount - startCount) + " items in " + (lastReceive - startTime).toFixed(2) + "ms", false);
+                            
+                            document.getElementById("receiveCount").innerHTML = receiveCount;
+                            
+                            clearInterval(timerId);
+                            timerId = undefined;
+                        }
+                    }, 1000); // check every one second to see if we are still receiving messages 
+                }
+                lastReceive = performance.now();
+                
+                receiveCount++;
+                
+                if (e.data.symbolStr !== undefined) { // binary
+                    if (!document.getElementById('logStep').checked || receiveCount % 1000 == 0) {
+                        if (document.getElementById('logSymbol').checked) {
+                            logReceive("(binary) " + e.data.size + " bytes - " + e.data.symbolStr);
+                        } else {
+                            logReceive("(binary) " + e.data.size + " bytes");
+                        }
+                    }
+                 
+                } else { // assume text
+                    logReceive("(text) " + e.data.text);
+                    textarea.scrollTop = textarea.scrollHeight;
+                }
+            }
+
+/* CONVERTS FROM BLOB TO ARRAYBUFFER
+var arrayBuffer;
+var fileReader = new FileReader();
+fileReader.onload = function() {
+    arrayBuffer = this.result;
+    worker.postMessage({'cmd': 'deserialize', 'blob': arrayBuffer});
+};
+fileReader.readAsArrayBuffer(e.data); */
+
+            function doTestTransport(numIter) {
+                var worker = new Worker('client.js');
+                        
+                worker.onmessage = function(e) {
+                    if (e.data.count !== undefined) {
+                        document.getElementById('textIterTransport').value = e.data.count;
+
+                    } else if (e.data.results !== undefined) {
+                        testResultsTransport.innerHTML = e.data.results;
+                    }
+                };
+                worker.onerror = function(e) {
+                    alert('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
+                };
+
+                worker.postMessage({'cmd': 'testTransport', 'numIter': numIter, 'url': document.getElementById('textAddress').value});
+            }
+
+            function doTestSimple(numIter) {
+                var worker = new Worker('client.js');
+                        
+                worker.onmessage = function(e) {
+                    if (e.data.count !== undefined) {
+                        document.getElementById('textIterSimple').value = e.data.count;
+
+                    } else if (e.data.results !== undefined) {
+                        testResultsSimple.innerHTML = e.data.results;
+                    }
+                };
+                worker.onerror = function(e) {
+                    alert('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
+                };
+                worker.postMessage({'cmd': 'testSimple', 'numIter': numIter});
+            }
+            
+            function setEchoFlag(flagEcho) {
+                worker.postMessage({'cmd': 'flagEcho', 'flagEcho': flagEcho});
+            }
+            
+            function logReceive(s, includeCount) {
+                includeCount = arguments.length == 1 ? true : false;
+                
+                textarea.value += (includeCount ? ("[" + receiveCount + "] " + s + "\n") : s + "\n");
+                textarea.scrollTop = textarea.scrollHeight;
+            }
+
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,47 @@
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'nebula.maven-nebula-publish'
+apply plugin: 'nebula.compile-api'
+
+sourceCompatibility = rootProject.sourceCompatibility
+targetCompatibility = rootProject.targetCompatibility
+
+//sourceSets.main.java.srcDirs += "$buildDir/generated-sources/proto/main/java"
+sourceSets.main.java.srcDirs += "$buildDir/generated-sources/proto/main/javalite"
+
+dependencies {
+    compileApi ("org.cmapi.primitives:common-map-geospatial-notation")
+    compileApi ("com.google.protobuf:protobuf-java")
+}
+
+protobuf {
+    generatedFilesBaseDir = "$buildDir/generated-sources/proto"
+    
+    protoc {
+        artifact = "com.google.protobuf:protoc:${version_protoc}"
+    }
+    plugins {
+        javalite {
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.generateDescriptorSet = true
+            task.descriptorSetOptions.includeSourceInfo = true
+            task.descriptorSetOptions.includeImports = true
+            
+            task.builtins {
+                remove java
+                js {
+                    option 'library=cmapi_proto'
+                    option 'binary'
+                    option 'error_on_name_conflict'
+                }
+            }
+            task.plugins {
+                javalite { }
+            }
+        }
+    }
+}
